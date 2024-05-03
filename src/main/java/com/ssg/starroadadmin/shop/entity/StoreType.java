@@ -1,4 +1,4 @@
-package com.ssg.starroad.shop.entity;
+package com.ssg.starroadadmin.shop.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

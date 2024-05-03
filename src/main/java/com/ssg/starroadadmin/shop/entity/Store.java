@@ -1,7 +1,7 @@
-package com.ssg.starroad.shop.entity;
+package com.ssg.starroadadmin.shop.entity;
 
-import com.ssg.starroad.common.entity.BaseTimeEntity;
-import com.ssg.starroad.user.entity.User;
+import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ public class Store extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private User managerId;
+    private Users managerId;
 
     @Column(unique = true)
     private String name;

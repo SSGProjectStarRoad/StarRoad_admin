@@ -1,4 +1,4 @@
-package com.ssg.starroad.review.entity;
+package com.ssg.starroadadmin.review.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

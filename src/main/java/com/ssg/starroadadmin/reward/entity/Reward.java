@@ -1,9 +1,6 @@
-package com.ssg.starroad.reward.entity;
+package com.ssg.starroadadmin.reward.entity;
 
-import com.ssg.starroad.common.entity.BaseTimeEntity;
-import com.ssg.starroad.review.enums.ConfidenceType;
-import com.ssg.starroad.shop.entity.Store;
-import com.ssg.starroad.user.entity.User;
+import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

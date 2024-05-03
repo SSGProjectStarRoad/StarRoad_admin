@@ -1,12 +1,9 @@
-package com.ssg.starroad.board.entity;
+package com.ssg.starroadadmin.board.entity;
 
-import com.ssg.starroad.common.entity.BaseTimeEntity;
-import com.ssg.starroad.user.entity.User;
+import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;

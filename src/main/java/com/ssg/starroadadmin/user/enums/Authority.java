@@ -1,4 +1,4 @@
-package com.ssg.starroad.user.enums;
+package com.ssg.starroadadmin.user.enums;
 
 public enum Authority {
     STORE("매장"),

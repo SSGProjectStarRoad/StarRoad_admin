@@ -1,6 +1,6 @@
-package com.ssg.starroad.review.entity;
+package com.ssg.starroadadmin.review.entity;
 
-import com.ssg.starroad.review.enums.ConfidenceType;
+import com.ssg.starroadadmin.review.enums.ConfidenceType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +21,8 @@ public class ReviewSentiment {
     private Review review;
 
     private String content;
-    private int offset;
-    private int length;
+    private int totalOffset;
+    private int totalLength;
 
     @Enumerated(EnumType.STRING)
     private ConfidenceType confidence;

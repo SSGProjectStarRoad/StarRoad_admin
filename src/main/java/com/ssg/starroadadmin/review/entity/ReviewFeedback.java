@@ -1,6 +1,6 @@
-package com.ssg.starroad.review.entity;
+package com.ssg.starroadadmin.review.entity;
 
-import com.ssg.starroad.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

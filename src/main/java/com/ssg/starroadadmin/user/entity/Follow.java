@@ -1,6 +1,6 @@
-package com.ssg.starroad.user.entity;
+package com.ssg.starroadadmin.user.entity;
 
-import com.ssg.starroad.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,9 +19,9 @@ public class Follow extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "from_user_id")
-    private User fromUser;
+    private Users fromUsers;
 
     @ManyToOne
     @JoinColumn(name = "to_user_id")
-    private User toUser;
+    private Users toUsers;
 }

@@ -1,13 +1,11 @@
-package com.ssg.starroad.board.entity;
+package com.ssg.starroadadmin.board.entity;
 
-import com.ssg.starroad.board.enums.BoardCategory;
-import com.ssg.starroad.common.entity.BaseTimeEntity;
-import com.ssg.starroad.user.entity.User;
+import com.ssg.starroadadmin.board.enums.BoardCategory;
+import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -23,7 +21,7 @@ public class Board extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users users;
 
     private String title;
     private String content;

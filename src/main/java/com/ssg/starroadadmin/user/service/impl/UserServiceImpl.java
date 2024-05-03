@@ -1,6 +1,6 @@
-package com.ssg.starroad.user.service.impl;
+package com.ssg.starroadadmin.user.service.impl;
 
-import com.ssg.starroad.user.service.UserService;
+import com.ssg.starroadadmin.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

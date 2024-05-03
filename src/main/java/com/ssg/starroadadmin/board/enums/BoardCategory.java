@@ -1,4 +1,4 @@
-package com.ssg.starroad.board.enums;
+package com.ssg.starroadadmin.board.enums;
 
 public enum BoardCategory {
     NOTICE("공지사항"),

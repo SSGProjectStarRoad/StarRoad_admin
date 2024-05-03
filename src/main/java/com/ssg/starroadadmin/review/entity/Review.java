@@ -1,9 +1,9 @@
-package com.ssg.starroad.review.entity;
+package com.ssg.starroadadmin.review.entity;
 
-import com.ssg.starroad.common.entity.BaseTimeEntity;
-import com.ssg.starroad.review.enums.ConfidenceType;
-import com.ssg.starroad.shop.entity.Store;
-import com.ssg.starroad.user.entity.User;
+import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.review.enums.ConfidenceType;
+import com.ssg.starroadadmin.shop.entity.Store;
+import com.ssg.starroadadmin.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class Review extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users users;
 
     @ManyToOne
     @JoinColumn(name = "store_id")

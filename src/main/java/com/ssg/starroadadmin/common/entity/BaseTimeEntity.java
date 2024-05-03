@@ -1,4 +1,4 @@
-package com.ssg.starroad.common.entity;
+package com.ssg.starroadadmin.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

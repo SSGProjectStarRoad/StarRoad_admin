@@ -1,8 +1,8 @@
-package com.ssg.starroad.user.repository;
+package com.ssg.starroadadmin.user.repository;
 
-import com.ssg.starroad.user.entity.User;
+import com.ssg.starroadadmin.user.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<Users, Long> {
 
 }

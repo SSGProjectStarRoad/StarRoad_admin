@@ -1,4 +1,4 @@
-package com.ssg.starroad.reward.enums;
+package com.ssg.starroadadmin.reward.enums;
 
 import lombok.Getter;
 

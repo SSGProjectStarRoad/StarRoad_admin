@@ -1,6 +1,6 @@
-package com.ssg.starroad.shop.entity;
+package com.ssg.starroadadmin.shop.entity;
 
-import com.ssg.starroad.user.entity.Manager;
+import com.ssg.starroadadmin.user.entity.Manager;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
