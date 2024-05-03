@@ -1,8 +1,8 @@
-package com.ssg.starroad.user.entity;
+package com.ssg.starroadadmin.user.entity;
 
-import com.ssg.starroad.common.entity.BaseTimeEntity;
-import com.ssg.starroad.user.enums.ActiveStatus;
-import com.ssg.starroad.user.enums.Gender;
+import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.user.enums.ActiveStatus;
+import com.ssg.starroadadmin.user.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +14,9 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+
 @NoArgsConstructor(access = PROTECTED)
-public class User extends BaseTimeEntity {
+public class Users extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
