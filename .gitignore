@@ -350,3 +350,6 @@ gradle-app.setting
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,intellij+iml,intellij+all,gradle,windows,macos
 
 src/main/resources/application.properties
+
+### log files ###
+*.log
