@@ -1,6 +1,6 @@
 package com.ssg.starroadadmin.user.entity;
 
-import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
 import com.ssg.starroadadmin.user.enums.ActiveStatus;
 import com.ssg.starroadadmin.user.enums.Gender;
 import jakarta.persistence.*;
@@ -14,7 +14,6 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
-
 @NoArgsConstructor(access = PROTECTED)
 public class Users extends BaseTimeEntity {
 

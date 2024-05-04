@@ -1,6 +1,6 @@
 package com.ssg.starroadadmin.review.entity;
 
-import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
 import com.ssg.starroadadmin.review.enums.ConfidenceType;
 import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.user.entity.Users;

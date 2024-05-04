@@ -2,12 +2,18 @@ package com.ssg.starroadadmin.shop.entity;
 
 import com.ssg.starroadadmin.user.entity.Manager;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+@Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class ComplexShoppingmall {
     @Id

@@ -1,7 +1,7 @@
 package com.ssg.starroadadmin.board.entity;
 
 import com.ssg.starroadadmin.board.enums.BoardCategory;
-import com.ssg.starroadadmin.common.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
 import com.ssg.starroadadmin.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
