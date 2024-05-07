@@ -258,4 +258,36 @@ class StoreServiceTest {
         assertThat(updatedStore.getOperatingTime()).isEqualTo(updatedStore.getOperatingTime());
         assertThat(updatedStore.getContactNumber()).isEqualTo(updatedStore.getContactNumber());
     }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 이미지 수정 실패 테스트 - 매장이 없는 경우")
+    public void givenImagePathAndStoreIdIsNotValid_whenUpdateStoreImage_thenStoreIsNotFound() {
+        // given
+        Long managerid = storeManager.getId();
+        Long storeId = 0L;
+        String imagePath = "testImagePath";
+
+        // when & then
+        // 매장 이미지 수정 요청
+        assertThatThrownBy(() -> storeService.updateStoreImage(managerid, storeId, imagePath))
+                .isInstanceOf(ShopException.class)
+                .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 이미지 수정 실패 테스트 - 매장 관리자가 아닌 경우")
+    public void givenImagePathAndManagerIsNotStoreManager_whenUpdateStoreImage_thenAccessDenied() {
+        // given
+        Long managerid = storeManager2.getId();
+        Long storeId = store1Id;
+        String imagePath = "testImagePath";
+
+        // when & then
+        // 매장 이미지 수정 요청
+        assertThatThrownBy(() -> storeService.updateStoreImage(managerid, storeId, imagePath))
+                .isInstanceOf(ShopException.class)
+                .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
+    }
 }
