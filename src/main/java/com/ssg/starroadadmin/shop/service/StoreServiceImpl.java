@@ -11,6 +11,7 @@ import com.ssg.starroadadmin.global.error.code.ShopErrorCode;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
 import com.ssg.starroadadmin.shop.repository.ComplexShoppingmallRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepository;
+import com.ssg.starroadadmin.shop.repository.StoreRepositoryCustom;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
+    private final StoreRepositoryCustom storeRepositoryCustom;
     private final ComplexShoppingmallRepository complexShoppingmallRepository;
     private final ManagerRepository managerRepository;
 
@@ -36,7 +38,7 @@ public class StoreServiceImpl implements StoreService {
      * @param mallManagerId
      * @param request
      */
-    public void createStore(Long mallManagerId, StoreRegisterRequest request) {
+    public Long createStore(Long mallManagerId, StoreRegisterRequest request) {
         // 쇼핑몰 관리자 정보 가져오기
         Manager mallManager = managerRepository.findByIdAndAuthority(mallManagerId, Authority.MALL)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
@@ -58,7 +60,9 @@ public class StoreServiceImpl implements StoreService {
                 .build();
 
         // 매장 추가
-        storeRepository.save(store);
+        Store saveStore = storeRepository.save(store);
+
+        return saveStore.getId();
     }
 
     @Override
@@ -81,11 +85,15 @@ public class StoreServiceImpl implements StoreService {
         managerRepository.findByIdAndAuthorityNot(mallManagerId, Authority.STORE)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
-        Pageable pageable = PageRequest.of(request.pageNumber(), request.pageSize(), Sort.by(request.direction(), "name"));
-        Page<StoreListResponse> byNameContainingOrFloorOrStoreType = storeRepository.findByNameContainingOrFloorOrStoreType(
-                request.storeName(), request.floor(), request.storeType(), pageable
+        // 복합 쇼핑몰 정보 가져오기
+        ComplexShoppingmall shoppingmall = complexShoppingmallRepository.findByManagerId(mallManagerId)
+                .orElseThrow(() -> new ShopException(ShopErrorCode.SHOPPINGMALL_NOT_FOUND));
+
+        Pageable pageable = PageRequest.of(request.pageNumber(), request.pageSize());
+        Page<StoreListResponse> page = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
+                shoppingmall.getId(), request.storeName(), request.floor(), request.storeType(), request.sortType(), pageable
         );
 
-        return byNameContainingOrFloorOrStoreType;
+        return page;
     }
 }

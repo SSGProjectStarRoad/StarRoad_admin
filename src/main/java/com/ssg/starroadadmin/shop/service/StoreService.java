@@ -16,7 +16,7 @@ public interface StoreService {
      * @param mallManagerId
      * @param request
      */
-    void createStore(Long mallManagerId, StoreRegisterRequest request);
+    Long createStore(Long mallManagerId, StoreRegisterRequest request);
 
     /**
      * 매장 목록 조회
