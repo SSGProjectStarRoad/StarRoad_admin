@@ -1,11 +1,18 @@
 package com.ssg.starroadadmin.shop.repository;
+import com.ssg.starroadadmin.shop.dto.StoreListResponse;
 import com.ssg.starroadadmin.shop.entity.Store;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -194,5 +201,115 @@ public class StoreRepositoryTest {
         // then
         Optional<Store> optionalStore = storeRepository.findById(savedStore.getId());
         assertThat(optionalStore.isPresent()).isFalse();
+    }
+
+    @Test
+    @Disabled("동적 쿼리가 필요하여 Querydsl을 사용하여 구현함")
+    @DisplayName("상점 목록 조회 성공 테스트 - (name : null)")
+    public void givenSearchStoreRequest_whenFindByNameContainingOrFloorOrStoreType_thenStoreListIsFound() {
+        // given
+        Store store1_1 = Store.builder()
+                .name("테스트 상점1_1")
+                .storeType("테스트 타입1")
+                .floor(1)
+                .build();
+        Store store1_2 = Store.builder()
+                .name("테스트 상점1_2")
+                .storeType("테스트 타입1")
+                .floor(1)
+                .build();
+        Store store2_1 = Store.builder()
+                .name("테스트 상점2_1")
+                .storeType("테스트 타입2")
+                .floor(2)
+                .build();
+        Store store2_2 = Store.builder()
+                .name("테스트 상점2_2")
+                .storeType("테스트 타입2")
+                .floor(2)
+                .build();
+        storeRepository.save(store1_1);
+        storeRepository.save(store1_2);
+        storeRepository.save(store2_1);
+        storeRepository.save(store2_2);
+
+        // when
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+
+        // 1. 1층 상점 목록 조회
+        Page<StoreListResponse> storeList1 = storeRepository.findByNameContainingAndFloorAndStoreType(null, 1, "테스트 타입1", pageable);
+
+        // 2. 2층 상점 목록 조회
+        Page<StoreListResponse> storeList2 = storeRepository.findByNameContainingAndFloorAndStoreType(null, 2, "테스트 타입2", pageable);
+
+        // then
+        // when 1 검증
+        assertThat(storeList1).isNotNull();
+        assertThat(storeList1.getTotalElements()).isEqualTo(2);
+        List<StoreListResponse> content1 = storeList1.getContent();
+        assertThat(content1).extracting("name").containsExactly("테스트 상점1_1", "테스트 상점1_2");
+        assertThat(content1).extracting("storeType").containsExactly("테스트 타입1", "테스트 타입1");
+        assertThat(content1).extracting("floor").containsExactly(1, 1);
+
+        // when 2 검증
+        assertThat(storeList2).isNotNull();
+        assertThat(storeList2.getTotalElements()).isEqualTo(2);
+        List<StoreListResponse> content2 = storeList2.getContent();
+        assertThat(content2).extracting("name").containsExactly("테스트 상점2_1", "테스트 상점2_2");
+        assertThat(content2).extracting("storeType").containsExactly("테스트 타입2", "테스트 타입2");
+        assertThat(content2).extracting("floor").containsExactly(2, 2);
+    }
+
+    @Test
+    @Disabled("동적 쿼리가 필요하여 Querydsl을 사용하여 구현함")
+    @DisplayName("상점 목록 조회 성공 테스트 - (name : not null)")
+    public void givenSearchStoreRequestNameNotNull_whenFindByNameContainingOrFloorOrStoreType_thenStoreListIsFound() {
+        // given
+        Store store1_1 = Store.builder()
+                .name("테스트 상점1_1")
+                .storeType("테스트 타입1")
+                .floor(1)
+                .build();
+        Store store1_2 = Store.builder()
+                .name("테스트 상점1_2")
+                .storeType("테스트 타입1")
+                .floor(1)
+                .build();
+        Store store2_1 = Store.builder()
+                .name("테스트 상점2_1")
+                .storeType("테스트 타입2")
+                .floor(2)
+                .build();
+        Store store2_2 = Store.builder()
+                .name("테스트 상점2_2")
+                .storeType("테스트 타입2")
+                .floor(2)
+                .build();
+        storeRepository.save(store1_1);
+        storeRepository.save(store1_2);
+        storeRepository.save(store2_1);
+        storeRepository.save(store2_2);
+
+        // when
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+
+        // 1. name이 "1_1"이고 1층에 있는 상점 목록 조회
+        Page<StoreListResponse> storeList1 = storeRepository.findByNameContainingAndFloorAndStoreType("1_1", 1, "테스트 타입1", pageable);
+
+        // 2. name이 "1_2"이고 2층에 있는 상점 목록 조회(검색 결과 없음)
+        Page<StoreListResponse> storeList2 = storeRepository.findByNameContainingAndFloorAndStoreType("1_2", 2, "테스트 타입2", pageable);
+
+        // then
+        // when 1 검증
+        assertThat(storeList1).isNotNull();
+        assertThat(storeList1.getTotalElements()).isEqualTo(1);
+        List<StoreListResponse> content1 = storeList1.getContent();
+        assertThat(content1).extracting("name").containsExactly("테스트 상점1_1");
+        assertThat(content1).extracting("storeType").containsExactly("테스트 타입1");
+        assertThat(content1).extracting("floor").containsExactly(1);
+
+        // when 2 검증
+        assertThat(storeList2).isNotNull();
+        assertThat(storeList2.getTotalElements()).isEqualTo(0);
     }
 }
