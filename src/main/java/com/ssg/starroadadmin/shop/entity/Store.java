@@ -38,12 +38,14 @@ public class Store extends BaseTimeEntity {
     private String operatingTime; // hh:mm ~ hh:mm format
     private String contactNumber;
 
-    public void updateInfo(String imagePath, String contents, int floor, String operatingTime, String contactNumber) {
-        this.imagePath = checkNull(imagePath, this.imagePath);
+    public void updateInfo(String contents, String operatingTime, String contactNumber) {
         this.contents = checkNull(contents, this.contents);
-        this.floor = checkNull(floor, this.floor);
         this.operatingTime = checkNull(operatingTime, this.operatingTime);
         this.contactNumber = checkNull(contactNumber, this.contactNumber);
+    }
+
+    public void updateImagePath(String imagePath) {
+        this.imagePath = checkNull(imagePath, this.imagePath);
     }
 
     private <T> T checkNull(T newValue, T currentValue) {

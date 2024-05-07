@@ -1,7 +1,6 @@
 package com.ssg.starroadadmin.shop.repository;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
 import com.ssg.starroadadmin.shop.entity.Store;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -133,18 +133,16 @@ public class StoreRepositoryTest {
         Store savedStore = storeRepository.save(store);
 
         // when
-        String newImagePath = "새로운/이미지/경로";
         String newContents = "새로운 내용";
-        int newFloor = 0;
         String newOperatingTime = null;
         String newContactNumber = "987-654-3210";
-        savedStore.updateInfo(newImagePath, newContents, newFloor, newOperatingTime, newContactNumber);
+        savedStore.updateInfo(newContents, newOperatingTime, newContactNumber);
         Store updatedStore = storeRepository.save(savedStore);
 
         // then
         assertThat(updatedStore.getId()).isEqualTo(savedStore.getId());
         assertThat(updatedStore.getName()).isEqualTo(savedStore.getName());
-        assertThat(updatedStore.getImagePath()).isEqualTo(newImagePath);
+        assertThat(updatedStore.getImagePath()).isEqualTo(store.getImagePath());
         assertThat(updatedStore.getContents()).isEqualTo(newContents);
         assertThat(updatedStore.getFloor()).isEqualTo(savedStore.getFloor());
         assertThat(updatedStore.getOperatingTime()).isEqualTo(savedStore.getOperatingTime());
@@ -167,12 +165,10 @@ public class StoreRepositoryTest {
         Store savedStore = storeRepository.save(store);
 
         // when
-        String newImagePath = "새로운/이미지/경로";
         String newContents = "새로운 내용";
-        int newFloor = 2;
         String newOperatingTime = "10:00 ~ 19:00";
         String newContactNumber = "987-654-3210";
-        savedStore.updateInfo(newImagePath, newContents, newFloor, newOperatingTime, newContactNumber);
+        savedStore.updateInfo(newContents, newOperatingTime, newContactNumber);
         Store updatedStore = storeRepository.save(savedStore);
 
         // then

@@ -2,6 +2,7 @@ package com.ssg.starroadadmin.shop.service;
 
 import com.ssg.starroadadmin.shop.dto.SearchStoreRequest;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
+import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
 import com.ssg.starroadadmin.shop.dto.StoreRegisterRequest;
 import com.ssg.starroadadmin.shop.entity.Store;
 import org.springframework.data.domain.Page;
@@ -37,5 +38,26 @@ public interface StoreService {
      * @param storeId
      * @return
      */
-    Store getStore(long storeId);
+    Store getStore(Long managerId, Long storeId);
+
+    /**
+     * 매장 정보 수정
+     * 매장 정보를 수정
+     * 매장 설명, 운영시간, 연락처 수정
+     *
+     * @param managerId
+     * @param storeId
+     * @param request
+     */
+    void updateStore(Long managerId, Long storeId, StoreModifyRequest request);
+
+    /**
+     * 매장 이미지 수정
+     * 매장 이미지를 수정
+     *
+     * @param managerId
+     * @param storeId
+     * @param imagePath
+     */
+    void updateStoreImage(Long managerId, Long storeId, String imagePath);
 }

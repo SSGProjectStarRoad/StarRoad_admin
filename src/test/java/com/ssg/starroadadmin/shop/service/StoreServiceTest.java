@@ -1,7 +1,10 @@
 package com.ssg.starroadadmin.shop.service;
 
+import com.ssg.starroadadmin.global.error.code.ShopErrorCode;
+import com.ssg.starroadadmin.global.error.exception.ShopException;
 import com.ssg.starroadadmin.shop.dto.SearchStoreRequest;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
+import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
 import com.ssg.starroadadmin.shop.dto.StoreRegisterRequest;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
 import com.ssg.starroadadmin.shop.entity.Store;
@@ -9,19 +12,17 @@ import com.ssg.starroadadmin.shop.repository.ComplexShoppingmallRepository;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.ssg.starroadadmin.shop.enums.StoreSortType.NAME_ASC;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @DisplayName("매장 서비스 테스트")
@@ -35,8 +36,9 @@ class StoreServiceTest {
     private ComplexShoppingmallRepository complexShoppingmallRepository;
 
     static Manager mallManager;
-    static Manager storeManager;
+    static Manager storeManager, storeManager2;
     static ComplexShoppingmall shoppingmall;
+    static Long store1Id;
 
     @BeforeEach
     void init() {
@@ -46,9 +48,10 @@ class StoreServiceTest {
         shoppingmall = complexShoppingmallRepository.save(ComplexShoppingmall.builder().manager(mallManager).build());
         // 매장 관리자 추가
         storeManager = managerRepository.save(Manager.builder().authority(Authority.STORE).build());
+        storeManager2 = managerRepository.save(Manager.builder().authority(Authority.STORE).build());
 
         // 매장 추가
-        storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
+        store1Id = storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
                 .storeName("테스트 매장1_1")
                 .storeType("테스트 타입1")
                 .storeFloor(1)
@@ -93,7 +96,7 @@ class StoreServiceTest {
         Long storeId = storeService.createStore(mallManager.getId(), request);
 
         // then
-        Store store = storeService.getStore(storeId);
+        Store store = storeService.getStore(storeManager.getId(), storeId);
         assertThat(store.getName()).isEqualTo(request.storeName());
         assertThat(store.getStoreType()).isEqualTo(request.storeType());
         assertThat(store.getFloor()).isEqualTo(request.storeFloor());
@@ -157,5 +160,102 @@ class StoreServiceTest {
         // then
         assertThat(storeList.getTotalElements()).isEqualTo(2); // 업종이 1인 매장 2개
         assertThat(storeList2.getTotalElements()).isEqualTo(2); // 업종이 2인 매장 2개
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 정보 수정 성공 테스트")
+    public void givenStoreModifyRequest_whenUpdateStore_thenStoreIsUpdated() {
+        // given
+        Long managerid = storeManager.getId();
+        Long storeId = store1Id;
+        StoreModifyRequest request = StoreModifyRequest.builder()
+                .contents("수정된 매장 설명")
+                .operatingTime("09:00 ~ 21:00")
+                .contactNumber("010-1234-5678")
+                .build();
+        Store store = storeService.getStore(storeManager.getId(), storeId);
+
+        // when
+        // 매장 정보 수정 요청
+        storeService.updateStore(managerid, store.getId(), request);
+
+        // then
+        Store updatedStore = storeService.getStore(storeManager.getId(), store.getId());
+        assertThat(updatedStore.getId()).isEqualTo(store1Id);
+        assertThat(updatedStore.getManager().getId()).isEqualTo(managerid);
+        assertThat(updatedStore.getName()).isEqualTo(store.getName());
+        assertThat(updatedStore.getStoreType()).isEqualTo(store.getStoreType());
+        assertThat(updatedStore.getImagePath()).isEqualTo(store.getImagePath());
+        assertThat(updatedStore.getContents()).isEqualTo(request.contents());
+        assertThat(updatedStore.getFloor()).isEqualTo(store.getFloor());
+        assertThat(updatedStore.getOperatingTime()).isEqualTo(request.operatingTime());
+        assertThat(updatedStore.getContactNumber()).isEqualTo(request.contactNumber());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 정보 수정 실패 테스트 - 매장이 없는 경우")
+    public void givenStoreModifyRequestAndStoreIdIsNotValid_whenUpdateStore_thenStoreIsNotFound() {
+        // given
+        Long managerid = storeManager.getId();
+        Long storeId = 0L;
+        StoreModifyRequest request = StoreModifyRequest.builder()
+                .contents("수정된 매장 설명")
+                .operatingTime("09:00 ~ 21:00")
+                .contactNumber("010-1234-5678")
+                .build();
+
+        // when & then
+        // 매장 정보 수정 요청
+        assertThatThrownBy(() -> storeService.updateStore(managerid, storeId, request))
+                .isInstanceOf(ShopException.class)
+                .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 정보 수정 실패 테스트 - 매장 관리자가 아닌 경우")
+    public void givenStoreModifyRequestAndManagerIsNotStoreManager_whenUpdateStore_thenAccessDenied() {
+        // given
+        Long managerid = storeManager2.getId();
+        Long storeId = store1Id;
+        StoreModifyRequest request = StoreModifyRequest.builder()
+                .contents("수정된 매장 설명")
+                .operatingTime("09:00 ~ 21:00")
+                .contactNumber("010-1234-5678")
+                .build();
+
+        // when & then
+        // 매장 정보 수정 요청
+        assertThatThrownBy(() -> storeService.updateStore(managerid, storeId, request))
+                .isInstanceOf(ShopException.class)
+                .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 이미지 수정 성공 테스트")
+    public void givenImagePath_whenUpdateStoreImage_thenStoreImageIsUpdated() {
+        // given
+        Long managerid = storeManager.getId();
+        Long storeId = store1Id;
+        String imagePath = "testImagePath";
+
+        // when
+        // 매장 이미지 수정 요청
+        storeService.updateStoreImage(managerid, storeId, imagePath);
+
+        // then
+        Store updatedStore = storeService.getStore(storeManager.getId(), storeId);
+        assertThat(updatedStore.getId()).isEqualTo(store1Id);
+        assertThat(updatedStore.getManager().getId()).isEqualTo(managerid);
+        assertThat(updatedStore.getName()).isEqualTo(updatedStore.getName());
+        assertThat(updatedStore.getStoreType()).isEqualTo(updatedStore.getStoreType());
+        assertThat(updatedStore.getImagePath()).isEqualTo(imagePath);
+        assertThat(updatedStore.getContents()).isEqualTo(updatedStore.getContents());
+        assertThat(updatedStore.getFloor()).isEqualTo(updatedStore.getFloor());
+        assertThat(updatedStore.getOperatingTime()).isEqualTo(updatedStore.getOperatingTime());
+        assertThat(updatedStore.getContactNumber()).isEqualTo(updatedStore.getContactNumber());
     }
 }
