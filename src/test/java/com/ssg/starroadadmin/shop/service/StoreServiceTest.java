@@ -290,4 +290,52 @@ class StoreServiceTest {
                 .isInstanceOf(ShopException.class)
                 .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
     }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 삭제 성공 테스트")
+    public void givenStoreId_whenDeleteStore_thenStoreIsDeleted() {
+        // given
+        Long managerid = storeManager.getId();
+        Long storeId = store1Id;
+
+        // when
+        // 매장 삭제 요청
+        storeService.deleteStore(managerid, storeId);
+
+        // then
+        assertThatThrownBy(() -> storeService.getStore(managerid, storeId))
+                .isInstanceOf(ShopException.class)
+                .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 삭제 실패 테스트 - 매장이 없는 경우")
+    public void givenStoreIdIsNotValid_whenDeleteStore_thenStoreIsNotFound() {
+        // given
+        Long managerid = storeManager.getId();
+        Long storeId = 0L;
+
+        // when & then
+        // 매장 삭제 요청
+        assertThatThrownBy(() -> storeService.deleteStore(managerid, storeId))
+                .isInstanceOf(ShopException.class)
+                .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("매장 삭제 실패 테스트 - 매장 관리자가 아닌 경우")
+    public void givenManagerIsNotStoreManager_whenDeleteStore_thenAccessDenied() {
+        // given
+        Long managerid = storeManager2.getId();
+        Long storeId = store1Id;
+
+        // when & then
+        // 매장 삭제 요청
+        assertThatThrownBy(() -> storeService.deleteStore(managerid, storeId))
+                .isInstanceOf(ShopException.class)
+                .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
+    }
 }

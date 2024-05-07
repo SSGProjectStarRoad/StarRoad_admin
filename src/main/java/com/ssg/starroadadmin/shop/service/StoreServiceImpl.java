@@ -150,5 +150,21 @@ public class StoreServiceImpl implements StoreService {
         store.updateImagePath(imagePath);
     }
 
+    /**
+     * 매장 삭제
+     *
+     * @param managerId
+     * @param storeId
+     */
+    @Transactional
+    @Override
+    public void deleteStore(Long managerId, Long storeId) {
+        managerRepository.findByIdAndAuthority(managerId, Authority.STORE)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
+        Store store = storeRepository.findByIdAndManagerId(storeId, managerId)
+                .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+
+        storeRepository.delete(store);
+    }
 }
