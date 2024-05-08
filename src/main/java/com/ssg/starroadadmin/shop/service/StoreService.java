@@ -60,4 +60,13 @@ public interface StoreService {
      * @param imagePath
      */
     void updateStoreImage(Long managerId, Long storeId, String imagePath);
+
+/**
+     * 매장 삭제
+     * 매장을 삭제
+     *
+     * @param managerId
+     * @param storeId
+     */
+    void deleteStore(Long managerId, Long storeId);
 }
