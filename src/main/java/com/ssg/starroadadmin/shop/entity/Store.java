@@ -28,15 +28,17 @@ public class Store extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
+    private String storeType;
 
     @Column(unique = true)
     private String name;
-    private String storeType;
     private String imagePath;
     private String contents;
     private int floor;
     private String operatingTime; // hh:mm ~ hh:mm format
     private String contactNumber;
+    private String storeGuideMap;
+    private int reviewCount;
 
     public void updateInfo(String contents, String operatingTime, String contactNumber) {
         this.contents = checkNull(contents, this.contents);
