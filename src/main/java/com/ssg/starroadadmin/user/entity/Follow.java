@@ -19,9 +19,9 @@ public class Follow extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "from_user_id")
-    private Users fromUsers;
+    private User fromUser;
 
     @ManyToOne
     @JoinColumn(name = "to_user_id")
-    private Users toUsers;
+    private User toUser;
 }

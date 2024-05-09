@@ -1,4 +1,4 @@
-package com.ssg.starroadadmin.shop.service;
+package com.ssg.starroadadmin.shop.service.impl;
 
 import com.ssg.starroadadmin.global.error.code.ManagerErrorCode;
 import com.ssg.starroadadmin.global.error.code.ShopErrorCode;
@@ -13,6 +13,7 @@ import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.shop.repository.ComplexShoppingmallRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepositoryCustom;
+import com.ssg.starroadadmin.shop.service.StoreService;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;

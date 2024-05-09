@@ -1,7 +1,7 @@
 package com.ssg.starroadadmin.reward.entity;
 
 import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
-import com.ssg.starroadadmin.user.entity.Users;
+import com.ssg.starroadadmin.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ public class RewardHistory extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users users;
+    private User user;
 
     private int rewardId;
 }

@@ -1,7 +1,8 @@
 package com.ssg.starroadadmin.board.entity;
 
 import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
-import com.ssg.starroadadmin.user.entity.Users;
+import com.ssg.starroadadmin.user.entity.Manager;
+import com.ssg.starroadadmin.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ public class Answer extends BaseTimeEntity {
     private Board board; // QnA 게시글
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private Users manager; // 쇼핑몰 관리자
+    private Manager manager; // 쇼핑몰 관리자
 
     private String content; // 답변 내용
 }

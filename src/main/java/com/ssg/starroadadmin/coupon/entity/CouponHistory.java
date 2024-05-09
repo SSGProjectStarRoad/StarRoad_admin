@@ -1,7 +1,7 @@
 package com.ssg.starroadadmin.coupon.entity;
 
 import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
-import com.ssg.starroadadmin.user.entity.Users;
+import com.ssg.starroadadmin.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class CouponHistory extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users users;
+    private User user;
 
     private Long couponId;
     private boolean usageStatus;
