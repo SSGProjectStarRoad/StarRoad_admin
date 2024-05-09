@@ -3,7 +3,7 @@ package com.ssg.starroadadmin.review.entity;
 import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
 import com.ssg.starroadadmin.review.enums.ConfidenceType;
 import com.ssg.starroadadmin.shop.entity.Store;
-import com.ssg.starroadadmin.user.entity.Users;
+import com.ssg.starroadadmin.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class Review extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users users;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "store_id")
