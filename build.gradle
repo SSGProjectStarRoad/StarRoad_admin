@@ -50,14 +50,19 @@ dependencies {
 	// DATABASE MYSQL
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
-	// DATABASE H2
-	runtimeOnly 'com.h2database:h2'
+	// AWS S3
+	implementation 'com.amazonaws:aws-java-sdk-s3'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 	// TEST IMPLEMENTATION ========================
 	// TEST DATABASE H2
 //	testImplementation 'com.h2database:h2'
 	testImplementation 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// TEST LOMBOK
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
 
 	// TEST LOG4J2
 	testImplementation 'org.springframework.boot:spring-boot-starter-log4j2'
