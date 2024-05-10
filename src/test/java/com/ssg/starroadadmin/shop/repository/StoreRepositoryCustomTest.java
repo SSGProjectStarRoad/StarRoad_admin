@@ -3,6 +3,7 @@ package com.ssg.starroadadmin.shop.repository;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
 import com.ssg.starroadadmin.shop.entity.Store;
+import com.ssg.starroadadmin.shop.enums.Floor;
 import com.ssg.starroadadmin.shop.enums.StoreSortType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +40,14 @@ class StoreRepositoryCustomTest {
             storeRepository.save(Store.builder()
                     .name(String.format("테스트 상점1_%02d", i))
                     .storeType("테스트 타입" + (i % 2))
-                    .floor(1)
+                    .floor(Floor.FIRST)
                     .complexShoppingmall(shoppingmall)
                     .build());
 
             storeRepository.save(Store.builder()
                     .name(String.format("테스트 상점2_%02d", i))
                     .storeType("테스트 타입" + (i % 2))
-                    .floor(2)
+                    .floor(Floor.SECOND)
                     .complexShoppingmall(shoppingmall)
                     .build());
         }
@@ -68,11 +69,11 @@ class StoreRepositoryCustomTest {
         // when
         // 1. 1층 상점 목록 조회
         Page<StoreListResponse> storeList1 = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
-                shoppingmall.getId(), null, 1, "테스트 타입1", sortType, pageable);
+                shoppingmall.getId(), null, Floor.FIRST, "테스트 타입1", sortType, pageable);
 
         // 2. 2층 상점 목록 조회
         Page<StoreListResponse> storeList2 = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
-                shoppingmall.getId(), null, 2, "테스트 타입0", sortType, pageable);
+                shoppingmall.getId(), null, Floor.SECOND, "테스트 타입0", sortType, pageable);
 
         // then
         // when 1 검증
@@ -103,11 +104,11 @@ class StoreRepositoryCustomTest {
         // when
         // 1. name이 "테스트 상점"이고 1층에 있는 상점 목록 조회
         Page<StoreListResponse> storeList1 = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
-                shoppingmall.getId(), "테스트 상점", 1, "테스트 타입1", sortType, pageable);
+                shoppingmall.getId(), "테스트 상점", Floor.FIRST, "테스트 타입1", sortType, pageable);
 
         // 2. name이 "상점2"이고 2층에 있는 상점 목록 조회(검색 결과 없음)
         Page<StoreListResponse> storeList2 = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
-                shoppingmall.getId(), "상점2", 2, "테스트 타입0", sortType, pageable);
+                shoppingmall.getId(), "상점2", Floor.SECOND, "테스트 타입0", sortType, pageable);
 
         // then
         // when 1 검증
@@ -134,11 +135,11 @@ class StoreRepositoryCustomTest {
         // when
         // 1. name이 "테스트 상점"이고 1층에 있는 상점 목록 조회
         Page<StoreListResponse> storeList1 = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
-                shoppingmall.getId(), "테스트 상점", 0, "테스트 타입1", sortType, pageable);
+                shoppingmall.getId(), "테스트 상점", Floor.FIRST, "테스트 타입1", sortType, pageable);
 
         // 2. name이 "상점2"이고 2층에 있는 상점 목록 조회(검색 결과 없음)
         Page<StoreListResponse> storeList2 = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
-                shoppingmall.getId(), "상점2", 0, "테스트 타입0", sortType, pageable);
+                shoppingmall.getId(), "상점2", Floor.FIRST, "테스트 타입0", sortType, pageable);
 
         // then
         // when 1 검증
@@ -160,7 +161,7 @@ class StoreRepositoryCustomTest {
         // when
         // 1. name이 "테스트 상점"이고 1층에 있는 상점 목록 조회
         Page<StoreListResponse> storeList = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
-                shoppingmall.getId(), null, 0, null, sortType, pageable);
+                shoppingmall.getId(), null, Floor.FIRST, null, sortType, pageable);
 
         // then
         // when 1 검증

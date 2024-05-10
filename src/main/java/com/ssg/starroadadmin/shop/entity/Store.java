@@ -1,6 +1,7 @@
 package com.ssg.starroadadmin.shop.entity;
 
 import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
+import com.ssg.starroadadmin.shop.enums.Floor;
 import com.ssg.starroadadmin.user.entity.Manager;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,7 +35,8 @@ public class Store extends BaseTimeEntity {
     private String name;
     private String imagePath;
     private String contents;
-    private int floor;
+    @Enumerated(EnumType.STRING)
+    private Floor floor;
     private String operatingTime; // hh:mm ~ hh:mm format
     private String contactNumber;
     private String storeGuideMap;
