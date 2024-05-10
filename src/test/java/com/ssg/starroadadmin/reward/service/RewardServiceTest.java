@@ -1,7 +1,9 @@
 package com.ssg.starroadadmin.reward.service;
 
+import com.ssg.starroadadmin.global.error.exception.ManagerException;
 import com.ssg.starroadadmin.reward.dto.RewardListRequest;
 import com.ssg.starroadadmin.reward.dto.RewardListResponse;
+import com.ssg.starroadadmin.reward.dto.RewardRegisterRequest;
 import com.ssg.starroadadmin.reward.enums.RewardSortType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -108,5 +110,34 @@ class RewardServiceTest {
         assertEquals(request.page(), result.getNumber());
         List<RewardListResponse> content = result.getContent();
         assertThat(content).extracting(RewardListResponse::createdAt).isSortedAccordingTo(Comparator.reverseOrder());
+    }
+
+    @Test
+    @DisplayName("새로운 리워드 생성")
+    public void givenRewardRegisterRequest_whenCreateReward_thenSuccess() {
+        // given
+        Long adminManagerId = 8L;
+        String name = "리워드 이름";
+        String rewardImageUrl = "https://example.com/image.jpg";
+
+        // when
+        Long rewardId = rewardService.createReward(adminManagerId, new RewardRegisterRequest(name, rewardImageUrl));
+
+        // then
+        assertNotNull(rewardId);
+    }
+
+    @Test
+    @DisplayName("리워드 생성 - 관리자 권한이 아닌 경우")
+    public void givenNonAdminManager_whenCreateReward_thenThrowException() {
+        // given
+        Long nonAdminManagerId = 7L;
+        String name = "리워드 이름";
+        String rewardImageUrl = "https://example.com/image.jpg";
+
+        // when & then
+        assertThrows(ManagerException.class, () -> {
+            rewardService.createReward(nonAdminManagerId, new RewardRegisterRequest(name, rewardImageUrl));
+        });
     }
 }

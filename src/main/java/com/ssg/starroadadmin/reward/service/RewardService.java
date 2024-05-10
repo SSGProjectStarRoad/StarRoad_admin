@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 
 public interface RewardService {
 
-    Long createReward(Long mallManagerId, RewardRegisterRequest request);
+    Long createReward(Long adminManagerId, RewardRegisterRequest request);
 
     Page<RewardListResponse> searchRewardList(Long mallManagerId, RewardListRequest request);
 }

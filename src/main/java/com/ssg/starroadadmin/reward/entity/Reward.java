@@ -2,6 +2,8 @@ package com.ssg.starroadadmin.reward.entity;
 
 import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +12,9 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@Builder
 @NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class Reward extends BaseTimeEntity {
 
     @Id
