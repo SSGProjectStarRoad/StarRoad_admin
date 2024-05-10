@@ -155,7 +155,7 @@ class StoreServiceTest {
         Page<StoreListResponse> storeList = storeService.searchStoreList(mallManager.getId(), searchRequest);
 
         // 매장 검색 요청 2
-        SearchStoreRequest searchRequest2 = new SearchStoreRequest("테스트 매장", Floor.FIRST, "테스트 타입2", NAME_ASC, 0, 10);
+        SearchStoreRequest searchRequest2 = new SearchStoreRequest("테스트 매장", Floor.SECOND, "테스트 타입2", NAME_ASC, 0, 10);
         Page<StoreListResponse> storeList2 = storeService.searchStoreList(mallManager.getId(), searchRequest2);
 
         // then
