@@ -18,8 +18,8 @@ import static com.ssg.starroadadmin.shop.enums.StoreSortType.NAME_ASC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@DisplayName("StoreRepositoryCustomImpl 테스트 - QUERYDSL")
-class StoreRepositoryCustomImplTest {
+@DisplayName("StoreRepositoryCustom 테스트 - QUERYDSL")
+class StoreRepositoryCustomTest {
 
     @Autowired
     private StoreRepositoryCustom storeRepositoryCustom;

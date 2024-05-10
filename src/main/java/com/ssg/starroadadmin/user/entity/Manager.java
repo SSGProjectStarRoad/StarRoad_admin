@@ -2,10 +2,7 @@ package com.ssg.starroadadmin.user.entity;
 
 import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
 import com.ssg.starroadadmin.user.enums.Authority;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,5 +28,7 @@ public class Manager extends BaseTimeEntity {
     private String name;
     @Column(unique = true)
     private String businessNumber;
+
+    @Enumerated(EnumType.STRING)
     private Authority authority;
 }

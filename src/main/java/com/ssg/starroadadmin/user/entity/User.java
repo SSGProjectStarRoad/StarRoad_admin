@@ -5,6 +5,8 @@ import com.ssg.starroadadmin.user.enums.ActiveStatus;
 import com.ssg.starroadadmin.user.enums.Gender;
 import com.ssg.starroadadmin.user.enums.ProviderType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +17,8 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class User extends BaseTimeEntity {
 
