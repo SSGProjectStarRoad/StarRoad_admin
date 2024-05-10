@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,13 +45,7 @@ public class S3Uploader {
 
             // 파일명 URL 인코딩
             String encodedFileName = null;
-            try {
-                encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
-            } catch (UnsupportedEncodingException e) {
-                log.error("URL encode fail", e);
-                urlList.add(String.format("URL encode fail: %s", file.getOriginalFilename()));
-                continue;
-            }
+            encodedFileName = Base64.getEncoder().encodeToString(fileName.getBytes(StandardCharsets.UTF_8));
 
             // S3에 저장될 파일명 구성
             String s3FileName = dirName + "/" + UUID.randomUUID() + "_" + encodedFileName + "." + extension;
