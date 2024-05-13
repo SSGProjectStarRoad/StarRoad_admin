@@ -45,7 +45,7 @@ public class S3Uploader {
 
             // 파일명 URL 인코딩
             String encodedFileName = null;
-            encodedFileName = Base64.getEncoder().encodeToString(fileName.getBytes(StandardCharsets.UTF_8));
+            encodedFileName = Base64.getUrlEncoder().encodeToString(fileName.getBytes(StandardCharsets.UTF_8));
 
             // S3에 저장될 파일명 구성
             String s3FileName = dirName + "/" + UUID.randomUUID() + "_" + encodedFileName + "." + extension;
