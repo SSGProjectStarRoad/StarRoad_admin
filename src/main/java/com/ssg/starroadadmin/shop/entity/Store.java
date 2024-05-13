@@ -26,19 +26,21 @@ public class Store extends BaseTimeEntity {
     @JoinColumn(name = "complex_shoppingmall_id")
     private ComplexShoppingmall complexShoppingmall;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
     private String storeType;
 
     @Column(unique = true)
     private String name;
+    @Column(length = 1000)
     private String imagePath;
     private String contents;
     @Enumerated(EnumType.STRING)
     private Floor floor;
     private String operatingTime; // hh:mm ~ hh:mm format
     private String contactNumber;
+    @Column(length = 1000)
     private String storeGuideMap;
     private int reviewCount;
 

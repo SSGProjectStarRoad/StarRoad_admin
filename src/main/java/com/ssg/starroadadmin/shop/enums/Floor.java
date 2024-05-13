@@ -1,5 +1,8 @@
 package com.ssg.starroadadmin.shop.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum Floor {
     BASEMENT_FOUR("B4"),
     BASEMENT_THREE("B3"),
