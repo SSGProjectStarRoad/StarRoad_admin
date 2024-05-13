@@ -7,5 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ReviewRepositoryCustom {
-    Page<ReviewListResponse> findAllByStoreIdAndBetweenDate(Long id, BetweenDate betweenDate, ReviewSortType reviewSortType, Pageable pageable);
+    Page<ReviewListResponse> findAllByStoreIdAndBetweenDate(Long storeId, BetweenDate betweenDate, ReviewSortType reviewSortType, Pageable pageable);
+
+    Page<ReviewListResponse> findAllByUserIdAndBetweenDate(Long userId, BetweenDate betweenDate, ReviewSortType reviewSortType, Pageable pageable);
 }
