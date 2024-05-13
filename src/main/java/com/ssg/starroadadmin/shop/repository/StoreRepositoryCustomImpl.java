@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
 import com.ssg.starroadadmin.shop.entity.Store;
+import com.ssg.starroadadmin.shop.enums.Floor;
 import com.ssg.starroadadmin.shop.enums.StoreSortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
 
     @Override
     public Page<StoreListResponse> findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
-            Long complexShoppingmallId, String name, int floor, String storeType, StoreSortType sortType, Pageable pageable
+            Long complexShoppingmallId, String name, Floor floor, String storeType, StoreSortType sortType, Pageable pageable
     ) {
         List<StoreListResponse> fetch = queryFactory
                 .select(Projections.constructor(StoreListResponse.class,
@@ -67,8 +68,8 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
         return hasText(name) ? store.name.contains(name) : null;
     }
 
-    private BooleanExpression floorEq(int floor) {
-        return floor != 0 ? store.floor.eq(floor) : null;
+    private BooleanExpression floorEq(Floor floor) {
+        return floor != null ? store.floor.eq(floor) : null;
     }
 
     private BooleanExpression storeTypeEq(String storeType) {

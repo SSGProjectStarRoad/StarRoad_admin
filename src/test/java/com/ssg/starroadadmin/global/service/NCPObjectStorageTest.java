@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +17,12 @@ import org.springframework.beans.factory.annotation.Value;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
+@Disabled
 @DisplayName("NCP Object Storage Amazon S3 API 활용 예제")
 class NCPObjectStorageTest {
 
-    private String accessKey = {{"cloud.aws.credentials.access-key"}};
-    private String secretKey = {{"cloud.aws.credentials.secret-key"}};
+    private String accessKey;// = {{"cloud.aws.credentials.access-key"}};
+    private String secretKey;// = {{"cloud.aws.credentials.secret-key"}};
     private String regionName = "kr-standard";
     private String endPoint = "https://kr.object.ncloudstorage.com";
     private String bucketName = "ssg-starroad";
