@@ -1,6 +1,7 @@
 package com.ssg.starroadadmin.shop.repository;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
 import com.ssg.starroadadmin.shop.entity.Store;
+import com.ssg.starroadadmin.shop.enums.Floor;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ public class StoreRepositoryTest {
                 .storeType("테스트 타입")
                 .imagePath("테스트/이미지/경로")
                 .contents("테스트 내용")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .operatingTime("09:00 ~ 18:00")
                 .contactNumber("123-456-7890")
                 .build();
@@ -62,7 +63,7 @@ public class StoreRepositoryTest {
                 .storeType("테스트 타입")
                 .imagePath("테스트/이미지/경로")
                 .contents("테스트 내용")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .operatingTime("09:00 ~ 18:00")
                 .contactNumber("123-456-7890")
                 .build();
@@ -92,7 +93,7 @@ public class StoreRepositoryTest {
                 .storeType("테스트 타입")
                 .imagePath("테스트/이미지/경로")
                 .contents("테스트 내용")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .operatingTime("09:00 ~ 18:00")
                 .contactNumber("123-456-7890")
                 .build();
@@ -105,7 +106,7 @@ public class StoreRepositoryTest {
                 .storeType(savedStore.getStoreType())
                 .imagePath("테스트/수정된/이미지/경로")
                 .contents("수정된 테스트 내용")
-                .floor(2)
+                .floor(Floor.SECOND)
                 .operatingTime("10:00 ~ 19:00")
                 .contactNumber("098-765-4321")
                 .build();
@@ -126,7 +127,7 @@ public class StoreRepositoryTest {
                 .storeType("테스트 타입")
                 .imagePath("테스트/이미지/경로")
                 .contents("테스트 내용")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .operatingTime("09:00 ~ 18:00")
                 .contactNumber("123-456-7890")
                 .build();
@@ -158,7 +159,7 @@ public class StoreRepositoryTest {
                 .storeType("테스트 타입")
                 .imagePath("테스트/이미지/경로")
                 .contents("테스트 내용")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .operatingTime("09:00 ~ 18:00")
                 .contactNumber("123-456-7890")
                 .build();
@@ -185,7 +186,7 @@ public class StoreRepositoryTest {
                 .storeType("테스트 타입")
                 .imagePath("테스트/이미지/경로")
                 .contents("테스트 내용")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .operatingTime("09:00 ~ 18:00")
                 .contactNumber("123-456-7890")
                 .build();
@@ -207,22 +208,22 @@ public class StoreRepositoryTest {
         Store store1_1 = Store.builder()
                 .name("테스트 상점1_1")
                 .storeType("테스트 타입1")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .build();
         Store store1_2 = Store.builder()
                 .name("테스트 상점1_2")
                 .storeType("테스트 타입1")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .build();
         Store store2_1 = Store.builder()
                 .name("테스트 상점2_1")
                 .storeType("테스트 타입2")
-                .floor(2)
+                .floor(Floor.SECOND)
                 .build();
         Store store2_2 = Store.builder()
                 .name("테스트 상점2_2")
                 .storeType("테스트 타입2")
-                .floor(2)
+                .floor(Floor.SECOND)
                 .build();
         storeRepository.save(store1_1);
         storeRepository.save(store1_2);
@@ -264,22 +265,22 @@ public class StoreRepositoryTest {
         Store store1_1 = Store.builder()
                 .name("테스트 상점1_1")
                 .storeType("테스트 타입1")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .build();
         Store store1_2 = Store.builder()
                 .name("테스트 상점1_2")
                 .storeType("테스트 타입1")
-                .floor(1)
+                .floor(Floor.FIRST)
                 .build();
         Store store2_1 = Store.builder()
                 .name("테스트 상점2_1")
                 .storeType("테스트 타입2")
-                .floor(2)
+                .floor(Floor.SECOND)
                 .build();
         Store store2_2 = Store.builder()
                 .name("테스트 상점2_2")
                 .storeType("테스트 타입2")
-                .floor(2)
+                .floor(Floor.SECOND)
                 .build();
         storeRepository.save(store1_1);
         storeRepository.save(store1_2);

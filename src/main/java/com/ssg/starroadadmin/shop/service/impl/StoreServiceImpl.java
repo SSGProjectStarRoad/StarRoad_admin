@@ -10,6 +10,7 @@ import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
 import com.ssg.starroadadmin.shop.dto.StoreRegisterRequest;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
 import com.ssg.starroadadmin.shop.entity.Store;
+import com.ssg.starroadadmin.shop.enums.Floor;
 import com.ssg.starroadadmin.shop.repository.ComplexShoppingmallRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepositoryCustom;

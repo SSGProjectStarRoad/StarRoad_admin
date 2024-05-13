@@ -8,6 +8,7 @@ import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
 import com.ssg.starroadadmin.shop.dto.StoreRegisterRequest;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
 import com.ssg.starroadadmin.shop.entity.Store;
+import com.ssg.starroadadmin.shop.enums.Floor;
 import com.ssg.starroadadmin.shop.repository.ComplexShoppingmallRepository;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
@@ -54,25 +55,25 @@ class StoreServiceTest {
         store1Id = storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
                 .storeName("테스트 매장1_1")
                 .storeType("테스트 타입1")
-                .storeFloor(1)
+                .storeFloor(Floor.FIRST)
                 .StoreManagerId(storeManager.getId())
                 .build());
         storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
                 .storeName("테스트 매장1_2")
                 .storeType("테스트 타입1")
-                .storeFloor(1)
+                .storeFloor(Floor.FIRST)
                 .StoreManagerId(storeManager.getId())
                 .build());
         storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
                 .storeName("테스트 매장2_1")
                 .storeType("테스트 타입2")
-                .storeFloor(2)
+                .storeFloor(Floor.SECOND)
                 .StoreManagerId(storeManager.getId())
                 .build());
         storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
                 .storeName("테스트 매장2_2")
                 .storeType("테스트 타입2")
-                .storeFloor(2)
+                .storeFloor(Floor.SECOND)
                 .StoreManagerId(storeManager.getId())
                 .build());
     }
@@ -87,7 +88,7 @@ class StoreServiceTest {
         StoreRegisterRequest request = StoreRegisterRequest.builder()
                 .storeName("테스트 매장")
                 .storeType("테스트 타입")
-                .storeFloor(1)
+                .storeFloor(Floor.FIRST)
                 .StoreManagerId(storeManager.getId())
                 .build();
 
@@ -111,11 +112,11 @@ class StoreServiceTest {
 
         // when
         // 매장 검색 요청 1
-        SearchStoreRequest searchRequest = new SearchStoreRequest("테스트 매장1_1", 1, "테스트 타입1", NAME_ASC, 0, 10);
+        SearchStoreRequest searchRequest = new SearchStoreRequest("테스트 매장1_1", Floor.FIRST, "테스트 타입1", NAME_ASC, 0, 10);
         Page<StoreListResponse> storeList = storeService.searchStoreList(mallManager.getId(), searchRequest);
 
         // 매장 검색 요청 2
-        SearchStoreRequest searchRequest2 = new SearchStoreRequest("테스트 매장", 2, "테스트 타입2", NAME_ASC, 0, 10);
+        SearchStoreRequest searchRequest2 = new SearchStoreRequest("테스트 매장", Floor.SECOND, "테스트 타입2", NAME_ASC, 0, 10);
         Page<StoreListResponse> storeList2 = storeService.searchStoreList(mallManager.getId(), searchRequest2);
 
         // then
@@ -135,7 +136,7 @@ class StoreServiceTest {
 
         // when
         // 매장 검색 요청
-        SearchStoreRequest searchRequest = new SearchStoreRequest(null, 1, "테스트 타입1", NAME_ASC, 0, 10);
+        SearchStoreRequest searchRequest = new SearchStoreRequest(null, Floor.FIRST, "테스트 타입1", NAME_ASC, 0, 10);
         Page<StoreListResponse> storeList = storeService.searchStoreList(mallManager.getId(), searchRequest);
 
         // then
@@ -150,11 +151,11 @@ class StoreServiceTest {
 
         // when
         // 매장 검색 요청 1
-        SearchStoreRequest searchRequest = new SearchStoreRequest("테스트 매장", 0, "테스트 타입1", NAME_ASC, 0, 10);
+        SearchStoreRequest searchRequest = new SearchStoreRequest("테스트 매장", Floor.FIRST, "테스트 타입1", NAME_ASC, 0, 10);
         Page<StoreListResponse> storeList = storeService.searchStoreList(mallManager.getId(), searchRequest);
 
         // 매장 검색 요청 2
-        SearchStoreRequest searchRequest2 = new SearchStoreRequest("테스트 매장", 0, "테스트 타입2", NAME_ASC, 0, 10);
+        SearchStoreRequest searchRequest2 = new SearchStoreRequest("테스트 매장", Floor.SECOND, "테스트 타입2", NAME_ASC, 0, 10);
         Page<StoreListResponse> storeList2 = storeService.searchStoreList(mallManager.getId(), searchRequest2);
 
         // then
