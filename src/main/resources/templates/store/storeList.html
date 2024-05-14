@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+
+<head>
+    <title>Store-List</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <h1>Store List</h1>
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+
+            <form action="#" th:action="@{/store/list}" th:object="${searchRequest}" method="get">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="storeType">Store Type:</label>
+                            <input type="text" th:field="*{storeType}" class="form-control" id="storeType"
+                                   placeholder="Enter store type">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="floor">Floor:</label>
+                            <select th:field="*{floor}" class="form-control" id="floor">
+                                <option value="">Select a floor</option>
+                                <option th:each="floor : ${T(com.ssg.starroadadmin.shop.enums.Floor).values()}"
+                                        th:value="${floor}" th:text="${floor}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label for="storeName">Store Name:</label>
+                    <input type="text" th:field="*{storeName}" class="form-control" id="storeName"
+                           placeholder="Enter store name">
+                </div>
+                <button type="submit" class="m-2 btn btn-primary">Search</button>
+            </form>
+
+
+            <!--            storeListResponses데이터 들고와서 테이블로 출력-->
+            <div class="table-responsive">
+                <table class="table text-start align-middle table-bordered table-hover mb-0">
+                    <thead>
+                    <tr class="text-dark">
+                        <th class="text-center col" scope="col">No</th>
+                        <th class="text-center col" scope="col">매장명</th>
+                        <th class="text-center col" scope="col">로고 이미지</th>
+                        <th class="text-center col" scope="col">매장 타입</th>
+                        <th class="text-center col" scope="col">층수</th>
+                        <th class="text-center col" scope="col">연락처</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="store : ${storeList}">
+                        <td class="text-center col" th:text="${(pages.number) * 10 + storeStat.count}">No</td>
+                        <td class="text-center col-4">
+                            <a th:text="${store.name()}" th:href="@{'/store/' + ${store.id()}}">Store Name</a>
+                        </td>
+                        <td class="text-center col-2"><img th:src="${store.imagePath()}" alt="store logo" width="100" height="100"></td>
+                        <td class="text-center col-2" th:text="${store.storeType()}">Store Type</td>
+                        <td class="text-center col-1" th:text="${store.floor().getFloor()} + 층">Store Type</td>
+                        <td class="text-center col-3" th:text="${store.contactNumber()}">Store Type</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <nav class="page-num d-flex justify-content-center m-2" aria-label="Page navigation"
+                 th:with="start=${pages.number * pages.size + 1},
+              end=${((pages.number + 1) * pages.size < pages.totalElements) ? (pages.number + 1) * pages.size : pages.totalElements}">
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=0,storeName=${searchRequest.storeName},floor=${searchRequest.floor},storeType=${searchRequest.storeType})}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=${pages.number - 1},storeName=${searchRequest.storeName},floor=${searchRequest.floor},storeType=${searchRequest.storeType})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=${page},storeName=${searchRequest.storeName},floor=${searchRequest.floor},storeType=${searchRequest.storeType})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=${pages.number + 1},storeName=${searchRequest.storeName},floor=${searchRequest.floor},storeType=${searchRequest.storeType})}"
+                           th:text="'>'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=${pages.totalPages - 1},storeName=${searchRequest.storeName},floor=${searchRequest.floor},storeType=${searchRequest.storeType})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

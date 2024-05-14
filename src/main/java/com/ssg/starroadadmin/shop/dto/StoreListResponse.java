@@ -4,10 +4,10 @@ import com.ssg.starroadadmin.shop.enums.Floor;
 
 public record StoreListResponse(
         Long id,
-        String name,
-        String storeType,
-        String imagePath,
-        Floor floor,
-        String contactNumber
+        String name, // 매장명
+        String storeType, // 매장 타입
+        String imagePath, // 매장 이미지
+        Floor floor, // 층수
+        String contactNumber // 연락처
 ) {
 }
