@@ -3,6 +3,7 @@ package com.ssg.starroadadmin.shop.controller;
 import com.ssg.starroadadmin.global.service.S3Uploader;
 import com.ssg.starroadadmin.shop.dto.SearchStoreRequest;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
+import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
 import com.ssg.starroadadmin.shop.dto.StoreResponse;
 import com.ssg.starroadadmin.shop.service.StoreService;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +66,16 @@ public class StoreController {
 
         storeService.updateStoreImage(managerId, storeId, file);
 
+        return "redirect:/store/" + storeId;
+    }
+
+    @PostMapping("/{storeId}/modify")
+    public String modifyStoreInfo(@PathVariable("storeId") Long storeId,
+                                    // jwt로 받아온 관리자 ID
+                                  StoreModifyRequest storeModifyRequest) {
+        Long managerId = 4L; // 삭제해야할 부분
+
+        storeService.updateStore(managerId, storeId, storeModifyRequest);
         return "redirect:/store/" + storeId;
     }
 }

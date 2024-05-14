@@ -99,14 +99,15 @@
                     <div class="ml-4 align-self-center">
                         <!-- 매장 로고 (이미지) 추가 -->
                         <div class="row mb-4">
-                            <label for="inputStoreLogo" class="col-sm-4 col-form-label align-content-center">매장 안내도</label>
+                            <label for="inputStoreLogo" class="col-sm-4 col-form-label align-content-center">매장
+                                로고</label>
                             <div class="col-sm-8">
                                 <img th:src="${storeResponse.imagePath()}" class="img-fluid" id="inputStoreLogo">
                             </div>
                         </div>
                         <!-- 이미지 변경 버튼 -->
-                        <div class="row">
-                            <div class="col">
+                        <div class="row m-3">
+                            <div class="col d-flex">
                                 <form action="/store/logo" method="POST" enctype="multipart/form-data">
                                     <input type="file" name="logo" accept="image/*">
                                     <input type="hidden" name="storeId" th:value="${storeResponse.id()}">
@@ -118,25 +119,68 @@
                 </div>
 
                 <div class="row mb-3">
-                        <label for="inputStoreContents" class="col-sm-3 col-form-label align-content-center">매장 소개</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="inputStoreContents"
-                                   th:value="${storeResponse.contents()}"
-                                   readonly>
+                    <label for="inputStoreContents" class="col-sm-3 col-form-label align-content-center">매장 소개</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputStoreContents"
+                               th:value="${storeResponse.contents()}"
+                               readonly>
+                    </div>
+                </div>
+                <!-- 매장 안내도(이미지) 추가 -->
+                <div class="row mb-3">
+                    <label for="inputStoreGuideMap" class="col-sm-3 col-form-label align-content-center">매장 안내도</label>
+                    <div class="col-sm-9">
+                        <img th:src="${storeResponse.storeGuideMap()}" class="img-fluid" id="inputStoreGuideMap">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 매장 정보 수정 버튼(모달 생성) -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editStoreModal">
+                매장 정보 수정
+            </button>
+
+            <!-- 매장 정보 수정 모달 -->
+            <div class="modal fade" id="editStoreModal" tabindex="-1" aria-labelledby="editStoreModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editStoreModalLabel">매장 정보 수정</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- 매장 정보 수정 양식 -->
+                            <form method="POST" id="modifyStoreForm" th:action="@{'/store/' + ${storeResponse.id()} + '/modify'}" th:object="${StoreModifyRequest}">
+                                <div class="mb-3">
+                                    <label for="modifiedinputStoreName" class="form-label">매장 이름</label>
+                                    <input type="text" class="form-control" id="modifiedinputStoreName" name="storeName"
+                                           th:value="${storeResponse.name()}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="modifiedinputStoreOperatingTime" class="form-label">운영 시간</label>
+                                    <input type="text" class="form-control" id="modifiedinputStoreOperatingTime" name="operatingTime"
+                                           th:value="${storeResponse.operatingTime()}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="modifiedinputStoreContactNumber" class="form-label">연락처</label>
+                                    <input type="text" class="form-control" id="modifiedinputStoreContactNumber" name="contactNumber"
+                                           th:value="${storeResponse.contactNumber()}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="modifiedinputStoreContents" class="form-label">매장 소개</label>
+                                    <input type="text" class="form-control" id="modifiedinputStoreContents" name="contents"
+                                           th:value="${storeResponse.contents()}">
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                <button type="submit" class="btn btn-primary">저장</button>
+                            </form>
                         </div>
                     </div>
-                    <!-- 매장 안내도(이미지) 추가 -->
-                    <div class="row mb-3">
-                        <label for="inputStoreGuideMap" class="col-sm-3 col-form-label align-content-center">매장 안내도</label>
-                        <div class="col-sm-9">
-                            <img th:src="${storeResponse.storeGuideMap()}" class="img-fluid" id="inputStoreGuideMap">
-                        </div>
-                    </div>
+                </div>
             </div>
 
         </div>
     </div>
-</div>
 </div>
 </body>
 </html>
