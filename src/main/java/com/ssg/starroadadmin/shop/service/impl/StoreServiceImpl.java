@@ -144,11 +144,17 @@ public class StoreServiceImpl implements StoreService {
     @Transactional
     @Override
     public void updateStore(Long managerId, Long storeId, StoreModifyRequest request) {
-        managerRepository.findByIdAndAuthority(managerId, Authority.STORE)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
-        Store store = storeRepository.findByIdAndManagerId(storeId, managerId)
-                .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        Store store = null;
+        if (manager.getAuthority() == Authority.STORE) {
+            store = storeRepository.findByIdAndManagerId(storeId, managerId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
+        } else {
+            store = storeRepository.findById(storeId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        }
 
         store.updateInfo(request.contents(), request.operatingTime(), request.contactNumber());
     }
@@ -163,15 +169,17 @@ public class StoreServiceImpl implements StoreService {
     @Transactional
     @Override
     public void updateStoreImage(Long managerId, Long storeId, MultipartFile file) {
-        Manager manager = managerRepository.findById(managerId).get();
-        System.out.println(manager.getAuthority());
-        System.out.println(manager.getUsername());
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
-        managerRepository.findByIdAndAuthority(managerId, Authority.STORE)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
-
-        Store store = storeRepository.findByIdAndManagerId(storeId, managerId)
-                .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        Store store = null;
+        if (manager.getAuthority() == Authority.STORE) {
+            store = storeRepository.findByIdAndManagerId(storeId, managerId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
+        } else {
+            store = storeRepository.findById(storeId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        }
 
         String mallName = store.getComplexShoppingmall().getName();
         String dirName = "ssg/mall/" + mallName + "/store/logo";

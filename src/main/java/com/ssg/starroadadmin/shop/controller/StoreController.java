@@ -30,7 +30,7 @@ public class StoreController {
                             @ModelAttribute("searchRequest") SearchStoreRequest searchRequest,
                             @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        Long mallManagerId = 4L; // 삭제해야할 부분
+        Long mallManagerId = 5L; // 삭제해야할 부분
 
         Page<StoreListResponse> storeListResponses = storeService.searchStoreList(mallManagerId, searchRequest, pageable);
 
@@ -44,7 +44,7 @@ public class StoreController {
     public String storeDetail(Model model
             // jwt로 받아온 관리자 ID
             , @PathVariable Long storeId) {
-        Long managerId = 4L; // 삭제해야할 부분
+        Long managerId = 5L; // 삭제해야할 부분
 
         StoreResponse storeResponse = storeService.getStore(managerId, storeId);
 
@@ -57,9 +57,7 @@ public class StoreController {
     public String updateStoreLogo(@RequestParam("storeId") Long storeId,
                                   // jwt로 받아온 관리자 ID
                                   @RequestParam("logo")MultipartFile file) {
-        Long managerId = 4L; // 삭제해야할 부분
-        System.out.println("storeId = " + storeId);
-        System.out.println("file = " + file);
+        Long managerId = 5L; // 삭제해야할 부분
         if (file.isEmpty()) {
             return "redirect:/store/" + storeId;
         }
@@ -73,7 +71,7 @@ public class StoreController {
     public String modifyStoreInfo(@PathVariable("storeId") Long storeId,
                                     // jwt로 받아온 관리자 ID
                                   StoreModifyRequest storeModifyRequest) {
-        Long managerId = 4L; // 삭제해야할 부분
+        Long managerId = 5L; // 삭제해야할 부분
 
         storeService.updateStore(managerId, storeId, storeModifyRequest);
         return "redirect:/store/" + storeId;

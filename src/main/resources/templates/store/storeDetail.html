@@ -10,11 +10,10 @@
 
 <body>
 <div layout:fragment="content">
-    <h1>Store List</h1>
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light text-center rounded p-4 my-2">
 
-            <div> 매장 관리자 정보</div>
+            <h3> 매장 관리자 정보</h3>
 
             <div class="bg-light rounded h-100 p-4">
                 <div class="row mb-3">
@@ -52,7 +51,7 @@
 
         <div class="bg-light text-center rounded p-4 my-2">
 
-            <div> 매장 정보</div>
+            <h3> 매장 정보</h3>
 
             <div class="bg-light rounded h-100 p-4">
 
@@ -119,8 +118,8 @@
                 </div>
 
                 <div class="row mb-3">
-                    <label for="inputStoreContents" class="col-sm-3 col-form-label align-content-center">매장 소개</label>
-                    <div class="col-sm-9">
+                    <label for="inputStoreContents" class="col-sm-2 col-form-label align-content-center">매장 소개</label>
+                    <div class="col-sm-10">
                         <input type="text" class="form-control" id="inputStoreContents"
                                th:value="${storeResponse.contents()}"
                                readonly>
@@ -128,8 +127,8 @@
                 </div>
                 <!-- 매장 안내도(이미지) 추가 -->
                 <div class="row mb-3">
-                    <label for="inputStoreGuideMap" class="col-sm-3 col-form-label align-content-center">매장 안내도</label>
-                    <div class="col-sm-9">
+                    <label for="inputStoreGuideMap" class="col-sm-2 col-form-label align-content-center">매장 안내도</label>
+                    <div class="col-sm-10">
                         <img th:src="${storeResponse.storeGuideMap()}" class="img-fluid" id="inputStoreGuideMap">
                     </div>
                 </div>
