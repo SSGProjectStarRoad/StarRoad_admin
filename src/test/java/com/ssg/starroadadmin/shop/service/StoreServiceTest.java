@@ -19,6 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 import static com.ssg.starroadadmin.shop.enums.StoreSortType.NAME_ASC;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -242,11 +245,11 @@ class StoreServiceTest {
         // given
         Long managerid = storeManager.getId();
         Long storeId = store1Id;
-        String imagePath = "testImagePath";
+        MultipartFile multipartFile = (MultipartFile) new File("/test");
 
         // when
         // 매장 이미지 수정 요청
-        storeService.updateStoreImage(managerid, storeId, imagePath);
+        storeService.updateStoreImage(managerid, storeId, multipartFile);
 
         // then
         StoreResponse updatedStore = storeService.getStore(storeManager.getId(), storeId);
@@ -268,11 +271,11 @@ class StoreServiceTest {
         // given
         Long managerid = storeManager.getId();
         Long storeId = 0L;
-        String imagePath = "testImagePath";
+        MultipartFile multipartFile = (MultipartFile) new File("/test");
 
         // when & then
         // 매장 이미지 수정 요청
-        assertThatThrownBy(() -> storeService.updateStoreImage(managerid, storeId, imagePath))
+        assertThatThrownBy(() -> storeService.updateStoreImage(managerid, storeId, multipartFile))
                 .isInstanceOf(ShopException.class)
                 .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
     }
@@ -284,11 +287,11 @@ class StoreServiceTest {
         // given
         Long managerid = storeManager2.getId();
         Long storeId = store1Id;
-        String imagePath = "testImagePath";
+        MultipartFile multipartFile = (MultipartFile) new File("/test");
 
         // when & then
         // 매장 이미지 수정 요청
-        assertThatThrownBy(() -> storeService.updateStoreImage(managerid, storeId, imagePath))
+        assertThatThrownBy(() -> storeService.updateStoreImage(managerid, storeId, multipartFile))
                 .isInstanceOf(ShopException.class)
                 .hasMessage(ShopErrorCode.STORE_NOT_FOUND.getDescription());
     }

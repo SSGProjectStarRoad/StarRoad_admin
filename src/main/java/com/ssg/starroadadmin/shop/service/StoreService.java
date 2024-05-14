@@ -4,6 +4,7 @@ import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.entity.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface StoreService {
 
@@ -55,9 +56,9 @@ public interface StoreService {
      *
      * @param managerId
      * @param storeId
-     * @param imagePath
+     * @param file
      */
-    void updateStoreImage(Long managerId, Long storeId, String imagePath);
+    void updateStoreImage(Long managerId, Long storeId, MultipartFile file);
 
 /**
      * 매장 삭제

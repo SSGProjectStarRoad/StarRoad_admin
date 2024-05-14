@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+
+<head>
+    <title>Store-Detail</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <h1>Store List</h1>
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4 my-2">
+
+            <div> 매장 관리자 정보</div>
+
+            <div class="bg-light rounded h-100 p-4">
+                <div class="row mb-3">
+                    <label for="inputManagerName" class="col-sm-3 col-form-label">매장 관리자 이름 : </label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputManagerName"
+                               th:value="${storeResponse.managerName()}"
+                               readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputManagerUsername" class="col-sm-3 col-form-label">매장 관리자 아이디 : </label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputManagerUsername"
+                               th:value="${storeResponse.managerUsername()}" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputManagerBusinessNumber" class="col-sm-3 col-form-label">매장 관리자 사업자 번호 : </label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputManagerBusinessNumber"
+                               th:value="${storeResponse.businessNumber()}" readonly>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputManagerCreatedAt" class="col-sm-3 col-form-label">매장 관리자 생성일 : </label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputManagerCreatedAt"
+                               th:value="${storeResponse.managerCreatedAt()}" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="bg-light text-center rounded p-4 my-2">
+
+            <div> 매장 정보</div>
+
+            <div class="bg-light rounded h-100 p-4">
+
+                <div class="d-flex justify-content-center">
+                    <div class="col-6 ">
+                        <div class="row mb-3">
+                            <label for="inputStoreName" class="col-sm-3 col-form-label">매장 이름</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputStoreName"
+                                       th:value="${storeResponse.name()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputStoreType" class="col-sm-3 col-form-label">매장 타입</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputStoreType"
+                                       th:value="${storeResponse.storeType()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputStoreFloor" class="col-sm-3 col-form-label">층수</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputStoreFloor"
+                                       th:value="${storeResponse.floor()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputStoreOperatingTime" class="col-sm-3 col-form-label">운영 시간</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputStoreOperatingTime"
+                                       th:value="${storeResponse.operatingTime()}"
+                                       readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputStoreContactNumber" class="col-sm-3 col-form-label">연락처</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputStoreContactNumber"
+                                       th:value="${storeResponse.contactNumber()}"
+                                       readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ml-4 align-self-center">
+                        <!-- 매장 로고 (이미지) 추가 -->
+                        <div class="row mb-4">
+                            <label for="inputStoreLogo" class="col-sm-4 col-form-label align-content-center">매장 안내도</label>
+                            <div class="col-sm-8">
+                                <img th:src="${storeResponse.imagePath()}" class="img-fluid" id="inputStoreLogo">
+                            </div>
+                        </div>
+                        <!-- 이미지 변경 버튼 -->
+                        <div class="row">
+                            <div class="col">
+                                <form action="/store/logo" method="POST" enctype="multipart/form-data">
+                                    <input type="file" name="logo" accept="image/*">
+                                    <input type="hidden" name="storeId" th:value="${storeResponse.id()}">
+                                    <button type="submit">이미지 변경</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                        <label for="inputStoreContents" class="col-sm-3 col-form-label align-content-center">매장 소개</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="inputStoreContents"
+                                   th:value="${storeResponse.contents()}"
+                                   readonly>
+                        </div>
+                    </div>
+                    <!-- 매장 안내도(이미지) 추가 -->
+                    <div class="row mb-3">
+                        <label for="inputStoreGuideMap" class="col-sm-3 col-form-label align-content-center">매장 안내도</label>
+                        <div class="col-sm-9">
+                            <img th:src="${storeResponse.storeGuideMap()}" class="img-fluid" id="inputStoreGuideMap">
+                        </div>
+                    </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

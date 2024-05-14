@@ -1,5 +1,6 @@
 package com.ssg.starroadadmin.shop.controller;
 
+import com.ssg.starroadadmin.global.service.S3Uploader;
 import com.ssg.starroadadmin.shop.dto.SearchStoreRequest;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
 import com.ssg.starroadadmin.shop.dto.StoreResponse;
@@ -13,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Controller
@@ -48,5 +50,21 @@ public class StoreController {
         model.addAttribute("storeResponse", storeResponse);
 
         return "store/storeDetail";
+    }
+
+    @PostMapping("/logo")
+    public String updateStoreLogo(@RequestParam("storeId") Long storeId,
+                                  // jwt로 받아온 관리자 ID
+                                  @RequestParam("logo")MultipartFile file) {
+        Long managerId = 4L; // 삭제해야할 부분
+        System.out.println("storeId = " + storeId);
+        System.out.println("file = " + file);
+        if (file.isEmpty()) {
+            return "redirect:/store/" + storeId;
+        }
+
+        storeService.updateStoreImage(managerId, storeId, file);
+
+        return "redirect:/store/" + storeId;
     }
 }

@@ -6,6 +6,7 @@ import com.ssg.starroadadmin.global.error.code.ShopErrorCode;
 import com.ssg.starroadadmin.global.error.exception.ManagerException;
 import com.ssg.starroadadmin.global.error.exception.ReviewException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
+import com.ssg.starroadadmin.global.service.S3Uploader;
 import com.ssg.starroadadmin.review.entity.Review;
 import com.ssg.starroadadmin.review.repository.ReviewRepository;
 import com.ssg.starroadadmin.shop.dto.*;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,7 +35,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService {
-    private final ReviewRepository reviewRepository;
+    private final S3Uploader s3Uploader;
     private final StoreRepository storeRepository;
     private final StoreRepositoryCustom storeRepositoryCustom;
     private final ComplexShoppingmallRepository complexShoppingmallRepository;
@@ -156,16 +158,24 @@ public class StoreServiceImpl implements StoreService {
      *
      * @param managerId
      * @param storeId
-     * @param imagePath
+     * @param file
      */
     @Transactional
     @Override
-    public void updateStoreImage(Long managerId, Long storeId, String imagePath) {
+    public void updateStoreImage(Long managerId, Long storeId, MultipartFile file) {
+        Manager manager = managerRepository.findById(managerId).get();
+        System.out.println(manager.getAuthority());
+        System.out.println(manager.getUsername());
+
         managerRepository.findByIdAndAuthority(managerId, Authority.STORE)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
         Store store = storeRepository.findByIdAndManagerId(storeId, managerId)
                 .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+
+        String mallName = store.getComplexShoppingmall().getName();
+        String dirName = "ssg/mall/" + mallName + "/store/logo";
+        String imagePath = s3Uploader.upload(file, dirName);
 
         store.updateImagePath(imagePath);
     }
