@@ -33,7 +33,6 @@ public class StoreController {
         Long mallManagerId = 5L; // 삭제해야할 부분
 
         Page<StoreListResponse> storeListResponses = storeService.searchStoreList(mallManagerId, searchRequest, pageable);
-
         model.addAttribute("storeList", storeListResponses);
         model.addAttribute("pages", storeListResponses);
 

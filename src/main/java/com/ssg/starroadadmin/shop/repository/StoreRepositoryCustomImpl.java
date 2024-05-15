@@ -36,7 +36,9 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
                         store.storeType,
                         store.imagePath,
                         store.floor,
-                        store.contactNumber))
+                        store.contactNumber,
+                        store.reviewCount
+                ))
                 .from(store)
                 .where(
                         complexShoppingmallIdEq(complexShoppingmallId),

@@ -6,11 +6,34 @@
 
 <head>
     <title>Store-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
 <div layout:fragment="content">
-    <h1>Store List</h1>
+    <div id="mallName"></div>
+
+    <script th:inline="javascript">
+        // Send AJAX request when the page loads
+        $(document).ready(function() {
+            $.ajax({
+                url: '/complexMall/name',
+                type: 'GET',
+                dataType: 'text', // Change the dataType as per your response type
+                success: function(data) {
+                    // Update the result div with the received data
+                    $('#mallName').html('<h1>' + data + ' 매장 리스트</h1>');
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light text-center rounded p-4">
 
@@ -42,10 +65,11 @@
                 </div>
                 <button type="submit" class="m-2 btn btn-primary">Search</button>
             </form>
+        </div>
 
-
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
             <!--            storeListResponses데이터 들고와서 테이블로 출력-->
-            <div class="table-responsive">
+            <div class="table-responsive my-2">
                 <table class="table text-start align-middle table-bordered table-hover mb-0">
                     <thead>
                     <tr class="text-dark">
@@ -55,25 +79,27 @@
                         <th class="text-center col" scope="col">매장 타입</th>
                         <th class="text-center col" scope="col">층수</th>
                         <th class="text-center col" scope="col">연락처</th>
+                        <th class="text-center col" scope="col">리뷰수</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="store : ${storeList}">
                         <td class="text-center col" th:text="${(pages.number) * 10 + storeStat.count}">No</td>
-                        <td class="text-center col-4">
+                        <td class="text-center col-3">
                             <a th:text="${store.name()}" th:href="@{'/store/' + ${store.id()}}">Store Name</a>
                         </td>
                         <td class="text-center col-2"><img th:src="${store.imagePath()}" alt="store logo" width="100" height="100"></td>
                         <td class="text-center col-2" th:text="${store.storeType()}">Store Type</td>
-                        <td class="text-center col-1" th:text="${store.floor().getFloor()} + 층">Store Type</td>
-                        <td class="text-center col-3" th:text="${store.contactNumber()}">Store Type</td>
+                        <td class="text-center col-1" th:text="${store.floor().getFloor()} + 층">Store Floor</td>
+                        <td class="text-center col-2" th:text="${store.contactNumber()}">Store Contact Number</td>
+                        <td class="text-center col-1" th:text="${store.reviewCount()} + 개">Store Review Count</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
 
             <!-- 페이지네이션 -->
-            <nav class="page-num d-flex justify-content-center m-2" aria-label="Page navigation"
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation"
                  th:with="start=${pages.number * pages.size + 1},
               end=${((pages.number + 1) * pages.size < pages.totalElements) ? (pages.number + 1) * pages.size : pages.totalElements}">
                 <ul class="pagination">
