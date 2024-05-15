@@ -1,4 +1,4 @@
-package com.ssg.starroadadmin.global.service;
+package com.ssg.starroadadmin.global.component;
 
 import com.amazonaws.services.s3.AmazonS3;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
-import java.io.File;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
