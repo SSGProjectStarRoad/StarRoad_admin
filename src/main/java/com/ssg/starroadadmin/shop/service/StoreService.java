@@ -1,11 +1,10 @@
 package com.ssg.starroadadmin.shop.service;
 
-import com.ssg.starroadadmin.shop.dto.SearchStoreRequest;
-import com.ssg.starroadadmin.shop.dto.StoreListResponse;
-import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
-import com.ssg.starroadadmin.shop.dto.StoreRegisterRequest;
+import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.entity.Store;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface StoreService {
 
@@ -29,7 +28,7 @@ public interface StoreService {
      * @param request
      * @return
      */
-    Page<StoreListResponse> searchStoreList(Long mallManagerId, SearchStoreRequest request);
+    Page<StoreListResponse> searchStoreList(Long mallManagerId, SearchStoreRequest request, Pageable pageable);
 
     /**
      * 매장 상세 조회
@@ -38,7 +37,7 @@ public interface StoreService {
      * @param storeId
      * @return
      */
-    Store getStore(Long managerId, Long storeId);
+    StoreResponse getStore(Long managerId, Long storeId);
 
     /**
      * 매장 정보 수정
@@ -57,9 +56,9 @@ public interface StoreService {
      *
      * @param managerId
      * @param storeId
-     * @param imagePath
+     * @param file
      */
-    void updateStoreImage(Long managerId, Long storeId, String imagePath);
+    void updateStoreImage(Long managerId, Long storeId, MultipartFile file);
 
 /**
      * 매장 삭제

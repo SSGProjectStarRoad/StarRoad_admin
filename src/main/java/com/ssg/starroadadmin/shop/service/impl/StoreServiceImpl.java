@@ -1,13 +1,15 @@
 package com.ssg.starroadadmin.shop.service.impl;
 
 import com.ssg.starroadadmin.global.error.code.ManagerErrorCode;
+import com.ssg.starroadadmin.global.error.code.ReviewErrorCode;
 import com.ssg.starroadadmin.global.error.code.ShopErrorCode;
 import com.ssg.starroadadmin.global.error.exception.ManagerException;
+import com.ssg.starroadadmin.global.error.exception.ReviewException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
-import com.ssg.starroadadmin.shop.dto.SearchStoreRequest;
-import com.ssg.starroadadmin.shop.dto.StoreListResponse;
-import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
-import com.ssg.starroadadmin.shop.dto.StoreRegisterRequest;
+import com.ssg.starroadadmin.global.service.S3Uploader;
+import com.ssg.starroadadmin.review.entity.Review;
+import com.ssg.starroadadmin.review.repository.ReviewRepository;
+import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
 import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.shop.enums.Floor;
@@ -19,15 +21,21 @@ import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService {
+    private final S3Uploader s3Uploader;
     private final StoreRepository storeRepository;
     private final StoreRepositoryCustom storeRepositoryCustom;
     private final ComplexShoppingmallRepository complexShoppingmallRepository;
@@ -79,16 +87,15 @@ public class StoreServiceImpl implements StoreService {
      * @return
      */
     @Transactional
-    public Page<StoreListResponse> searchStoreList(Long mallManagerId, SearchStoreRequest request) {
+    public Page<StoreListResponse> searchStoreList(Long mallManagerId, SearchStoreRequest request, Pageable pageable) {
         // 매장 관리자 정보 가져오기
-        managerRepository.findByIdAndAuthorityNot(mallManagerId, Authority.STORE)
+        managerRepository.findByIdAndAuthority(mallManagerId, Authority.MALL)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
         // 복합 쇼핑몰 정보 가져오기
         ComplexShoppingmall shoppingmall = complexShoppingmallRepository.findByManagerId(mallManagerId)
                 .orElseThrow(() -> new ShopException(ShopErrorCode.SHOPPINGMALL_NOT_FOUND));
 
-        Pageable pageable = PageRequest.of(request.pageNumber(), request.pageSize());
         Page<StoreListResponse> page = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
                 shoppingmall.getId(), request.storeName(), request.floor(), request.storeType(), request.sortType(), pageable
         );
@@ -105,9 +112,22 @@ public class StoreServiceImpl implements StoreService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Store getStore(Long managerId, Long storeId) {
-        return storeRepository.findByIdAndManagerId(storeId, managerId)
-                .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+    public StoreResponse getStore(Long managerId, Long storeId) {
+        // 매장 관리자 정보 가져오기
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        Store store = null;
+        // 매장 관리자인 경우 본인 매장 정보만 볼 수 있음
+        if (manager.getAuthority() == Authority.STORE) {
+            store = storeRepository.findByIdAndManagerId(storeId, managerId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
+        } else {
+            store = storeRepository.findById(storeId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        }
+
+        return StoreResponse.from(manager, store);
     }
 
     /**
@@ -124,11 +144,17 @@ public class StoreServiceImpl implements StoreService {
     @Transactional
     @Override
     public void updateStore(Long managerId, Long storeId, StoreModifyRequest request) {
-        managerRepository.findByIdAndAuthority(managerId, Authority.STORE)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
-        Store store = storeRepository.findByIdAndManagerId(storeId, managerId)
-                .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        Store store = null;
+        if (manager.getAuthority() == Authority.STORE) {
+            store = storeRepository.findByIdAndManagerId(storeId, managerId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
+        } else {
+            store = storeRepository.findById(storeId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        }
 
         store.updateInfo(request.contents(), request.operatingTime(), request.contactNumber());
     }
@@ -138,16 +164,26 @@ public class StoreServiceImpl implements StoreService {
      *
      * @param managerId
      * @param storeId
-     * @param imagePath
+     * @param file
      */
     @Transactional
     @Override
-    public void updateStoreImage(Long managerId, Long storeId, String imagePath) {
-        managerRepository.findByIdAndAuthority(managerId, Authority.STORE)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+    public void updateStoreImage(Long managerId, Long storeId, MultipartFile file) {
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
-        Store store = storeRepository.findByIdAndManagerId(storeId, managerId)
-                .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        Store store = null;
+        if (manager.getAuthority() == Authority.STORE) {
+            store = storeRepository.findByIdAndManagerId(storeId, managerId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
+        } else {
+            store = storeRepository.findById(storeId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        }
+
+        String mallName = store.getComplexShoppingmall().getName();
+        String dirName = "ssg/mall/" + mallName + "/store/logo";
+        String imagePath = s3Uploader.upload(file, dirName);
 
         store.updateImagePath(imagePath);
     }

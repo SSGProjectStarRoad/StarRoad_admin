@@ -24,15 +24,21 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+//	// SPRING SECURITY
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
+//
+//	// JWT
+//	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+//	implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+//	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
 	// THYMELEAF
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
-//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
 	// QUERYDSL
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -44,6 +50,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	// LOG4J2
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
 	// SPRING BOOT DEVTOOLS
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -54,6 +63,10 @@ dependencies {
 	implementation 'com.amazonaws:aws-java-sdk-s3'
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+	// JSON
+	implementation 'org.json:json:20231013'
+
+
 	// TEST IMPLEMENTATION ========================
 	// TEST DATABASE H2
 //	testImplementation 'com.h2database:h2'
@@ -63,11 +76,6 @@ dependencies {
 	// TEST LOMBOK
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	testCompileOnly 'org.projectlombok:lombok'
-
-	// TEST LOG4J2
-	testImplementation 'org.springframework.boot:spring-boot-starter-log4j2'
-	testImplementation 'org.apache.logging.log4j:log4j-slf4j-impl'
-	testImplementation 'org.apache.logging.log4j:log4j-api'
 
 	// TEST JUNIT
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -63,7 +63,7 @@ class ReviewRepositoryCustomTest {
         assertThat(reviewListResponseList.get(0).mallName()).isEqualTo("스타필드 하남");
         // 매장
         assertThat(reviewListResponseList.get(0).storeId()).isEqualTo(1L);
-        assertThat(reviewListResponseList.get(0).storeName()).isEqualTo("자라_더미x");
+        assertThat(reviewListResponseList.get(0).storeName()).isEqualTo("자라_더미");
         assertThat(reviewListResponseList.get(0).floor()).isEqualTo(Floor.SECOND);
         assertThat(reviewListResponseList.get(0).storeImagePath()).isEqualTo("/images/store1.jpg");
         // 리뷰

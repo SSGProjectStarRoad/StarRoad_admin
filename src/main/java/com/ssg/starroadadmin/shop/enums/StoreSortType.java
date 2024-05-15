@@ -3,6 +3,7 @@ package com.ssg.starroadadmin.shop.enums;
 import org.springframework.data.domain.Sort;
 
 public enum StoreSortType {
+    NULL("name", Sort.Direction.ASC),
     NAME_ASC("name", Sort.Direction.ASC),
     NAME_DESC("name", Sort.Direction.DESC),
     FLOOR_ASC("floor", Sort.Direction.ASC),
