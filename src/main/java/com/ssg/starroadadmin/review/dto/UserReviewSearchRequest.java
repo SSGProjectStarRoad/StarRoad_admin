@@ -9,7 +9,6 @@ public record UserReviewSearchRequest(
         Long storeId,
         LocalDate startDate,
         LocalDate endDate,
-        ReviewSortType sortType,
-        Pageable pageable
+        ReviewSortType sortType
 ) {
 }

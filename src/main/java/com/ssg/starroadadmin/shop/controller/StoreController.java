@@ -1,6 +1,5 @@
 package com.ssg.starroadadmin.shop.controller;
 
-import com.ssg.starroadadmin.global.service.S3Uploader;
 import com.ssg.starroadadmin.shop.dto.SearchStoreRequest;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
 import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
@@ -55,7 +54,7 @@ public class StoreController {
     @PostMapping("/logo")
     public String updateStoreLogo(@RequestParam("storeId") Long storeId,
                                   // jwt로 받아온 관리자 ID
-                                  @RequestParam("logo")MultipartFile file) {
+                                  @RequestParam("logo") MultipartFile file) {
         Long managerId = 5L; // 삭제해야할 부분
         if (file.isEmpty()) {
             return "redirect:/store/" + storeId;

@@ -205,7 +205,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
     }
 
     private OrderSpecifier orderSpecifier(ReviewSortType sortType) {
-        return switch (sortType) {
+        return switch (sortType != null ? sortType : ReviewSortType.CREATED_AT_DESC) {
             case CREATED_AT_ASC -> review.createdAt.asc();
             case CREATED_AT_DESC -> review.createdAt.desc();
             case LIKE_COUNT_ASC -> review.likeCount.asc();

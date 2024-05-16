@@ -105,12 +105,12 @@
                             </div>
                         </div>
                         <!-- 이미지 변경 버튼 -->
-                        <div class="row m-3">
-                            <div class="col d-flex">
+                        <div class="row m-2">
+                            <div class="col">
                                 <form action="/store/logo" method="POST" enctype="multipart/form-data">
-                                    <input type="file" name="logo" accept="image/*">
+                                    <input class="col-8" type="file" name="logo" accept="image/*">
                                     <input type="hidden" name="storeId" th:value="${storeResponse.id()}">
-                                    <button type="submit">이미지 변경</button>
+                                    <button class="col-3" type="submit">이미지 변경</button>
                                 </form>
                             </div>
                         </div>

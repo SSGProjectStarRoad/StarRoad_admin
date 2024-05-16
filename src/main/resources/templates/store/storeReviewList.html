@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+
+<head>
+    <title>Store-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script th:inline="javascript">
+        function calculateDaysAgo(localDateTimeStr) {
+            var localDateTime = new Date(localDateTimeStr); // 문자열을 JavaScript Date 객체로 변환
+            var currentDate = new Date(); // 현재 날짜와 시간을 얻음
+
+            // 날짜 차이 계산
+            var differenceInTime = currentDate.getTime() - localDateTime.getTime();
+            var differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+
+            // 날짜 차이에 따라 표시할 메시지 결정
+            if (differenceInDays === 0) {
+                return '오늘';
+            } else {
+                return differenceInDays + '일 전';
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+
+            <form action="#" th:action="@{/review/store/{storeId}(storeId=${storeId})}"
+                  th:object="${searchRequest}" method="get">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" th:field="*{startDate}" class="form-control" id="startDate">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" th:field="*{endDate}" class="form-control" id="endDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sortType">Sort Type :</label>
+                    <select th:field="*{sortType}" class="form-control" id="sortType">
+                        <option value="">Select Sort Type</option>
+                        <option
+                                th:each="sortType : ${T(com.ssg.starroadadmin.review.enums.ReviewSortType).values()}"
+                                th:value="${sortType}" th:text="${sortType.getDiscription()}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="m-2 btn btn-primary">Search</button>
+            </form>
+
+        </div>
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
+            <!-- 리스트 출력 -->
+            <div class="review-container">
+                <div th:if="${reviewList.isEmpty()}">
+                    <p>No reviews available.</p>
+                </div>
+                <div th:each="review, iterStat : ${reviewList}">
+                    <div class="review-item">
+                        <!-- 유저 정보(프로필 이미지, 이름, 날짜(현재 기준 - 작성날짜)) -->
+                        <div class="d-flex align-items-center">
+                            <img th:src="${review.userImagePath()}" alt="profile image"
+                                 class="rounded-circle m-2" style="width: 3rem; height: 3rem">
+                            <span th:text="${review.userName()}" class="fs-4">User Name</span>
+                            <spna class="mx-2"> •
+                                <spna th:text="${review.daysAgo()}" class="fs-6">Days Ago</spna>일 전
+                            </spna>
+                            <div id="days-ago"></div>
+                        </div>
+                        <!-- 리뷰 이미지 -->
+                        <div>
+                            <!-- (캐러셀) 이미지 슬라이드 -->
+                            <div th:id="'carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                                 class="carousel slide"
+                                 data-bs-touch="false" data-bs-interval="false">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item text-center"
+                                         th:each="image, iterStat : ${review.reviewImagePaths()}"
+                                         th:classappend="${iterStat.first} ? 'active'">
+                                        <img th:src="${image}" style="height: 25rem;" class="d-block mx-auto" alt="...">
+                                    </div>
+                                </div>
+
+                                <button class="carousel-control-prev" type="button"
+                                        th:data-bs-target="'#carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                                        data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button"
+                                        th:data-bs-target="'#carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                                        data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- 리뷰 좋아요  -->
+                        <div class="mx-2 my-1">
+                            <div class="text-start">좋아요 <span th:text="${review.likeCount}">0</span>개</div>
+                        </div>
+                        <!-- 리뷰 내용 -->
+                        <div class="text-start m-2 text-dark">
+                            <span th:text="${review.reviewId()}">Review ID</span>
+                            <span class="fw-bold me-2" th:text="${review.userName()}"></span>
+                            <span th:text="${review.contents()}">Review Content</span>
+                        </div>
+
+                        <!-- 리뷰 피드백 -->
+                        <div class="m-2 text-start">
+                            <span class="fw-bold"> -- 피드백 --</span>
+                            <ul >
+                                <li th:each="feedback : ${review.reviewFeedbackSelection()}">
+                                    <span th:text="${feedback}">Feedback</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=0)}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=${pages.number - 1})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=${page})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=${pages.number + 1})}"
+                           th:text="'>'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=${pages.totalPages - 1})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

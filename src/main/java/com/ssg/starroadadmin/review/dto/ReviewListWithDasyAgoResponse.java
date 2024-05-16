@@ -6,7 +6,7 @@ import com.ssg.starroadadmin.shop.enums.Floor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record ReviewListResponse(
+public record ReviewListWithDasyAgoResponse(
         // 쇼핑몰
         Long mallId,
         String mallName,
@@ -25,6 +25,7 @@ public record ReviewListResponse(
         ConfidenceType confidence,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
+        int daysAgo,
 
 
         // 리뷰 이미지들

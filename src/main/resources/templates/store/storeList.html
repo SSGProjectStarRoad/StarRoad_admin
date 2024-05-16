@@ -99,9 +99,7 @@
             </div>
 
             <!-- 페이지네이션 -->
-            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation"
-                 th:with="start=${pages.number * pages.size + 1},
-              end=${((pages.number + 1) * pages.size < pages.totalElements) ? (pages.number + 1) * pages.size : pages.totalElements}">
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
                 <ul class="pagination">
                     <li class="page-item" th:if="${pages.number > 0}">
                         <a class="page-link"

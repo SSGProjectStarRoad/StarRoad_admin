@@ -15,7 +15,6 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
-	all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
 }
 
 repositories {
@@ -50,8 +49,8 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// LOG4J2
-	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+//	 LOG4J2
+//	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
 	// SPRING BOOT DEVTOOLS
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

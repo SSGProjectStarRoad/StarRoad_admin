@@ -8,6 +8,7 @@ import com.ssg.starroadadmin.global.error.exception.ManagerException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
 import com.ssg.starroadadmin.global.error.exception.UserException;
 import com.ssg.starroadadmin.review.dto.ReviewListResponse;
+import com.ssg.starroadadmin.review.dto.ReviewListWithDasyAgoResponse;
 import com.ssg.starroadadmin.review.dto.StoreReviewSearchRequest;
 import com.ssg.starroadadmin.review.dto.UserReviewSearchRequest;
 import com.ssg.starroadadmin.review.repository.ReviewRepositoryCustom;
@@ -21,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
      * @return
      */
     @Override
-    public Page<ReviewListResponse> searchReviewList(Long managerId, StoreReviewSearchRequest reviewSearchRequest) {
+    public Page<ReviewListWithDasyAgoResponse> searchReviewList(Long managerId, StoreReviewSearchRequest reviewSearchRequest, Pageable pageable) {
         managerRepository.findByIdAndAuthorityNot(managerId, Authority.STORE)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
@@ -49,9 +53,31 @@ public class ReviewServiceImpl implements ReviewService {
                 .endDate(reviewSearchRequest.endDate())
                 .build();
 
-        Pageable pageable = reviewSearchRequest.pageable();
+        Page<ReviewListResponse> contents = reviewRepositoryCustom.findAllByStoreIdAndBetweenDate(store.getId(), betweenDate, reviewSearchRequest.sortType(), pageable);
 
-        Page<ReviewListResponse> page = reviewRepositoryCustom.findAllByStoreIdAndBetweenDate(store.getId(), betweenDate, reviewSearchRequest.sortType(), pageable);
+        Page<ReviewListWithDasyAgoResponse> page = contents.map(reviewListResponse -> new ReviewListWithDasyAgoResponse(
+                    reviewListResponse.mallId(),
+                    reviewListResponse.mallName(),
+                    reviewListResponse.storeId(),
+                    reviewListResponse.storeName(),
+                    reviewListResponse.floor(),
+                    reviewListResponse.storeImagePath(),
+                    reviewListResponse.reviewId(),
+                    reviewListResponse.visible(),
+                    reviewListResponse.likeCount(),
+                    reviewListResponse.contents(),
+                    reviewListResponse.confidence(),
+                    reviewListResponse.createdAt(),
+                    reviewListResponse.modifiedAt(),
+                    getDaysAgo(reviewListResponse.modifiedAt()),
+                    reviewListResponse.reviewImagePaths(),
+                    reviewListResponse.reviewFeedbackSelection(),
+                    reviewListResponse.userId(),
+                    reviewListResponse.userName(),
+                    reviewListResponse.nickname(),
+                    reviewListResponse.userImagePath()
+                )
+            );
 
         return page;
     }
@@ -63,7 +89,7 @@ public class ReviewServiceImpl implements ReviewService {
      * @return
      */
     @Override
-    public Page<ReviewListResponse> searchReviewList(Long managerId, UserReviewSearchRequest reviewSearchRequest) {
+    public Page<ReviewListWithDasyAgoResponse> searchReviewList(Long managerId, UserReviewSearchRequest reviewSearchRequest, Pageable pageable) {
         managerRepository.findByIdAndAuthorityNot(managerId, Authority.STORE)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
@@ -75,10 +101,36 @@ public class ReviewServiceImpl implements ReviewService {
                 .endDate(reviewSearchRequest.endDate())
                 .build();
 
-        Pageable pageable = reviewSearchRequest.pageable();
+        Page<ReviewListResponse> contents = reviewRepositoryCustom.findAllByUserIdAndBetweenDate(user.getId(), betweenDate, reviewSearchRequest.sortType(), pageable);
 
-        Page<ReviewListResponse> page = reviewRepositoryCustom.findAllByUserIdAndBetweenDate(user.getId(), betweenDate, reviewSearchRequest.sortType(), pageable);
+        Page<ReviewListWithDasyAgoResponse> page = contents.map(reviewListResponse -> new ReviewListWithDasyAgoResponse(
+                        reviewListResponse.mallId(),
+                        reviewListResponse.mallName(),
+                        reviewListResponse.storeId(),
+                        reviewListResponse.storeName(),
+                        reviewListResponse.floor(),
+                        reviewListResponse.storeImagePath(),
+                        reviewListResponse.reviewId(),
+                        reviewListResponse.visible(),
+                        reviewListResponse.likeCount(),
+                        reviewListResponse.contents(),
+                        reviewListResponse.confidence(),
+                        reviewListResponse.createdAt(),
+                        reviewListResponse.modifiedAt(),
+                        getDaysAgo(reviewListResponse.modifiedAt()),
+                        reviewListResponse.reviewImagePaths(),
+                        reviewListResponse.reviewFeedbackSelection(),
+                        reviewListResponse.userId(),
+                        reviewListResponse.userName(),
+                        reviewListResponse.nickname(),
+                        reviewListResponse.userImagePath()
+                )
+        );
 
         return page;
+    }
+
+    private int getDaysAgo(LocalDateTime createdAt) {
+        return LocalDate.now().compareTo(createdAt.toLocalDate());
     }
 }
