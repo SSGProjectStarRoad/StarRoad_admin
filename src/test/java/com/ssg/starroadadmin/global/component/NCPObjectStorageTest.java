@@ -1,4 +1,4 @@
-package com.ssg.starroadadmin.global.service;
+package com.ssg.starroadadmin.global.component;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -12,7 +12,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

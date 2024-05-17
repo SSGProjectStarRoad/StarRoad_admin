@@ -36,7 +36,9 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
                         store.storeType,
                         store.imagePath,
                         store.floor,
-                        store.contactNumber))
+                        store.contactNumber,
+                        store.reviewCount
+                ))
                 .from(store)
                 .where(
                         complexShoppingmallIdEq(complexShoppingmallId),
@@ -77,13 +79,14 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
     }
 
     private OrderSpecifier orderSpecifier(StoreSortType sortType) {
-        return switch (sortType) {
+        return switch (sortType != null ? sortType : StoreSortType.NULL) {
             case NAME_ASC -> store.name.asc();
             case NAME_DESC -> store.name.desc();
             case FLOOR_ASC -> store.floor.asc();
             case FLOOR_DESC -> store.floor.desc();
             case CREATED_AT_ASC -> store.createdAt.asc();
             case CREATED_AT_DESC -> store.createdAt.desc();
+            case NULL -> store.name.asc();
             default -> store.name.asc();
         };
     }
