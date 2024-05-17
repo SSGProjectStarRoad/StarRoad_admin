@@ -70,10 +70,33 @@
 <body>
 <div layout:fragment="content">
 
+    <div id="mallName"></div>
+
+    <script th:inline="javascript">
+
+        var userId = $('#userId').val(); // 유저 ID를 가져옵니다.
+        // Send AJAX request when the page loads
+        $(document).ready(function() {
+
+            $.ajax({
+                url: '/user/' + userId + '/name',
+                type: 'GET',
+                dataType: 'text', // Change the dataType as per your response type
+                success: function(data) {
+                    // Update the result div with the received data
+                    $('#mallName').html('<h1>' + data + ' 님의 리뷰 리스트</h1>');
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light text-center rounded p-4">
-
-            <form action="#" th:action="@{/review/store/{storeId}(storeId=${storeId})}"
+            <form action="#" th:action="@{/review/user/{userId}(userId=${userId})}"
                   th:object="${searchRequest}" method="get">
                 <div class="row">
                     <div class="col-md-6">
@@ -150,12 +173,12 @@
                                     <span class="visually-hidden">Next</span>
                                 </button>
                             </div>
-
                             <!-- 이미지가 없는 경우 No Review Image 표시 -->
                             <div class="image-container text-center d-flex justify-content-center align-items-center"
                                  th:if="${review.reviewImagePaths().size() == 0}">
                                 <h2>No Review Image</h2>
                             </div>
+
                         </div>
                         <!-- 리뷰 좋아요  -->
                         <div class="mx-2 my-1">
@@ -171,59 +194,52 @@
                         <!-- 리뷰 피드백 -->
                         <div class="m-2 text-start feedback-container">
                             <span class="fw-bold align-self-center"> -- 피드백 --</span>
-                            <div class="feedback-list">
-                                <div th:if="${review.reviewFeedbackSelection().size() != 0}">
-                                    <ul>
-                                        <li th:each="feedback : ${review.reviewFeedbackSelection()}">
-                                            <span th:text="${feedback}">Feedback</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="text-center d-flex align-items-center"
-                                     th:if="${review.reviewFeedbackSelection().size() == 0}">
-                                    <h4>No Review Feedback</h4>
-                                </div>
-                            </div>
+                            <ul class="feedback-list">
+                                <li th:each="feedback : ${review.reviewFeedbackSelection()}">
+                                    <span th:text="${feedback}">Feedback</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-
-                <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
-                    <ul class="pagination">
-                        <li class="page-item" th:if="${pages.number > 0}">
-                            <a class="page-link"
-                               th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=0)}"
-                               th:text="'<<'"></a>
-                        </li>
-                        <li class="page-item" th:if="${pages.number > 0}">
-                            <a class="page-link"
-                               th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=${pages.number - 1})}"
-                               th:text="'<'"></a>
-                        </li>
-
-                        <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
-                            <a class="page-link"
-                               th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=${page})}"
-                               th:text="${page + 1}"
-                               th:classappend="${page == pages.number} ? 'active'"></a>
-                        </li>
-
-                        <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
-                            <a class="page-link"
-                               th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=${pages.number + 1})}"
-                               th:text="'>'"></a>
-                        </li>
-
-                        <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
-                            <a class="page-link"
-                               th:href="@{/review/store/{storeId}(storeId=${searchRequest.storeId}, page=${pages.totalPages - 1})}"
-                               th:text="'>>'"></a>
-                        </li>
-                    </ul>
-                </nav>
-
             </div>
+
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=0)}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=${pages.number - 1})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=${page})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=${pages.number + 1})}"
+                           th:text="'>'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=${pages.totalPages - 1})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+
         </div>
     </div>
+</div>
 </body>
 </html>

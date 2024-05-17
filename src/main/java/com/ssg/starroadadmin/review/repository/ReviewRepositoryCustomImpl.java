@@ -197,7 +197,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         return storeId != null ? review.store.id.eq(storeId) : null;
     }
     private BooleanExpression userIdEq(Long userId) {
-        return userId != null ? review.store.id.eq(userId) : null;
+        return userId != null ? review.user.id.eq(userId) : null;
     }
 
     private BooleanExpression createdAtBetween(LocalDate start, LocalDate end) {

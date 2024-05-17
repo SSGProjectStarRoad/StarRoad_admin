@@ -1,9 +1,6 @@
 package com.ssg.starroadadmin.shop.controller;
 
-import com.ssg.starroadadmin.shop.dto.SearchStoreRequest;
-import com.ssg.starroadadmin.shop.dto.StoreListResponse;
-import com.ssg.starroadadmin.shop.dto.StoreModifyRequest;
-import com.ssg.starroadadmin.shop.dto.StoreResponse;
+import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +52,7 @@ public class StoreController {
     public String updateStoreLogo(@RequestParam("storeId") Long storeId,
                                   // jwt로 받아온 관리자 ID
                                   @RequestParam("logo") MultipartFile file) {
-        Long managerId = 5L; // 삭제해야할 부분
+            Long managerId = 5L; // 삭제해야할 부분
         if (file.isEmpty()) {
             return "redirect:/store/" + storeId;
         }

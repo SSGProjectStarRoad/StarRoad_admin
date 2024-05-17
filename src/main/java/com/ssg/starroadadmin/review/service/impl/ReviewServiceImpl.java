@@ -1,4 +1,4 @@
-package com.ssg.starroadadmin.review.service;
+package com.ssg.starroadadmin.review.service.impl;
 
 import com.ssg.starroadadmin.global.dto.BetweenDate;
 import com.ssg.starroadadmin.global.error.code.ManagerErrorCode;
@@ -12,6 +12,7 @@ import com.ssg.starroadadmin.review.dto.ReviewListWithDasyAgoResponse;
 import com.ssg.starroadadmin.review.dto.StoreReviewSearchRequest;
 import com.ssg.starroadadmin.review.dto.UserReviewSearchRequest;
 import com.ssg.starroadadmin.review.repository.ReviewRepositoryCustom;
+import com.ssg.starroadadmin.review.service.ReviewService;
 import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.shop.repository.StoreRepository;
 import com.ssg.starroadadmin.user.entity.User;
@@ -93,8 +94,10 @@ public class ReviewServiceImpl implements ReviewService {
         managerRepository.findByIdAndAuthorityNot(managerId, Authority.STORE)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
-        User user = userRepository.findById(reviewSearchRequest.storeId())
+        User user = userRepository.findById(reviewSearchRequest.userId())
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        System.out.println("user.getId() = " + user.getId());
 
         BetweenDate betweenDate = BetweenDate.builder()
                 .startDate(reviewSearchRequest.startDate())
