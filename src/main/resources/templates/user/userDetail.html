@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+
+<head>
+    <title>Store-Detail</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4 my-2">
+
+            <h3> 유저 정보</h3>
+
+            <div class="bg-light rounded h-100 p-4">
+
+                <div class="d-flex justify-content-center">
+                    <div class="col-6 ">
+                        <div class="row mb-3">
+                            <label for="inputUserName" class="col-sm-3 col-form-label">유저 이름 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputUserName"
+                                       th:value="${userResponse.name()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUserEmail" class="col-sm-3 col-form-label">유저 이메일 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputUserEmail"
+                                       th:value="${userResponse.email()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUserNickname" class="col-sm-3 col-form-label">유저 닉네임 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputUserNickname"
+                                       th:value="${userResponse.nickname()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUserPhone" class="col-sm-3 col-form-label">유저 연락처 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputUserPhone"
+                                       th:value="${userResponse.phone()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputReviewExp" class="col-sm-3 col-form-label">경험치 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputReviewExp"
+                                       th:value="${userResponse.reviewExp()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputReviewCount" class="col-sm-3 col-form-label">리뷰 수 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputReviewCount"
+                                       th:value="${userResponse.reviewCount()}" readonly>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div class="row mb-3">
+                                <label for="inputfollowerCount" class="col-sm-5 col-form-label">팔로워 수 : </label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" id="inputfollowerCount"
+                                           th:value="${userResponse.followerCount()}" readonly>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="inputfollowingCount" class="col-sm-5 col-form-label">팔로잉 수 : </label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" id="inputfollowingCount"
+                                           th:value="${userResponse.followingCount()}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 m-2">
+                        <div class="col-8 ml-4 align-self-center">
+                            <!-- 매장 로고 (이미지) 추가 -->
+                            <div class="row mb-4 mx-1">
+                                <label for="inputUserLogo" class="col-sm-6 col-form-label align-content-center">프로필
+                                    사진</label>
+                                <div class="col-sm-6">
+                                    <img th:src="${userResponse.imagePath()}" class="img-fluid" id="inputUserLogo">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUserBirth" class="col-sm-3 col-form-label">유저 생일 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputUserBirth"
+                                       th:value="${userResponse.birth()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUserproviderType" class="col-sm-3 col-form-label">가입 방법 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputUserproviderType"
+                                       th:value="${userResponse.providerType() == null ? 'GENERAL' : userResponse.providerType()}"
+                                       readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUserCreatedAt" class="col-sm-3 col-form-label">유저 가입일 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputUserCreatedAt"
+                                       th:value="${userResponse.createdAt().toLocalDate()}" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUserActiveStatus" class="col-sm-3 col-form-label">유저 상태 : </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="inputUserActiveStatus"
+                                       th:value="${userResponse.activeStatus()}" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+</body>
+</html>
