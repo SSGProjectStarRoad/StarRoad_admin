@@ -13,6 +13,7 @@ import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
 import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.shop.enums.Floor;
+import com.ssg.starroadadmin.shop.enums.StoreType;
 import com.ssg.starroadadmin.shop.repository.ComplexShoppingmallRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepositoryCustom;
@@ -20,6 +21,7 @@ import com.ssg.starroadadmin.shop.service.StoreService;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
+import com.ssg.starroadadmin.user.service.ManagerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,10 +38,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService {
     private final S3Uploader s3Uploader;
+
+
+
     private final StoreRepository storeRepository;
     private final StoreRepositoryCustom storeRepositoryCustom;
     private final ComplexShoppingmallRepository complexShoppingmallRepository;
     private final ManagerRepository managerRepository;
+    private final ManagerService managerService;
 
     /**
      * 로그인 한 관리자의 ID(PK)를 바탕으로 권한 확인
@@ -50,25 +56,29 @@ public class StoreServiceImpl implements StoreService {
      * @param request
      */
     @Transactional
-    public Long createStore(Long mallManagerId, StoreRegisterRequest request) {
+    public Long createStore(Long mallManagerId, StoreCreateRequest request,Long storeManagerId) {
+
         // 쇼핑몰 관리자 정보 가져오기
         Manager mallManager = managerRepository.findByIdAndAuthority(mallManagerId, Authority.MALL)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
-        // 매장 관리자 정보 가져오기
-        Manager storeManager = managerRepository.findById(request.StoreManagerId())
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.STORE_MANAGER_NOT_FOUND));
-
-        // 쇼핑몰 정보 가져오기
+        //관리자를 추가를 한 후에
+        // 매장 관리자 정보 가져오기 , jwt로 받아온
+        Manager storeManager = managerRepository.findById(storeManagerId).orElseThrow(()->new ManagerException(ManagerErrorCode.STORE_MANAGER_NOT_FOUND));
         ComplexShoppingmall shoppingmall = complexShoppingmallRepository.findByManagerId(mallManagerId)
                 .orElseThrow(() -> new ShopException(ShopErrorCode.SHOPPINGMALL_NOT_FOUND));
 
+
+        String dirName = "ssg/mall/" + shoppingmall.getName() + "/store/location";
+        String imagePath = s3Uploader.upload(request.createStoreGuideMap(), dirName);
+
         Store store = Store.builder()
-                .name(request.storeName())
-                .floor(request.storeFloor())
-                .storeType(request.storeType())
+                .name(request.createStoreName())
+                .floor(request.createStoreFloor())
+                .storeType(request.createStoreType())
                 .complexShoppingmall(shoppingmall)
                 .manager(storeManager)
+                .storeGuideMap(imagePath)
                 .build();
 
         // 매장 추가

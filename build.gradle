@@ -23,6 +23,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
@@ -37,7 +38,7 @@ dependencies {
 	// THYMELEAF
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
 	// QUERYDSL
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -48,9 +49,6 @@ dependencies {
 	// LOMBOK
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-
-//	 LOG4J2
-//	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
 	// SPRING BOOT DEVTOOLS
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -78,7 +76,7 @@ dependencies {
 
 	// TEST JUNIT
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+//	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 sourceSets {
