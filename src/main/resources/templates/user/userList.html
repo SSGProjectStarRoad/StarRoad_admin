@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+
+<head>
+    <title>User-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <h1>유저 리스트</h1>
+
+    <div class="container-fluid pt-4 px-4">
+
+        <div class="bg-light text-center rounded p-4">
+            <form action="#" th:action="@{/user/list}" th:object="${searchRequest}" method="get">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mt-2">
+                            <label for="userName">User Name:</label>
+                            <input type="text" th:field="*{name}" class="form-control" id="userName"
+                                   placeholder="Enter user Name">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mt-2">
+                            <label for="userNickname">User Nickname:</label>
+                            <input type="text" th:field="*{nickname}" class="form-control" id="userNickname"
+                                   placeholder="Enter user Nickname">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label for="userEmail">User Email:</label>
+                    <input type="text" th:field="*{email}" class="form-control" id="userEmail"
+                           placeholder="Enter user Email">
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" th:field="*{startDate}" class="form-control" id="startDate">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" th:field="*{endDate}" class="form-control" id="endDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sortType">Sort Type :</label>
+                    <select th:field="*{sortType}" class="form-control" id="sortType">
+                        <option value="">Select Sort Type</option>
+                        <option
+                                th:each="sortType : ${T(com.ssg.starroadadmin.user.enums.UserSortType).values()}"
+                                th:value="${sortType}" th:text="${sortType}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="m-2 btn btn-primary">Search</button>
+            </form>
+        </div>
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
+            <!--            storeListResponses데이터 들고와서 테이블로 출력-->
+            <div class="table-responsive my-2">
+                <table class="table text-start align-middle table-hover mb-0">
+                    <thead>
+                    <tr class="text-dark text-center align-middle">
+                        <th class="text-center col" scope="col">No</th>
+                        <th class="text-center col" scope="col">이름 <br/> 유저명</th>
+                        <th class="text-center col" scope="col">이메일</th>
+                        <th class="text-center col" scope="col">프로필 사진</th>
+                        <th class="text-center col" scope="col">생년월일</th>
+                        <th class="text-center col" scope="col">리뷰 갯수<br/>팔로워 수</th>
+                        <th class="text-center col" scope="col">가입 날짜</th>
+                        <th class="text-center col" scope="col">활동 상태</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${userList}">
+                        <td class="text-center col" th:text="${(pages.number) * 10 + userStat.count}">No</td>
+                        <td class="text-center col-1">
+                            <span th:text="${user.name()}">User Name</span>
+                            <br/>
+                            <span th:text="${user.nickname()}">User Nickname</span>
+                        </td>
+                        <td class="text-center col-1">
+                            <a th:text="${user.email()}" th:href="@{'/user/' + ${user.id()}}">User Email</a>
+                        </td>
+                        <td class="text-center col-1"><img th:src="${user.imagePath()}" alt="user profile image"
+                                                           width="100" height="100"></td>
+                        <td class="text-center col" th:text="${user.birth()}">User Birth</td>
+                        <td class="text-center col-1">
+                            <span th:text="${user.reviewCount()} + 개">Review Count</span>
+                            <br/>
+                            <span th:text="${user.followerCount()} + 명">Follower Count</span>
+                        </td>
+                        <td class="text-center col-2" th:text="${user.createdAt().toLocalDate()}">User CreatedAt</td>
+                        <td class="text-center col-1" th:text="${user.activeStatus()}">User Active Status</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/user/list(page=0)}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/user/list(page=${pages.number - 1})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/user/list(page=${page})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/user/list(page=${pages.number + 1})}"
+                           th:text="'>'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/user/list(page=${pages.totalPages - 1})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

@@ -185,8 +185,12 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="storeType">Store Type:</label>
-                            <input type="text" th:field="*{storeType}" class="form-control" id="storeType"
-                                   placeholder="Enter store type">
+                            <select th:field="*{storeType}" class="form-control" id="storeType">
+                                <option value="">Select a storeType</option>
+                                <option th:each="storeType : ${T(com.ssg.starroadadmin.shop.enums.StoreType).values()}"
+                                        th:value="${storeType.getName()}" th:text="${storeType.getName()}">
+                                </option>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -195,10 +199,11 @@
                             <select th:field="*{floor}" class="form-control" id="floor">
                                 <option value="">Select a floor</option>
                                 <option th:each="floor : ${T(com.ssg.starroadadmin.shop.enums.Floor).values()}"
-                                        th:value="${floor}" th:text="${floor}">
+                                        th:value="${floor}" th:text="${floor.getFloor()} + 층">
                                 </option>
                             </select>
                         </div>
+
                     </div>
                 </div>
                 <div class="form-group mt-2">
@@ -330,6 +335,7 @@
                         </div>
                     </div>
                 </div>
+              
                 <ul class="pagination">
                     <li class="page-item" th:if="${pages.number > 0}">
                         <a class="page-link"

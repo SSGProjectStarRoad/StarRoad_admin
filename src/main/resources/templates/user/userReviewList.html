@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+
+<head>
+    <title>Store-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .review-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .review-item {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1rem;
+            background-color: #e3e5e8;
+        }
+
+        .image-container {
+            /*border: #0c0e12 1px solid;*/
+            background-color: #f5f8f8;
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .review-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            max-width: 100%;
+            max-height: 100%;
+            transform: translate(-50%, -50%);
+            object-fit: cover; /* 이미지가 컨테이너를 꽉 채우도록 설정 */
+        }
+
+        .review-content {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 3em; /* 두 줄의 대략적인 높이 */
+        }
+
+        .feedback-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border: 1px solid #c2c7cc;
+        }
+
+        .feedback-list {
+            min-height: 120px; /* Adjust based on your line-height and desired number of lines */
+            line-height: 20px; /* Example line height */
+        }
+
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div id="mallName"></div>
+
+    <script th:inline="javascript">
+
+        var userId = $('#userId').val(); // 유저 ID를 가져옵니다.
+        // Send AJAX request when the page loads
+        $(document).ready(function() {
+
+            $.ajax({
+                url: '/user/' + userId + '/name',
+                type: 'GET',
+                dataType: 'text', // Change the dataType as per your response type
+                success: function(data) {
+                    // Update the result div with the received data
+                    $('#mallName').html('<h1>' + data + ' 님의 리뷰 리스트</h1>');
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+            <form action="#" th:action="@{/review/user/{userId}(userId=${userId})}"
+                  th:object="${searchRequest}" method="get">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" th:field="*{startDate}" class="form-control" id="startDate">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" th:field="*{endDate}" class="form-control" id="endDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sortType">Sort Type :</label>
+                    <select th:field="*{sortType}" class="form-control" id="sortType">
+                        <option value="">Select Sort Type</option>
+                        <option
+                                th:each="sortType : ${T(com.ssg.starroadadmin.review.enums.ReviewSortType).values()}"
+                                th:value="${sortType}" th:text="${sortType.getDiscription()}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="m-2 btn btn-primary">Search</button>
+            </form>
+
+        </div>
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
+            <!-- 리스트 출력 -->
+            <div class="review-container">
+                <div th:if="${reviewList.isEmpty()}">
+                    <p>No reviews available.</p>
+                </div>
+                <div th:each="review, iterStat : ${reviewList}">
+                    <div class="review-item">
+                        <!-- 유저 정보(프로필 이미지, 이름, 날짜(현재 기준 - 작성날짜)) -->
+                        <div class="d-flex align-items-center">
+                            <img th:src="${review.userImagePath()}" alt="profile image"
+                                 class="rounded-circle m-2" style="width: 3rem; height: 3rem">
+                            <span th:text="${review.userName()}" class="fs-4">User Name</span>
+                            <spna class="mx-2"> •
+                                <spna th:text="${review.daysAgo()}" class="fs-6">Days Ago</spna>
+                                일 전
+                            </spna>
+                            <div id="days-ago"></div>
+                        </div>
+                        <!-- 리뷰 이미지 -->
+                        <div>
+                            <!-- (캐러셀) 이미지 슬라이드 -->
+                            <div th:id="'carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                                 class="carousel slide"
+                                 data-bs-touch="false" data-bs-interval="false">
+                                <div class="carousel-inner">
+                                    <div class="image-container carousel-item text-center"
+                                         th:each="image, iterStat : ${review.reviewImagePaths()}"
+                                         th:classappend="${iterStat.first} ? 'active'">
+                                        <img th:src="${image}" class="d-block mx-auto review-image" alt="...">
+                                    </div>
+                                </div>
+
+                                <button class="carousel-control-prev" type="button"
+                                        th:data-bs-target="'#carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                                        data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button"
+                                        th:data-bs-target="'#carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                                        data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                            <!-- 이미지가 없는 경우 No Review Image 표시 -->
+                            <div class="image-container text-center d-flex justify-content-center align-items-center"
+                                 th:if="${review.reviewImagePaths().size() == 0}">
+                                <h2>No Review Image</h2>
+                            </div>
+
+                        </div>
+                        <!-- 리뷰 좋아요  -->
+                        <div class="mx-2 my-1">
+                            <div class="text-start">좋아요 <span th:text="${review.likeCount}">0</span>개</div>
+                        </div>
+                        <!-- 리뷰 내용 -->
+                        <div class="text-start m-2 text-dark">
+                            <span th:text="${review.reviewId()}">Review ID</span>
+                            <span class="fw-bold me-2" th:text="${review.userName()}"></span>
+                            <span class="review-content" th:text="${review.contents()}">Review Content</span>
+                        </div>
+
+                        <!-- 리뷰 피드백 -->
+                        <div class="m-2 text-start feedback-container">
+                            <span class="fw-bold align-self-center"> -- 피드백 --</span>
+                            <ul class="feedback-list">
+                                <li th:each="feedback : ${review.reviewFeedbackSelection()}">
+                                    <span th:text="${feedback}">Feedback</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=0)}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=${pages.number - 1})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=${page})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=${pages.number + 1})}"
+                           th:text="'>'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/review/user/{userId}(userId=${searchRequest.userId}, page=${pages.totalPages - 1})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

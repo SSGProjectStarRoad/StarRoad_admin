@@ -88,8 +88,8 @@ public class StoreController {
     @PostMapping("/logo")
     public String updateStoreLogo(@RequestParam("storeId") Long storeId,
                                   // jwt로 받아온 관리자 ID
-                                  @RequestParam("logo")MultipartFile file) {
-        Long managerId = 5L; // 삭제해야할 부분
+                                  @RequestParam("logo") MultipartFile file) {
+            Long managerId = 5L; // 삭제해야할 부분
         if (file.isEmpty()) {
             return "redirect:/store/" + storeId;
         }
@@ -103,7 +103,7 @@ public class StoreController {
     public String modifyStoreInfo(@PathVariable("storeId") Long storeId,
                                     // jwt로 받아온 관리자 ID
                                   StoreModifyRequest storeModifyRequest) {
-        Long managerId = 5L; // 삭제해야할 부분
+        Long managerId = 9L; // 삭제해야할 부분
 
         storeService.updateStore(managerId, storeId, storeModifyRequest);
         return "redirect:/store/" + storeId;

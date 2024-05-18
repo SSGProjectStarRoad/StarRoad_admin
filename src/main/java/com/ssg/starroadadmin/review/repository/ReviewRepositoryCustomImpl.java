@@ -197,7 +197,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         return storeId != null ? review.store.id.eq(storeId) : null;
     }
     private BooleanExpression userIdEq(Long userId) {
-        return userId != null ? review.store.id.eq(userId) : null;
+        return userId != null ? review.user.id.eq(userId) : null;
     }
 
     private BooleanExpression createdAtBetween(LocalDate start, LocalDate end) {
@@ -205,7 +205,7 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
     }
 
     private OrderSpecifier orderSpecifier(ReviewSortType sortType) {
-        return switch (sortType) {
+        return switch (sortType != null ? sortType : ReviewSortType.CREATED_AT_DESC) {
             case CREATED_AT_ASC -> review.createdAt.asc();
             case CREATED_AT_DESC -> review.createdAt.desc();
             case LIKE_COUNT_ASC -> review.likeCount.asc();

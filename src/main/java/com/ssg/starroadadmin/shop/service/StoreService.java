@@ -60,7 +60,7 @@ public interface StoreService {
      */
     void updateStoreImage(Long managerId, Long storeId, MultipartFile file);
 
-/**
+    /**
      * 매장 삭제
      * 매장을 삭제
      *
@@ -68,4 +68,5 @@ public interface StoreService {
      * @param storeId
      */
     void deleteStore(Long managerId, Long storeId);
+
 }

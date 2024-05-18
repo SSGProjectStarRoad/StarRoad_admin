@@ -6,10 +6,9 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 
 public record UserReviewSearchRequest(
-        Long storeId,
+        Long userId,
         LocalDate startDate,
         LocalDate endDate,
-        ReviewSortType sortType,
-        Pageable pageable
+        ReviewSortType sortType
 ) {
 }

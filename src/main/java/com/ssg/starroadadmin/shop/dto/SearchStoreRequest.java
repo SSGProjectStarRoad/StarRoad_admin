@@ -2,6 +2,7 @@ package com.ssg.starroadadmin.shop.dto;
 
 import com.ssg.starroadadmin.shop.enums.Floor;
 import com.ssg.starroadadmin.shop.enums.StoreSortType;
+import com.ssg.starroadadmin.shop.enums.StoreType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;

@@ -6,6 +6,9 @@
 
 <head>
     <title>Store-Detail</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -105,12 +108,12 @@
                             </div>
                         </div>
                         <!-- 이미지 변경 버튼 -->
-                        <div class="row m-3">
-                            <div class="col d-flex">
+                        <div class="row m-2">
+                            <div class="col">
                                 <form action="/store/logo" method="POST" enctype="multipart/form-data">
-                                    <input type="file" name="logo" accept="image/*">
-                                    <input type="hidden" name="storeId" th:value="${storeResponse.id()}">
-                                    <button type="submit">이미지 변경</button>
+                                    <input class="col-8" type="file" name="logo" accept="image/*">
+                                    <input type="hidden" id="storeId" name="storeId" th:value="${storeResponse.id()}">
+                                    <button class="col-3" type="submit">이미지 변경</button>
                                 </form>
                             </div>
                         </div>
@@ -140,7 +143,8 @@
             </button>
 
             <!-- 매장 정보 수정 모달 -->
-            <div class="modal fade" id="editStoreModal" tabindex="-1" aria-labelledby="editStoreModalLabel" aria-hidden="true">
+            <div class="modal fade" id="editStoreModal" tabindex="-1" aria-labelledby="editStoreModalLabel"
+                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -149,7 +153,9 @@
                         </div>
                         <div class="modal-body">
                             <!-- 매장 정보 수정 양식 -->
-                            <form method="POST" id="modifyStoreForm" th:action="@{'/store/' + ${storeResponse.id()} + '/modify'}" th:object="${StoreModifyRequest}">
+                            <form method="POST" id="modifyStoreForm"
+                                  th:action="@{'/store/' + ${storeResponse.id()} + '/modify'}"
+                                  th:object="${StoreModifyRequest}">
                                 <div class="mb-3">
                                     <label for="modifiedinputStoreName" class="form-label">매장 이름</label>
                                     <input type="text" class="form-control" id="modifiedinputStoreName" name="storeName"
@@ -157,17 +163,20 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="modifiedinputStoreOperatingTime" class="form-label">운영 시간</label>
-                                    <input type="text" class="form-control" id="modifiedinputStoreOperatingTime" name="operatingTime"
+                                    <input type="text" class="form-control" id="modifiedinputStoreOperatingTime"
+                                           name="operatingTime"
                                            th:value="${storeResponse.operatingTime()}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="modifiedinputStoreContactNumber" class="form-label">연락처</label>
-                                    <input type="text" class="form-control" id="modifiedinputStoreContactNumber" name="contactNumber"
+                                    <input type="text" class="form-control" id="modifiedinputStoreContactNumber"
+                                           name="contactNumber"
                                            th:value="${storeResponse.contactNumber()}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="modifiedinputStoreContents" class="form-label">매장 소개</label>
-                                    <input type="text" class="form-control" id="modifiedinputStoreContents" name="contents"
+                                    <input type="text" class="form-control" id="modifiedinputStoreContents"
+                                           name="contents"
                                            th:value="${storeResponse.contents()}">
                                 </div>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
@@ -179,7 +188,58 @@
             </div>
 
         </div>
+        <script>
+            $(document).ready(function () {
+                // 페이지가 로드되면 AJAX 요청을 보냅니다.
+                var storeId = $('#storeId').val(); // 상점 ID를 가져옵니다.
+
+                $.ajax({
+                    type: "GET",
+                    url: "/feedback/" + storeId, // 상점 ID를 URL에 포함시킵니다.
+                    success: function (data) {
+                        // AJAX 요청이 성공하면 받은 데이터를 처리합니다.
+                        // 받은 데이터는 StoreFeedbackResponse의 배열일 것입니다.
+                        // 각 객체에서 reviewFeedbackSelection과 count를 사용할 수 있습니다.
+                        var totalReviewCount = 0;
+                        data.forEach(function (feedback) {
+                            totalReviewCount += feedback.count;
+                        });
+
+                        var feedbackHtml = '';
+                        data.forEach(function (feedback) {
+                            var width = (feedback.count / totalReviewCount * 100); // 프로그레스 바 너비 계산
+                            var selection = feedback.reviewFeedbackSelection;
+                            feedbackHtml += '<div class="d-flex justify-content-center">';
+                            feedbackHtml += '<div class="col-4 align-self-center me-1">' + selection + '</div>';
+                            feedbackHtml += '<div class="progress my-2 col" style="height: 40px;">';
+                            feedbackHtml += '<div class="progress-bar" role="progressbar" style="width: ' + width + '%" ';
+                            feedbackHtml += 'aria-valuenow="' + width + '" aria-valuemin="0" aria-valuemax="100">' + feedback.count + '개</div>';
+                            feedbackHtml += '</div>';
+                            feedbackHtml += '</div>';
+                        });
+                        $('.feedback').append(feedbackHtml);
+                    },
+                    error: function (xhr, status, error) {
+                        // AJAX 요청이 실패하면 에러 메시지를 출력합니다.
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        </script>
+
+        <div class="bg-light text-center rounded p-4 my-2">
+            <div>
+                <h3>피드백 정보</h3>
+                <div></div>
+            </div>
+            <div class="bg-light rounded h-100 p-4">
+                <!-- 피드백 정보가 여기에 동적으로 추가됩니다 -->
+                <div class="feedback"></div>
+            </div>
+        </div>
     </div>
+
+
 </div>
 </body>
 </html>

@@ -14,4 +14,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     List<StoreListResponse> findByNameAndStoreType(String name, String storeType);
 
     Optional<Store> findByIdAndManagerId(Long storeId, Long managerId);
+
+    Optional<Store> findByIdAndComplexShoppingmallManagerId(Long storeId, Long managerId);
 }
