@@ -1,5 +1,8 @@
 package com.ssg.starroadadmin.shop.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum StoreType {
     RESTAURANT_AND_CAFE("식당&카페"),
     LIFESTYLE("라이프스타일"),

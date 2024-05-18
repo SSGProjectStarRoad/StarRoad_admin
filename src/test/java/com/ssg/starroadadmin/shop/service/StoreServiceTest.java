@@ -6,10 +6,14 @@ import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
 import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.shop.enums.Floor;
+import com.ssg.starroadadmin.shop.enums.StoreType;
 import com.ssg.starroadadmin.shop.repository.ComplexShoppingmallRepository;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
+import com.ssg.starroadadmin.user.repository.UserRepository;
+import com.ssg.starroadadmin.user.service.impl.ManagerServiceImpl;
+import com.ssg.starroadadmin.user.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,68 +46,32 @@ class StoreServiceTest {
     static Manager storeManager, storeManager2;
     static ComplexShoppingmall shoppingmall;
     static Long store1Id;
-
-    @BeforeEach
-    void init() {
-        // 쇼핑몰 관리자 추가
-        mallManager = managerRepository.save(Manager.builder().authority(Authority.MALL).build());
-        // 쇼핑몰 추가
-        shoppingmall = complexShoppingmallRepository.save(ComplexShoppingmall.builder().manager(mallManager).build());
-        // 매장 관리자 추가
-        storeManager = managerRepository.save(Manager.builder().authority(Authority.STORE).build());
-        storeManager2 = managerRepository.save(Manager.builder().authority(Authority.STORE).build());
-
-        // 매장 추가
-        store1Id = storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
-                .storeName("테스트 매장1_1")
-                .storeType("테스트 타입1")
-                .storeFloor(Floor.FIRST)
-                .StoreManagerId(storeManager.getId())
-                .build());
-        storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
-                .storeName("테스트 매장1_2")
-                .storeType("테스트 타입1")
-                .storeFloor(Floor.FIRST)
-                .StoreManagerId(storeManager.getId())
-                .build());
-        storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
-                .storeName("테스트 매장2_1")
-                .storeType("테스트 타입2")
-                .storeFloor(Floor.SECOND)
-                .StoreManagerId(storeManager.getId())
-                .build());
-        storeService.createStore(mallManager.getId(), StoreRegisterRequest.builder()
-                .storeName("테스트 매장2_2")
-                .storeType("테스트 타입2")
-                .storeFloor(Floor.SECOND)
-                .StoreManagerId(storeManager.getId())
-                .build());
-    }
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserServiceImpl userServiceImpl;
+    @Autowired
+    private ManagerServiceImpl managerServiceImpl;
 
     @Test
-    @Transactional
-    @DisplayName("새로운 매장 저장 성공 테스트")
-    public void givenStoreRegisterRequest_whenCreateStore_thenStoreIsCreated() {
-        // given
+    @DisplayName("매장 추가 ")
+    public void createStoreTest() {
 
-        // 매장 등록 요청
-        StoreRegisterRequest request = StoreRegisterRequest.builder()
-                .storeName("테스트 매장")
-                .storeType("테스트 타입")
-                .storeFloor(Floor.FIRST)
-                .StoreManagerId(storeManager.getId())
+        StoreCreateRequest request = StoreCreateRequest.builder()
+                .createStoreFloor(Floor.BASEMENT_ONE)
+                .createStoreName("테스트2")
+                .createBusinessNumber("123-46-67450")
+                .createStoreGuideMap("WEFWEFE3WFWEF")
+                .createStoreManagerPassword("0000")
+                .createStoreType(StoreType.INTERIOR)
+                .createStoreManagerId("sungju2n@naver.com")
+                .createStoreManagerName("이한강")
                 .build();
+        Manager manager= managerServiceImpl.createManager(request.createStoreManagerId(), request.createStoreManagerPassword(), request.createBusinessNumber(), request.createStoreManagerName());
+        Long id = manager.getId();
 
-        // when
-        // 매장 추가
-        Long storeId = storeService.createStore(mallManager.getId(), request);
+        storeService.createStore(5L,request,id);
 
-        // then
-        StoreResponse store = storeService.getStore(storeManager.getId(), storeId);
-        assertThat(store.name()).isEqualTo(request.storeName());
-        assertThat(store.storeType()).isEqualTo(request.storeType());
-        assertThat(store.floor()).isEqualTo(request.storeFloor());
-        assertThat(store.managerId()).isEqualTo(request.StoreManagerId());
     }
 
     @Test

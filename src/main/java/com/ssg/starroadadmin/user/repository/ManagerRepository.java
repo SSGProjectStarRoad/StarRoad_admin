@@ -15,6 +15,8 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
     /**
      *FROM MANAGER WHERE USERNAME = #{USERNAME} 이런 쿼리문이 되는것이다.
       */
+    Optional<Manager> findByBusinessNumber(String businessNumber);
+
 
     Optional<Manager> findByIdAndAuthorityNot(Long id, Authority authority);
 
