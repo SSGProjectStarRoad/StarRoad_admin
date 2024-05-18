@@ -23,4 +23,14 @@ class ManagerRepositoryTest {
         System.out.println(managerRepository.findByUsername("store1").toString());
         System.out.println("@@@@@@@@@@");
 }
+
+@Test
+    public void findByBusinessNumber() {
+    System.out.println(managerRepository.findByBusinessNumber("1111111111"));
+}
+
+    @Test
+    public void testCreateStoreManager() {
+
+    }
 }
