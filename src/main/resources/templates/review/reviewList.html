@@ -5,11 +5,10 @@
       layout:decorate="~{/layout/layout}">
 
 <head>
-    <title>Store-List</title>
+    <title>Review-List</title>
 
     <!-- JQUERY LIBRARY -->
-<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
-    <script src="/webjars/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .form-group{
             text-align: left;
@@ -57,7 +56,6 @@
                 type: 'GET',
                 dataType: 'text',
                 success: function(data) {
-                    console.log('Data:', data);
                     // 수신된 데이터로 결과 div 업데이트
                     $('#mallName').html('<h1>' + data + ' 매장 리스트</h1>');
                 },

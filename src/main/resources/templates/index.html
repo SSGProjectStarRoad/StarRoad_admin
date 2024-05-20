@@ -6,278 +6,237 @@
 
 <head>
     <title>Home</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="/webjars/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .review-content {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            line-height: 1.5; /* 줄 간격 조절 */
+            max-height: 3em; /* 2줄의 높이를 설정 (line-height * 2) */
+        }
+
+        .review-count {
+            font-size: small;
+        }
+    </style>
 </head>
 
 <body>
 <div layout:fragment="content">
-    <!-- Sale & Revenue Start -->
     <div class="container-fluid pt-4 px-4">
-        <div class="row g-4">
-            <div class="col-sm-6 col-xl-3">
-                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                    <i class="fa fa-chart-line fa-3x text-primary"></i>
-                    <div class="ms-3">
-                        <p class="mb-2">Today Sale</p>
-                        <h6 class="mb-0">$1234</h6>
+
+        <!-- mall review Chart Start -->
+        <div class="col-sm-12 col-xl-12 m-2">
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">쇼핑몰 전체 리뷰</h6>
+                <canvas id="reviewCountChart"></canvas>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // Ajax request to fetch data
+                $.ajax({
+                    url: '/chart/mall/review-count', // 실제 데이터를 가져올 URL로 수정해야 합니다.
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        // 데이터 배열 초기화
+                        var labels = [];
+                        var totalReviewCount = [];
+                        var positiveReviewCount = [];
+                        var negativeReviewCount = [];
+                        var neutralReviewCount = [];
+
+                        // 데이터를 추출하여 배열에 저장
+                        for (var i = 0; i < data.length; i++) {
+                            console.log(data[i].reviewYear + '-' + data[i].reviewMonth + ' : ' + data[i].reviewCount);
+                            labels.push(data[i].reviewYear + '-' + data[i].reviewMonth);
+                            totalReviewCount.push(data[i].reviewCount);
+                            positiveReviewCount.push(data[i].positiveReviewCount);
+                            negativeReviewCount.push(data[i].negativeReviewCount);
+                            neutralReviewCount.push(data[i].neutralReviewCount);
+                        }
+
+                        // 차트 생성
+                        var ctx = document.getElementById('reviewCountChart').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: "Positive",
+                                        data: positiveReviewCount,
+                                        backgroundColor: "rgba(0, 156, 255, .5)",
+                                        borderColor: "rgba(0, 156, 255, .5)",
+                                        borderWidth: 2,
+                                        // fill: true
+                                    },
+                                    {
+                                        label: "Negative",
+                                        data: negativeReviewCount,
+                                        backgroundColor: "rgba(255, 0, 0, .5)",
+                                        borderColor: "rgba(255, 0, 0, .5)",
+                                        borderWidth: 2,
+                                        // fill: true
+                                    },
+                                    {
+                                        label: "Neutral",
+                                        data: neutralReviewCount,
+                                        backgroundColor: "rgba(255, 255, 0, .5)",
+                                        borderColor: "rgba(255, 255, 0, .5)",
+                                        borderWidth: 2,
+                                        // fill: true
+                                    },
+                                    {
+                                        label: 'Total',
+                                        data: totalReviewCount,
+                                        backgroundColor: "rgba(0, 255, 0, .5)",
+                                        borderColor: "rgba(0, 255, 0, .5)",
+                                        borderWidth: 2,
+                                        // fill: true
+                                    }
+                                ]
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        // Log any errors to the console
+                        console.error('Error fetching data:', error);
+                    }
+                });
+            });
+        </script>
+
+
+        <!-- Widgets Start -->
+        <div class="container-fluid pt-4 px-4">
+            <div class="row g-4">
+                <div class="col-sm-12 col-md-6 col-xl-4">
+                    <div class="h-100 bg-light rounded p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="mb-0">Recent</h6>
+                        </div>
+                        <!-- Ajax로 내용이 로드됩니다 -->
+                        <div id="recent-review-container"></div>
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                    <i class="fa fa-chart-bar fa-3x text-primary"></i>
-                    <div class="ms-3">
-                        <p class="mb-2">Total Sale</p>
-                        <h6 class="mb-0">$1234</h6>
+
+                <div class="col-sm-12 col-md-6 col-xl-4">
+                    <div class="h-100 bg-light rounded p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="mb-0">Popular User</h6>
+                        </div>
+                        <div id="popular-user-container"></div>
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                    <i class="fa fa-chart-area fa-3x text-primary"></i>
-                    <div class="ms-3">
-                        <p class="mb-2">Today Revenue</p>
-                        <h6 class="mb-0">$1234</h6>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                    <i class="fa fa-chart-pie fa-3x text-primary"></i>
-                    <div class="ms-3">
-                        <p class="mb-2">Total Revenue</p>
-                        <h6 class="mb-0">$1234</h6>
+                <div class="col-sm-12 col-md-6 col-xl-4">
+                    <div class="h-100 bg-light rounded p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h6 class="mb-0">Popular Store</h6>
+                        </div>
+                        <div id="popular-store-container"></div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                $.ajax({
+                    url: '/review/user/recent',
+                    method: 'GET',
+                    success: function (data) {
+                        data.forEach(function (review) {
+                            $('#recent-review-container').append(`
+                        <div class="d-flex align-items-center pt-3">
+                            <img class="rounded-circle flex-shrink-0" src="${review.userImagePath}" alt="User Profile" style="width: 40px; height: 40px;">
+                            <div class="w-100 ms-3">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-0">${review.userName}</h6>
+                                    <small>팔로워 : ${review.followerCount}</small>
+                                    <small>팔로잉 : ${review.followingCount}</small>
+                                </div>
+                                <span class="review-content">${review.contents}</span>
+                            </div>
+                        </div>
+                    `);
+                        });
+                    },
+                    error: function (error) {
+                        console.error("사용자 프로필을 가져오는 중 오류가 발생했습니다!", error);
+                    }
+                });
+            });
+
+            $(document).ready(function () {
+                $.ajax({
+                    url: '/follow/user/popular',
+                    method: 'GET',
+                    success: function (data) {
+                        data.forEach(function (data) {
+                            $('#popular-user-container').append(`
+                        <div class="d-flex align-items-center pt-3">
+                            <img class="rounded-circle flex-shrink-0" src="${data.imagePath}" alt="User Profile" style="width: 40px; height: 40px;">
+                            <div class="w-100 ms-3">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-0">${data.userName}</h6>
+                                    <small>팔로워 : ${data.followerCount}</small>
+                                    <small>팔로잉 : ${data.followingCount}</small>
+                                </div>
+                                <span class="review-content">작성한 리뷰 수 : ${data.reviewCount}</span>
+                            </div>
+                        </div>
+                    `);
+                        });
+                    },
+                    error: function (error) {
+                        console.error("사용자 프로필을 가져오는 중 오류가 발생했습니다!", error);
+                    }
+                });
+            });
+
+            $(document).ready(function () {
+                $.ajax({
+                    url: '/review/store/popular',
+                    method: 'GET',
+                    success: function (data) {
+                        data.forEach(function (data) {
+                            $('#popular-store-container').append(`
+                        <div class="d-flex align-items-center pt-3">
+                            <img class="flex-shrink-0" src="${data.storeImage}" alt="User Profile" style="width: 40px; height: 40px;">
+                            <div class="w-100 ms-3">
+                                <div class="w-100">
+                                    <h6 class="mb-0">${data.storeName}</h6>
+                                    <small>${data.mallName} ${data.floor}층</small>
+                                </div>
+                                <div class="d-flex w-100 justify-content-start">
+                                <span class="review-count">total : ${data.reviewCount}</span>
+                                <span class="review-count mx-3">positive : ${data.positiveReviewCount}</span>
+<!--                                <span class="review-count">negative : ${data.negativeReviewCount}</span>-->
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                        });
+                    },
+                    error: function (error) {
+                        console.error("사용자 프로필을 가져오는 중 오류가 발생했습니다!", error);
+                    }
+                });
+            });
+        </script>
+        <!-- Widgets End -->
     </div>
-    <!-- Sale & Revenue End -->
-
-
-    <!-- Sales Chart Start -->
-    <div class="container-fluid pt-4 px-4">
-        <div class="row g-4">
-            <div class="col-sm-12 col-xl-6">
-                <div class="bg-light text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Worldwide Sales</h6>
-                        <a href="">Show All</a>
-                    </div>
-                    <canvas id="worldwide-sales"></canvas>
-                </div>
-            </div>
-            <div class="col-sm-12 col-xl-6">
-                <div class="bg-light text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Salse & Revenue</h6>
-                        <a href="">Show All</a>
-                    </div>
-                    <canvas id="salse-revenue"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Sales Chart End -->
-
-
-    <!-- Recent Sales Start -->
-    <div class="container-fluid pt-4 px-4">
-        <div class="bg-light text-center rounded p-4">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h6 class="mb-0">Recent Salse</h6>
-                <a href="">Show All</a>
-            </div>
-            <div class="table-responsive">
-                <table class="table text-start align-middle table-bordered table-hover mb-0">
-                    <thead>
-                    <tr class="text-dark">
-                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Invoice</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    <tr>
-                        <td><input class="form-check-input" type="checkbox"></td>
-                        <td>01 Jan 2045</td>
-                        <td>INV-0123</td>
-                        <td>Jhon Doe</td>
-                        <td>$123</td>
-                        <td>Paid</td>
-                        <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <!-- Recent Sales End -->
-
-
-    <!-- Widgets Start -->
-    <div class="container-fluid pt-4 px-4">
-        <div class="row g-4">
-            <div class="col-sm-12 col-md-6 col-xl-4">
-                <div class="h-100 bg-light rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h6 class="mb-0">Messages</h6>
-                        <a href="">Show All</a>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-3">
-                        <img class="rounded-circle flex-shrink-0" src="/img/user.jpg" alt=""
-                             style="width: 40px; height: 40px;">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-0">Jhon Doe</h6>
-                                <small>15 minutes ago</small>
-                            </div>
-                            <span>Short message goes here...</span>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-3">
-                        <img class="rounded-circle flex-shrink-0" src="/img/user.jpg" alt=""
-                             style="width: 40px; height: 40px;">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-0">Jhon Doe</h6>
-                                <small>15 minutes ago</small>
-                            </div>
-                            <span>Short message goes here...</span>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-3">
-                        <img class="rounded-circle flex-shrink-0" src="/img/user.jpg" alt=""
-                             style="width: 40px; height: 40px;">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-0">Jhon Doe</h6>
-                                <small>15 minutes ago</small>
-                            </div>
-                            <span>Short message goes here...</span>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center pt-3">
-                        <img class="rounded-circle flex-shrink-0" src="/img/user.jpg" alt=""
-                             style="width: 40px; height: 40px;">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-0">Jhon Doe</h6>
-                                <small>15 minutes ago</small>
-                            </div>
-                            <span>Short message goes here...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6 col-xl-4">
-                <div class="h-100 bg-light rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Calender</h6>
-                        <a href="">Show All</a>
-                    </div>
-                    <div id="calender"></div>
-                </div>
-            </div>
-            <div class="col-sm-12 col-md-6 col-xl-4">
-                <div class="h-100 bg-light rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">To Do List</h6>
-                        <a href="">Show All</a>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <input class="form-control bg-transparent" type="text" placeholder="Enter task">
-                        <button type="button" class="btn btn-primary ms-2">Add</button>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-2">
-                        <input class="form-check-input m-0" type="checkbox">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 align-items-center justify-content-between">
-                                <span>Short task goes here...</span>
-                                <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-2">
-                        <input class="form-check-input m-0" type="checkbox">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 align-items-center justify-content-between">
-                                <span>Short task goes here...</span>
-                                <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-2">
-                        <input class="form-check-input m-0" type="checkbox" checked>
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 align-items-center justify-content-between">
-                                <span><del>Short task goes here...</del></span>
-                                <button class="btn btn-sm text-primary"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-2">
-                        <input class="form-check-input m-0" type="checkbox">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 align-items-center justify-content-between">
-                                <span>Short task goes here...</span>
-                                <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center pt-2">
-                        <input class="form-check-input m-0" type="checkbox">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex w-100 align-items-center justify-content-between">
-                                <span>Short task goes here...</span>
-                                <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Widgets End -->
 </div>
 </body>
 </html>
