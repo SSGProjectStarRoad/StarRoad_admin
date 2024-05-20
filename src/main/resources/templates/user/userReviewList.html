@@ -134,7 +134,7 @@
                     <p>No reviews available.</p>
                 </div>
                 <div th:each="review, iterStat : ${reviewList}">
-                    <div class="review-item">
+                    <div class="review-item" th:onclick="|location.href='@{/review/detail/}' + ${review.reviewId()}|">
                         <!-- 유저 정보(프로필 이미지, 이름, 날짜(현재 기준 - 작성날짜)) -->
                         <div class="d-flex align-items-center">
                             <img th:src="${review.userImagePath()}" alt="profile image"

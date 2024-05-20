@@ -60,7 +60,7 @@
                         <option value="">Select Sort Type</option>
                         <option
                                 th:each="sortType : ${T(com.ssg.starroadadmin.user.enums.UserSortType).values()}"
-                                th:value="${sortType}" th:text="${sortType}">
+                                th:value="${sortType}" th:text="${sortType.getDiscription()}">
                         </option>
                     </select>
                 </div>
@@ -85,16 +85,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="user : ${userList}">
+                    <tr th:each="user : ${userList}" th:onclick="|location.href='@{/user/detail/}' + ${user.id()}|">
                         <td class="text-center col" th:text="${(pages.number) * 10 + userStat.count}">No</td>
                         <td class="text-center col-1">
                             <span th:text="${user.name()}">User Name</span>
                             <br/>
                             <span th:text="${user.nickname()}">User Nickname</span>
                         </td>
-                        <td class="text-center col-1">
-                            <a th:text="${user.email()}" th:href="@{'/user/' + ${user.id()}}">User Email</a>
-                        </td>
+                        <td class="text-center col-1" th:text="${user.email()}">User Email</td>
                         <td class="text-center col-1"><img th:src="${user.imagePath()}" alt="user profile image"
                                                            width="100" height="100"></td>
                         <td class="text-center col" th:text="${user.birth()}">User Birth</td>

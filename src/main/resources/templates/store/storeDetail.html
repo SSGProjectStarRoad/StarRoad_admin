@@ -78,7 +78,7 @@
                             <label for="inputStoreFloor" class="col-sm-3 col-form-label">층수</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="inputStoreFloor"
-                                       th:value="${storeResponse.floor()}" readonly>
+                                       th:value="${storeResponse.floor().getFloor()} + 층" readonly>
                             </div>
                         </div>
                         <div class="row mb-3">

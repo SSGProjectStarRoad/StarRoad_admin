@@ -1,9 +1,8 @@
-package com.ssg.starroadadmin.review.repository;
+package com.ssg.starroadadmin.review.repository.impl;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ssg.starroadadmin.review.entity.QReview;
-import com.ssg.starroadadmin.review.entity.QReviewFeedback;
+import com.ssg.starroadadmin.review.repository.ReviewFeedbackRepositoryCustom;
 import com.ssg.starroadadmin.shop.dto.StoreFeedbackResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

@@ -35,7 +35,7 @@ public class UserController {
         return "user/userList";
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/detail/{userId}")
     public String userDetail(Model model,
                              // jwt로 받아온 관리자 ID
                              @PathVariable Long userId) {

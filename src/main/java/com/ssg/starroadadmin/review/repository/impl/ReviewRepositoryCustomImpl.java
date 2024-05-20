@@ -1,4 +1,4 @@
-package com.ssg.starroadadmin.review.repository;
+package com.ssg.starroadadmin.review.repository.impl;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -6,11 +6,11 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssg.starroadadmin.global.dto.BetweenDate;
-import com.ssg.starroadadmin.review.dto.ReviewDetails;
-import com.ssg.starroadadmin.review.dto.ReviewListResponse;
-import com.ssg.starroadadmin.review.dto.ReviewListWithOutImagesAndFeedbacksResponse;
-import com.ssg.starroadadmin.review.enums.ReviewSortType;
+import com.ssg.starroadadmin.review.dto.*;
 import com.ssg.starroadadmin.review.entity.Review;
+import com.ssg.starroadadmin.review.enums.ReviewSortType;
+import com.ssg.starroadadmin.review.repository.ReviewRepositoryCustom;
+import com.ssg.starroadadmin.user.entity.Manager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +22,18 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.querydsl.core.types.dsl.Expressions.FALSE;
+import static com.querydsl.core.types.dsl.Expressions.TRUE;
 import static com.ssg.starroadadmin.review.entity.QReview.review;
 import static com.ssg.starroadadmin.review.entity.QReviewFeedback.reviewFeedback;
 import static com.ssg.starroadadmin.review.entity.QReviewImage.reviewImage;
+import static com.ssg.starroadadmin.review.enums.ConfidenceType.*;
+import static com.ssg.starroadadmin.shop.entity.QComplexShoppingmall.complexShoppingmall;
+import static com.ssg.starroadadmin.shop.entity.QStore.store;
+import static com.ssg.starroadadmin.user.entity.QUser.user;
 
 @Repository
 @RequiredArgsConstructor
@@ -193,9 +200,88 @@ public class ReviewRepositoryCustomImpl implements ReviewRepositoryCustom {
         return PageableExecutionUtils.getPage(completeReviews, pageable, count::fetchCount);
     }
 
+    @Override
+    public ReviewDetailWithOutList findAllByManager(Manager manager, Long reviewId) {
+        return queryFactory
+                .select(Projections.constructor(ReviewDetailWithOutList.class,
+                        // 쇼핑몰
+                        complexShoppingmall.id.as("mallId"),
+                        complexShoppingmall.name.as("mallName"),
+
+                        // 매장
+                        store.id.as("storeId"),
+                        store.name.as("storeName"),
+                        store.floor.as("floor"),
+                        store.imagePath.as("storeImagePath"),
+
+                        // 유저
+                        user.id.as("userId"),
+                        user.name.as("userName"),
+                        user.nickname.as("nickname"),
+                        user.imagePath.as("userImagePath"),
+
+                        // 리뷰
+                        review.id.as("reviewId"),
+                        review.visible.as("visible"),
+                        review.likeCount.as("likeCount"),
+                        review.contents.as("contents"),
+                        review.confidence.as("confidence"),
+                        review.summary.as("summary"),
+                        review.createdAt.as("createdAt"),
+                        review.modifiedAt.as("modifiedAt")
+                ))
+                .from(review)
+                .innerJoin(store).on(review.store.id.eq(store.id))
+                .innerJoin(complexShoppingmall).on(store.complexShoppingmall.id.eq(complexShoppingmall.id))
+                .innerJoin(user).on(review.user.id.eq(user.id))
+                .where(
+                        review.id.eq(reviewId),
+                        ManagerEq(manager)
+//                        store.manager.id.eq(managerId)
+                )
+                .fetchFirst();
+    }
+
+    @Override
+    public Optional<List<PopularStore>> findTop5PopularStore() {
+        return Optional.ofNullable(queryFactory
+                .select(Projections.constructor(PopularStore.class,
+                        store.id.as("storeId"),
+                        store.name.as("storeName"),
+                        store.imagePath.as("storeImagePath"),
+                        store.complexShoppingmall.id.as("mallId"),
+                        store.complexShoppingmall.name.as("mallName"),
+                        store.floor.as("floor"),
+                        review.id.count().as("reviewCount"),
+                        review.confidence.nullif(POSITIVE).count().as("positiveReviewCount"),
+                        review.confidence.nullif(NEUTRAL).count().as("neutralReviewCount"),
+                        review.confidence.nullif(NEGATIVE).count().as("negativeReviewCount")
+                ))
+                .from(review)
+                .innerJoin(store).on(review.store.id.eq(store.id))
+                .groupBy(store.id)
+                .orderBy(store.name.desc())
+                .limit(5)
+                .fetch());
+    }
+
+    private BooleanExpression ManagerEq(Manager manager) {
+        switch (manager.getAuthority()) {
+            case MALL:
+                return complexShoppingmall.manager.id.eq(manager.getId());
+            case STORE:
+                return store.manager.id.eq(manager.getId());
+            case ADMIN:
+                return TRUE;
+            default:
+                return FALSE;
+        }
+    }
+
     private BooleanExpression storeIdEq(Long storeId) {
         return storeId != null ? review.store.id.eq(storeId) : null;
     }
+
     private BooleanExpression userIdEq(Long userId) {
         return userId != null ? review.user.id.eq(userId) : null;
     }

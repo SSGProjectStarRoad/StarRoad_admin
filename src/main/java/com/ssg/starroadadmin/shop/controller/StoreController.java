@@ -72,7 +72,7 @@ public class StoreController {
         return "store/storeList";
     }
 
-    @GetMapping("/{storeId}")
+    @GetMapping("/detail/{storeId}")
     public String storeDetail(Model model
             // jwt로 받아온 관리자 ID
             , @PathVariable Long storeId) {

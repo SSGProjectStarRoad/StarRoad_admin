@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/layout}">
+
+<head>
+    <title>Store-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .review-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); /* 최소 너비를 350px로 조정 */
+            gap: 1.5rem; /* 간격을 조금 더 넓게 조정 */
+        }
+
+        .review-item {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1.5rem; /* 패딩을 늘려서 카드 내부 여백을 더 넓게 */
+            background-color: #e3e5e8;
+        }
+
+        .image-container {
+            background-color: #f5f8f8;
+            position: relative;
+            width: 100%;
+            height: 400px; /* 이미지 컨테이너 높이를 350px로 증가 */
+            overflow: hidden;
+        }
+
+        .review-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            max-width: 100%;
+            max-height: 100%;
+            transform: translate(-50%, -50%);
+            object-fit: cover; /* 이미지가 컨테이너를 꽉 채우도록 설정 */
+        }
+
+        .review-content {
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 두 줄까지 표시 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 4em; /* 두 줄의 대략적인 높이 */
+        }
+
+        .sentiment-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            border: 1px solid #c2c7cc;
+        }
+
+        .feedback-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border: 1px solid #c2c7cc;
+        }
+
+        .feedback-list {
+            min-height: 120px; /* 피드백 리스트의 최소 높이를 증가 */
+            line-height: 20px; /* 예시 줄 높이 */
+        }
+
+        .store-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid #c2c7cc;
+            background-color: #edf5f5;
+        }
+
+        .store-info {
+            display: flex;
+            justify-content: left;
+            gap: 0.5rem;
+        }
+
+        .shop-name {
+            text-align: left;
+        }
+
+        .mall-name {
+            font-size: 0.8rem;
+        }
+
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+            <!-- 리스트 출력 -->
+            <div class="review-container">
+                <div class="review-item">
+                    <!-- 유저 정보(프로필 이미지, 이름, 날짜(현재 기준 - 작성날짜)) -->
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div th:onclick="|location.href='@{/user/detail/}' + ${review.userId()}|">
+                            <img th:src="${review.userImagePath()}" alt="profile image"
+                                 class="rounded-circle m-2" style="width: 3rem; height: 3rem">
+                            <span th:text="${review.userName()}" class="fs-4">User Name</span>
+                        </div>
+                        <div class="mx-2 text-secondary">
+                            <spna th:text="${#temporals.format(review.createdAt(), 'yyyy-MM-dd hh시dd분ss초')}"
+                                  class="fs-6">Review Created At
+                            </spna>
+                        </div>
+                    </div>
+                    <!-- 리뷰 이미지 -->
+                    <div>
+                        <!-- (캐러셀) 이미지 슬라이드 -->
+                        <div th:id="'carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                             class="carousel slide"
+                             data-bs-touch="false" data-bs-interval="false">
+                            <div class="carousel-inner">
+                                <div class="image-container carousel-item text-center"
+                                     th:each="image, iterStat : ${review.reviewImagePaths()}"
+                                     th:classappend="${iterStat.first} ? 'active'">
+                                    <img th:src="${image}" class="d-block mx-auto review-image" alt="...">
+                                </div>
+                            </div>
+
+                            <button class="carousel-control-prev" type="button"
+                                    th:data-bs-target="'#carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                                    data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                    th:data-bs-target="'#carouselExampleControlsNoTouching-' + ${review.reviewId()}"
+                                    data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+
+                        <!-- 이미지가 없는 경우 No Review Image 표시 -->
+                        <div class="image-container text-center d-flex justify-content-center align-items-center"
+                             th:if="${review.reviewImagePaths().size() == 0}">
+                            <h2>No Review Image</h2>
+                        </div>
+                    </div>
+                    <!-- 리뷰 좋아요  -->
+                    <div class="mx-2 my-1">
+                        <div class="text-start">좋아요 <span th:text="${review.likeCount}">0</span>개</div>
+                    </div>
+
+
+                    <!-- 리뷰 내용 -->
+                    <div class="text-start m-2 text-dark">
+                        <span class="fw-bold me-2" th:text="${review.userName()}"></span>
+                        <span class="review-content" th:text="${review.contents()}">Review Content</span>
+                    </div>
+
+                    <div class="m-2 sentiment-container">
+                        <!-- 리뷰 요약 -->
+                        <div class="text-start m-2 text-dark d-flex">
+                            <span class="mx-2">리뷰 요약 : </span>
+                            <span class="review-content" th:text="${review.summary()}">Review Summary</span>
+                        </div>
+                    </div>
+
+                    <!-- 리뷰 피드백 -->
+                    <div class="m-2 text-start feedback-container">
+                        <span class="fw-bold align-self-center"> -- 피드백 --</span>
+                        <div class="feedback-list">
+                            <div th:if="${review.reviewFeedbackSelection().size() != 0}">
+                                <ul>
+                                    <li th:each="feedback : ${review.reviewFeedbackSelection()}">
+                                        <span th:text="${feedback}">Feedback</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="text-center d-flex align-items-center"
+                                 th:if="${review.reviewFeedbackSelection().size() == 0}">
+                                <h4>No Review Feedback</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="store-container m-2" th:onclick="|location.href='@{/store/detail/}' + ${review.storeId()}|">
+                        <div class="store-info">
+                            <img th:src="${review.storeImagePath()}" alt="store image"
+                                 style="width: 3.5rem; height: 3.5rem">
+                            <div class="shop-name mx-2">
+                                <div class="fw-bolder fs-5" th:text="${review.storeName()}"></div>
+                                <div class="fw-light mall-name" th:text="${review.mallName()}"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <a class="fw-bolder fs-4 text-black-50 m-3"> > </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

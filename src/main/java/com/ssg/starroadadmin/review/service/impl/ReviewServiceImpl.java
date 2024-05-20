@@ -2,38 +2,48 @@ package com.ssg.starroadadmin.review.service.impl;
 
 import com.ssg.starroadadmin.global.dto.BetweenDate;
 import com.ssg.starroadadmin.global.error.code.ManagerErrorCode;
+import com.ssg.starroadadmin.global.error.code.ReviewErrorCode;
 import com.ssg.starroadadmin.global.error.code.ShopErrorCode;
 import com.ssg.starroadadmin.global.error.code.UserErrorCode;
 import com.ssg.starroadadmin.global.error.exception.ManagerException;
+import com.ssg.starroadadmin.global.error.exception.ReviewException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
 import com.ssg.starroadadmin.global.error.exception.UserException;
-import com.ssg.starroadadmin.review.dto.ReviewListResponse;
-import com.ssg.starroadadmin.review.dto.ReviewListWithDasyAgoResponse;
-import com.ssg.starroadadmin.review.dto.StoreReviewSearchRequest;
-import com.ssg.starroadadmin.review.dto.UserReviewSearchRequest;
-import com.ssg.starroadadmin.review.repository.ReviewRepositoryCustom;
+import com.ssg.starroadadmin.review.dto.*;
+import com.ssg.starroadadmin.review.entity.*;
+import com.ssg.starroadadmin.review.repository.*;
 import com.ssg.starroadadmin.review.service.ReviewService;
 import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.shop.repository.StoreRepository;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.entity.User;
 import com.ssg.starroadadmin.user.enums.Authority;
+import com.ssg.starroadadmin.user.repository.FollowRepository;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
 import com.ssg.starroadadmin.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepositoryCustom reviewRepositoryCustom;
+    private final ReviewRepository reviewRepository;
+    private final ReviewImageRepository reviewImageRepository;
+    private final ReviewFeedbackRepository reviewFeedbackRepository;
+    private final ReviewSentimentRepository reviewSentimentRepository;
     private final StoreRepository storeRepository;
     private final UserRepository userRepository;
     private final ManagerRepository managerRepository;
+    private final FollowRepository followRepository;
 
     /**
      * 매장별 리뷰 리스트 조회
@@ -135,5 +145,83 @@ public class ReviewServiceImpl implements ReviewService {
 
     private int getDaysAgo(LocalDateTime createdAt) {
         return LocalDate.now().compareTo(createdAt.toLocalDate());
+    }
+
+    /**
+     * 리뷰 상세 조회
+     *
+     * @param mallManagerId
+     * @param reviewId
+     * @return
+     */
+    @Override
+    public ReviewDetailResponse getReview(Long mallManagerId, Long reviewId) {
+        Manager manager = managerRepository.findById(mallManagerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+        log.debug("manager.getAuthority() : {}", manager.getAuthority());
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        ReviewDetailWithOutList reviewDetailWithOutList = reviewRepositoryCustom.findAllByManager(manager, reviewId);
+
+        // 리뷰 이미지들
+        // 리뷰 선택지들
+        // 리뷰 sentiment
+        ExcludedReviewList excludedList = ExcludedReviewList.builder()
+                .reviewImages(reviewImageRepository.findAllByReviewId(reviewId)
+                        .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_IMAGE_NOT_FOUND)))
+                .reviewFeedbacks(reviewFeedbackRepository.findAllByReviewId(reviewId)
+                        .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_FEEDBACK_NOT_FOUND)))
+                .reviewSentimentResponses(reviewSentimentRepository.findAllByReviewId(reviewId)
+                        .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_SENTIMENT_NOT_FOUND)))
+                .build();
+
+        return ReviewDetailResponse.from(reviewDetailWithOutList, excludedList);
+    }
+
+    /**
+     * 최근 리뷰 5개 조회
+     *
+     * @return
+     */
+    @Override
+    public List<RecentReviewResponse> getRecentReviewList() {
+        List<Review> recentReviewList = reviewRepository.findTop5ByOrderByCreatedAtDesc()
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        return recentReviewList.stream()
+                .map(review -> {
+                    User user = userRepository.findById(review.getUser().getId())
+                            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+                    Long followerCount = followRepository.countByToUser_Id(user.getId());
+                    Long followingCount = followRepository.countByFromUser_Id(user.getId());
+
+                    return RecentReviewResponse.builder()
+                            .reviewId(review.getId())
+                            .userName(user.getName())
+                            .userImagePath(user.getImagePath())
+                            .userImagePath(user.getImagePath())
+                            .followerCount(followerCount)
+                            .followingCount(followingCount)
+                            .contents(review.getContents())
+                            .build();
+                })
+                .toList();
+    }
+
+    /**
+     * 인기 매장 5개 조회
+     * 리뷰가 가장 많이 달린 매장 조회
+     *
+     * @return
+     */
+    @Override
+    public List<PopularStore> getPopularStoreList() {
+        List<PopularStore> popularStore = reviewRepositoryCustom.findTop5PopularStore()
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+        log.debug("popularStore : {}", popularStore);
+        return popularStore;
     }
 }

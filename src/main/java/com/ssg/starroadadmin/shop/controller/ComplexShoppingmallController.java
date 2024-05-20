@@ -22,10 +22,8 @@ public class ComplexShoppingmallController {
     ) {
         Long managerId = 5L; // 삭제해야할 부분
 
-        System.out.println("managerId = " + managerId);
         String mallName = complexShoppingmallService.getComplexShoppingmallName(managerId);
 
-        System.out.println("mallName = "    + mallName);
         return mallName;
     }
 }
