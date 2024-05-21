@@ -1,20 +1,14 @@
-# Java 런타임을 포함하는 기본 이미지로 시작
-FROM openjdk:17-jdk-alpine
+# Use the official OpenJDK base image
+FROM openjdk:11-jdk-slim
 
-# 메인테이너 정보 추가
-LABEL maintainer="your-email@example.com"
+# Set the working directory in the container
+WORKDIR /app
 
-# /tmp로 가리키는 볼륨 추가
-VOLUME /tmp
+# Copy the packaged JAR file into the container at /app
+COPY target/starroad-admin.jar /app
 
-# 이 컨테이너 외부에 8080 포트를 사용 가능하게 함
-EXPOSE 8080
+# Make port 8082 available to the world outside this container
+EXPOSE 8082
 
-# 애플리케이션의 jar 파일
-ARG JAR_FILE=build/libs/starroad-admin.jar
-
-# 애플리케이션의 jar 파일을 컨테이너에 추가
-COPY ${JAR_FILE} app.jar
-
-# jar 파일 실행
-ENTRYPOINT ["java","-jar","/app.jar"]
+# Run the JAR file
+CMD ["java", "-jar", "starroad-admin.jar"]
