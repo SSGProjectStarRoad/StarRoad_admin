@@ -9,3 +9,6 @@ COPY build/libs/*-0.0.1-SNAPSHOT.jar /app/starrod-admin-app.jar
 
 # 4. 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "/app/starrod-admin-app.jar"]
+
+# 5. 포트 번호를 8082로 설정
+EXPOSE 8082
