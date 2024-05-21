@@ -75,8 +75,8 @@ jobs:
           password: ${{ secrets.NCP_PASSWORD }}
           port: ${{ secrets.NCP_PORT }}
           script: |
-            docker-compose pull ${{ env.DOCKER_IMAGE_NAME }}
+            docker pull ${{ env.DOCKER_IMAGE_NAME }}
             docker stop StarRoad_admin || true
             docker rm StarRoad_admin || true
-            docker-compose up -d --name StarRoad_admin ${{ env.DOCKER_IMAGE_NAME }}
+            docker  up -d --name StarRoad_admin ${{ env.DOCKER_IMAGE_NAME }}
       
