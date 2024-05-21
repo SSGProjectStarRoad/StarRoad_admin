@@ -23,10 +23,10 @@ jobs:
           java-version: '17' # Java 17 사용
 
       - name: Create application.properties
-      - uses: actions/checkout@v2
-      - run: touch ./src/main/resources/application.properties
-      - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
-      - run: cat ./src/main/resources/application.properties
+        uses: actions/checkout@v2
+        run: touch ./src/main/resources/application.properties
+        run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
+        run: cat ./src/main/resources/application.properties
 
 
       - name: Cache Gradle packages
