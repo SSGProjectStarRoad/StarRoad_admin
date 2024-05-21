@@ -23,7 +23,7 @@ jobs:
           java-version: '17' # Java 17 사용
 
       - uses: actions/checkout@v2
-        run: |
+      - run: |
           touch ./src/main/resources/application.properties
           echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
           cat ./src/main/resources/application.properties
