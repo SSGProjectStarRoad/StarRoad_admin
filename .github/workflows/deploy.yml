@@ -52,8 +52,8 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker build -t jjuuuunn/starroad-admin-app # Docker 이미지 빌드
-          docker push jjuuuunn/starroad-admin-app # Docker 이미지를 Docker Hub에 푸시
+          docker build -t jjuuuunn/starroad-admin-app:latest
+          docker push jjuuuunn/starroad-admin-app:latest
 
 
   deploy:
