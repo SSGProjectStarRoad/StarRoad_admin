@@ -1,0 +1,59 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main # main 브랜치로의 푸시 시 트리거
+  pull_request:
+    branches:
+      - main # main 브랜치로의 풀 리퀘스트 시 트리거
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 최신 Ubuntu 이미지에서 실행
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 # 코드를 체크아웃하는 GitHub 액션 사용
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2 # JDK 설정을 위한 GitHub 액션 사용
+        with:
+          distribution: 'temurin' # Temurin JDK 사용
+          java-version: '17' # Java 17 사용
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2 # Gradle 패키지 캐시를 위한 GitHub 액션 사용
+        with:
+          path: ~/.gradle/caches # 캐시 경로 설정
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }} # 캐시 키 설정
+          restore-keys: ${{ runner.os }}-gradle # 캐시 복구 키 설정
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew # gradlew 파일에 실행 권한 부여
+
+      - name: Build with Gradle
+        run: ./gradlew build # Gradle을 사용하여 빌드
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }} .
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin # Docker Hub에 로그인
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }} # Docker 이미지를 Docker Hub에 푸시
+
+      - name: Deploy to Docker Compose on NCP
+        uses: appleboy/ssh-action@v0.1.5 # SSH를 사용하여 NCP에 Docker Compose 배포
+        with:
+          host: ${{ secrets.NCP_HOST }} # NCP 호스트
+          username: ${{ secrets.NCP_USERNAME }} # NCP 사용자 이름
+          password: ${{ secrets.NCP_PASSWORD }} # NCP 비밀번호
+          port: ${{ secrets.NCP_PORT }} # NCP 포트
+          script: |
+            cd /path/to/your/docker-compose/directory
+            docker-compose pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
+            docker stop StarRoad_admin || true
+            docker rm StarRoad_admin || true
+            docker-compose up -d -p 8082:8080 --name StarRoad_admin ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}
