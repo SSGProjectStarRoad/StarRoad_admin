@@ -75,7 +75,6 @@ jobs:
           password: ${{ secrets.NCP_PASSWORD }}
           port: ${{ secrets.NCP_PORT }}
           script: |
-            cd /path/to/your/docker-compose/directory
             docker-compose pull ${{ env.DOCKER_IMAGE_NAME }}:latest
             docker stop StarRoad_admin || true
             docker rm StarRoad_admin || true
