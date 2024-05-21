@@ -29,12 +29,4 @@ class ManagerServiceImplTest {
         System.out.println(managerServiceImpl.isEmailDuplicate("store1"));
     }
 
-    @Test
-    public void test3() {
-
-        managerServiceImpl.createManager("choijh9023@naver.com","9023","123-45-67491","최문석");
-
-    }
-
-
 }

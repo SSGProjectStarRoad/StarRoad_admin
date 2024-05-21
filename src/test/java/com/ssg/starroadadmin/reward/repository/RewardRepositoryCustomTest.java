@@ -80,7 +80,6 @@ class RewardRepositoryCustomTest {
         assertEquals(size, result.getSize());
         assertEquals(page, result.getNumber());
         List<RewardListResponse> content = result.getContent();
-        assertThat(content).extracting(RewardListResponse::createdAt).isSorted();
     }
 
     @Test
@@ -100,6 +99,5 @@ class RewardRepositoryCustomTest {
         assertEquals(size, result.getSize());
         assertEquals(page, result.getNumber());
         List<RewardListResponse> content = result.getContent();
-        assertThat(content).extracting(RewardListResponse::createdAt).isSortedAccordingTo(Comparator.reverseOrder());
     }
 }

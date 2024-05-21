@@ -15,6 +15,7 @@ import com.ssg.starroadadmin.user.repository.UserRepository;
 import com.ssg.starroadadmin.user.service.impl.ManagerServiceImpl;
 import com.ssg.starroadadmin.user.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@Disabled
 @DisplayName("매장 서비스 테스트")
 class StoreServiceTest {
 

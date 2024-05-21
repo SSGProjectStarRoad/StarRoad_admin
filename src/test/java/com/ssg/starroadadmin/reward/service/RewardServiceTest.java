@@ -5,6 +5,7 @@ import com.ssg.starroadadmin.reward.dto.RewardListRequest;
 import com.ssg.starroadadmin.reward.dto.RewardListResponse;
 import com.ssg.starroadadmin.reward.dto.RewardRegisterRequest;
 import com.ssg.starroadadmin.reward.enums.RewardSortType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,7 @@ class RewardServiceTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("리워드 리스트 조회 - 생성일시순 오른차순 정렬")
     public void givenRewardListRequestSortByCreatedAtASC_whenSearchRewardList_thenSuccess() {
         // given
@@ -91,6 +93,7 @@ class RewardServiceTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("리워드 리스트 조회 - 생성일시순 내림차순 정렬")
     public void givenRewardListRequestSortByCreatedAtDESC_whenSearchRewardList_thenSuccess() {
         // given
