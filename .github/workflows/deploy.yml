@@ -78,5 +78,5 @@ jobs:
             docker-compose pull ${{ env.DOCKER_IMAGE_NAME }}
             docker stop StarRoad_admin || true
             docker rm StarRoad_admin || true
-            docker-compose up -d -p 8082:8080 --name StarRoad_admin ${{ env.DOCKER_IMAGE_NAME }}
+            docker-compose up -d --name StarRoad_admin ${{ env.DOCKER_IMAGE_NAME }}
       
