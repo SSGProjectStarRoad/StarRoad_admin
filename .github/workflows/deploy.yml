@@ -77,6 +77,6 @@ jobs:
           script: |
             cd /path/to/your/docker-compose/directory
             docker-compose pull ${{ env.DOCKER_IMAGE_NAME }}:latest
-            docker stop StarRoad_admin || true
-            docker rm StarRoad_admin || true
-            docker-compose up -d -p 8082:8080 --name StarRoad_admin ${{ env.DOCKER_IMAGE_NAME }}:latest
+            docker stop starroad_admin || true
+            docker rm starroad_admin || true
+            docker-compose up -d -p 8082:8082 --name StarRoad_admin ${{ env.DOCKER_IMAGE_NAME }}:latest
