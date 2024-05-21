@@ -17,4 +17,4 @@ ARG JAR_FILE=build/libs/starroad-admin.jar
 ADD ${JAR_FILE} starroad-admin.jar
 
 # jar 파일 실행
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/starroad-admin.jar"]
