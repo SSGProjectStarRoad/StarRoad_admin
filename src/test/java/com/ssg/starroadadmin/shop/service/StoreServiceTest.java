@@ -61,9 +61,9 @@ class StoreServiceTest {
                 .createStoreFloor(Floor.BASEMENT_ONE)
                 .createStoreName("테스트2")
                 .createBusinessNumber("123-46-67450")
-                .createStoreGuideMap("WEFWEFE3WFWEF")
+//                .createStoreGuideMap("WEFWEFE3WFWEF")
                 .createStoreManagerPassword("0000")
-                .createStoreType(StoreType.INTERIOR)
+                .createStoreType(StoreType.INTERIOR.name())
                 .createStoreManagerId("sungju2n@naver.com")
                 .createStoreManagerName("이한강")
                 .build();
