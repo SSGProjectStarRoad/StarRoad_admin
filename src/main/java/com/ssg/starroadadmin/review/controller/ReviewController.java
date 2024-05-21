@@ -42,7 +42,7 @@ public class ReviewController {
         model.addAttribute("reviewList", reviewListResponses);
         model.addAttribute("pages", reviewListResponses);
 
-        return "store/storeReviewList";
+        return "/store/storeReviewList";
     }
 
     @GetMapping("/user/{userId}")
