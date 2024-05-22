@@ -4,11 +4,11 @@ FROM openjdk:17-jdk-slim
 # 2. 작업 디렉토리 설정
 WORKDIR /app
 
-# 외부에 8082 포트를 사용 가능하게 함
-EXPOSE 8082
-
 # 3. 빌드된 JAR 파일을 복사
 COPY build/libs/*-0.0.1-SNAPSHOT.jar /app/starrod-admin-app.jar
 
 # 4. 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "/app/starrod-admin-app.jar"]
+
+# 5. 포트 번호를 8082로 설정
+EXPOSE 8082
