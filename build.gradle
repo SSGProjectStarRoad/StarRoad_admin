@@ -63,13 +63,6 @@ dependencies {
 	// JSON
 	implementation 'org.json:json:20231013'
 
-	// WEBJARS BOWER
-	// JQUERY
-	compileOnly 'org.webjars:jquery:3.5.1'
-	// BOOTSTRAP
-	compileOnly 'org.webjars:bootstrap:5.0.0'
-
-
 	// TEST IMPLEMENTATION ========================
 	// TEST DATABASE H2
 //	testImplementation 'com.h2database:h2'
