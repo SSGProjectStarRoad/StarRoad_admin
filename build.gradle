@@ -65,9 +65,9 @@ dependencies {
 
 	// WEBJARS BOWER
 	// JQUERY
-//	compileOnly 'org.webjars:jquery:3.5.1'
+	compileOnly 'org.webjars:jquery:3.5.1'
 	// BOOTSTRAP
-//	compileOnly 'org.webjars:bootstrap:5.0.0'
+	compileOnly 'org.webjars:bootstrap:5.0.0'
 
 
 	// TEST IMPLEMENTATION ========================
