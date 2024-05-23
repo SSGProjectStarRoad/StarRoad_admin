@@ -1,9 +1,6 @@
 package com.ssg.starroadadmin.shop.controller;
 
-import com.ssg.starroadadmin.global.service.S3Uploader;
 import com.ssg.starroadadmin.shop.dto.*;
-import com.ssg.starroadadmin.shop.enums.Floor;
-import com.ssg.starroadadmin.shop.enums.StoreType;
 import com.ssg.starroadadmin.shop.service.StoreService;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.service.ManagerService;
@@ -13,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class StoreController {
     private final StoreService storeService;
-    private final S3Uploader s3Uploader;
     private final ManagerService managerService;
-
-
-
 
     @PostMapping("/create")
     public String create(
@@ -91,12 +85,12 @@ public class StoreController {
                                   @RequestParam("logo") MultipartFile file) {
             Long managerId = 5L; // 삭제해야할 부분
         if (file.isEmpty()) {
-            return "redirect:/store/" + storeId;
+            return "redirect:/store/detail/" + storeId;
         }
 
         storeService.updateStoreImage(managerId, storeId, file);
 
-        return "redirect:/store/" + storeId;
+        return "redirect:/store/detail/" + storeId;
     }
 
     @PostMapping("/{storeId}/modify")
@@ -106,6 +100,18 @@ public class StoreController {
         Long managerId = 9L; // 삭제해야할 부분
 
         storeService.updateStore(managerId, storeId, storeModifyRequest);
-        return "redirect:/store/" + storeId;
+        return "redirect:/store/detail/" + storeId;
+    }
+
+    @ResponseBody
+    @GetMapping("/{storeId}/color")
+    public ResponseEntity<StoreConfidenceResponse> getStoreConfidenceColor(
+            // jwt로 받아온 관리자 ID
+            @PathVariable Long storeId) {
+        Long managerId = 5L; // 삭제해야할 부분
+
+        StoreConfidenceResponse storeConfidenceResponse = storeService.getStoreConfidenceColor(managerId, storeId);
+
+        return ResponseEntity.ok(storeConfidenceResponse);
     }
 }

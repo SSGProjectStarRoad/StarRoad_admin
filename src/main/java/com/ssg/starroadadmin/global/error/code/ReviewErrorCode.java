@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ReviewErrorCode {
-    REVIEW_NOT_FOUND("해당 리뷰는 존재하지 않습니다."),
+    REVIEW_NOT_FOUND("리뷰가 존재하지 않습니다."),
     REVIEW_ALREADY_DELETED("이미 삭제된 리뷰입니다."),
     REVIEW_ALREADY_REPORTED("이미 신고된 리뷰입니다."),
     REVIEW_NOT_REPORTED("신고되지 않은 리뷰입니다."),

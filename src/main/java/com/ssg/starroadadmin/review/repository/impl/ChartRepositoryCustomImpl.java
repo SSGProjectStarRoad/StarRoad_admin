@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssg.starroadadmin.review.dto.MallReviewCountResponse;
+import com.ssg.starroadadmin.review.dto.MonthlyStoreReviewResponse;
 import com.ssg.starroadadmin.review.dto.StoreReviewCountResponse;
 import com.ssg.starroadadmin.review.enums.ConfidenceType;
 import com.ssg.starroadadmin.review.repository.ChartRepositoryCustom;
@@ -77,6 +78,30 @@ public class ChartRepositoryCustomImpl implements ChartRepositoryCustom {
                 )
                 .groupBy(
                         store.name
+                )
+                .fetch();
+    }
+
+    @Override
+    public List<MonthlyStoreReviewResponse> findMonthlyStoreReview(Long storeId) {
+        return queryFactory.select(Projections.constructor(MonthlyStoreReviewResponse.class,
+                review.count().as("reviewCount"),
+                review.createdAt.year().as("reviewYear"),
+                review.createdAt.month().as("reviewMonth"),
+                ConfidenceCount(POSITIVE).as("positiveReviewCount"),
+                ConfidenceCount(NEUTRAL).as("neutralReviewCount"),
+                ConfidenceCount(NEGATIVE).as("negativeReviewCount")
+                ))
+                .from(review)
+                .innerJoin(store).on(review.store.id.eq(store.id))
+                .where(
+                        store.id.eq(storeId),
+                        // 오늘 날짜 기준 12개월 전까지의 데이터만 조회
+                        review.createdAt.after(LocalDateTime.now().minusMonths(12))
+                )
+                .groupBy(
+                        review.createdAt.year(),
+                        review.createdAt.month()
                 )
                 .fetch();
     }

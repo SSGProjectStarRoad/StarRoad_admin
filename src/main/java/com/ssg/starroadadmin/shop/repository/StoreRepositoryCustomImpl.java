@@ -5,6 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ssg.starroadadmin.review.enums.ConfidenceType;
 import com.ssg.starroadadmin.shop.dto.StoreListResponse;
 import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.shop.enums.Floor;
@@ -15,8 +16,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import static com.ssg.starroadadmin.review.entity.QReview.review;
 import static com.ssg.starroadadmin.shop.entity.QStore.store;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -63,9 +67,27 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
         return PageableExecutionUtils.getPage(fetch, pageable, count::fetchCount);
     }
 
+    @Override
+    public Optional<ConfidenceType> findStoreConfidence(Long storeId) {
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        return Optional.ofNullable(queryFactory.select(
+                        review.confidence
+                )
+                .from(store)
+                .innerJoin(review).on(store.id.eq(review.store.id))
+                .where(store.id.eq(storeId)
+                        .and(review.createdAt.after(oneMonthAgo)))
+                .groupBy(review.confidence)
+                .orderBy(review.count().desc())
+                .fetchFirst()
+        );
+    }
+
     private BooleanExpression complexShoppingmallIdEq(Long complexShoppingmallId) {
         return complexShoppingmallId != null ? store.complexShoppingmall.id.eq(complexShoppingmallId) : null;
     }
+
     private BooleanExpression nameContains(String name) {
         return hasText(name) ? store.name.contains(name) : null;
     }

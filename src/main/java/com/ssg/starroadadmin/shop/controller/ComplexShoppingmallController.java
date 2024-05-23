@@ -26,4 +26,26 @@ public class ComplexShoppingmallController {
 
         return mallName;
     }
+
+    @GetMapping("/info")
+    public String getMallInfo(
+            // jwt로 받아온 관리자 ID
+    ) {
+        Long managerId = 5L; // 삭제해야할 부분
+
+//        String mallInfo = complexShoppingmallService.getComplexShoppingmallInfo(managerId);
+
+        return "/store/mallInfo";
+    }
+
+    @GetMapping("/info2")
+    public String getMallInfo2(
+            // jwt로 받아온 관리자 ID
+    ) {
+        Long managerId = 5L; // 삭제해야할 부분
+
+//        String mallInfo = complexShoppingmallService.getComplexShoppingmallInfo(managerId);
+
+        return "/store/mallInfo2";
+    }
 }

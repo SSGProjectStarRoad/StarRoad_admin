@@ -111,12 +111,18 @@
                         <div class="row m-2">
                             <div class="col">
                                 <form action="/store/logo" method="POST" enctype="multipart/form-data">
-                                    <input class="col-8" type="file" name="logo" accept="image/*">
+                                    <input class="col-8" type="file" name="logo" accept="image/*" id="logoInput">
                                     <input type="hidden" id="storeId" name="storeId" th:value="${storeResponse.id()}">
-                                    <button class="col-3" type="submit">이미지 변경</button>
+                                    <button class="col-3 img-update-btn btn btn-primary" type="submit" id="submitBtn" disabled>이미지 변경</button>
                                 </form>
                             </div>
                         </div>
+                        <script>
+                            document.getElementById('logoInput').addEventListener('change', function() {
+                                var submitBtn = document.getElementById('submitBtn');
+                                submitBtn.disabled = !this.files.length;  // Disable button if no files are selected
+                            });
+                        </script>
                     </div>
                 </div>
 
@@ -201,6 +207,11 @@
                         // 받은 데이터는 StoreFeedbackResponse의 배열일 것입니다.
                         // 각 객체에서 reviewFeedbackSelection과 count를 사용할 수 있습니다.
                         var totalReviewCount = 0;
+                        if (data.length === 0) {
+                            $('.feedback').append('<div class="d-flex justify-content-center">피드백이 없습니다.</div>');
+                            return;
+                        };
+
                         data.forEach(function (feedback) {
                             totalReviewCount += feedback.count;
                         });
