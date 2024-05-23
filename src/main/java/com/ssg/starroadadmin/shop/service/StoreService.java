@@ -69,4 +69,13 @@ public interface StoreService {
      */
     void deleteStore(Long managerId, Long storeId);
 
+    /**
+     * 매장 신뢰도 색상 조회
+     * 매장의 신뢰도에 따른 색상을 조회
+     *
+     * @param managerId
+     * @param storeId
+     * @return
+     */
+    StoreConfidenceResponse getStoreConfidenceColor(Long managerId, Long storeId);
 }

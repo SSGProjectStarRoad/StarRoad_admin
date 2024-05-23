@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -100,5 +101,17 @@ public class StoreController {
 
         storeService.updateStore(managerId, storeId, storeModifyRequest);
         return "redirect:/store/detail/" + storeId;
+    }
+
+    @ResponseBody
+    @GetMapping("/{storeId}/color")
+    public ResponseEntity<StoreConfidenceResponse> getStoreConfidenceColor(
+            // jwt로 받아온 관리자 ID
+            @PathVariable Long storeId) {
+        Long managerId = 5L; // 삭제해야할 부분
+
+        StoreConfidenceResponse storeConfidenceResponse = storeService.getStoreConfidenceColor(managerId, storeId);
+
+        return ResponseEntity.ok(storeConfidenceResponse);
     }
 }

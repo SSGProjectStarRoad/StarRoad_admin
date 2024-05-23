@@ -8,6 +8,7 @@ import com.ssg.starroadadmin.global.error.exception.ReviewException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
 import com.ssg.starroadadmin.global.service.S3Uploader;
 import com.ssg.starroadadmin.review.entity.Review;
+import com.ssg.starroadadmin.review.enums.ConfidenceType;
 import com.ssg.starroadadmin.review.repository.ReviewRepository;
 import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -39,13 +41,10 @@ import java.util.List;
 public class StoreServiceImpl implements StoreService {
     private final S3Uploader s3Uploader;
 
-
-
     private final StoreRepository storeRepository;
     private final StoreRepositoryCustom storeRepositoryCustom;
     private final ComplexShoppingmallRepository complexShoppingmallRepository;
     private final ManagerRepository managerRepository;
-    private final ManagerService managerService;
 
     /**
      * 로그인 한 관리자의 ID(PK)를 바탕으로 권한 확인
@@ -216,6 +215,27 @@ public class StoreServiceImpl implements StoreService {
         storeRepository.delete(store);
     }
 
+    @Override
+    public StoreConfidenceResponse getStoreConfidenceColor(Long managerId, Long storeId) {
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+
+        // 매장 관리자인 경우 본인 매장 정보만 볼 수 있음
+        if (manager.getAuthority() == Authority.STORE && store.getManager().getId() != manager.getId()) {
+            throw new ShopException(ShopErrorCode.ACCESS_DENIED);
+        } else if (manager.getAuthority() == Authority.MALL && store.getComplexShoppingmall().getManager().getId() != manager.getId()) {
+            throw new ShopException(ShopErrorCode.ACCESS_DENIED);
+        }
+
+        System.out.println(store.getName() + "의 신뢰도 확인");
+        ConfidenceType storeConfidence = storeRepositoryCustom.findStoreConfidence(storeId)
+                .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
+        System.out.println(store.getName() + " = " + storeConfidence.name());
+        return new StoreConfidenceResponse(storeConfidence.name());
+    }
 
 
 }
