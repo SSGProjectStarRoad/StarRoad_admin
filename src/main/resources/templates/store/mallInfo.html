@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>층별 매장 상태 확인</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .store {
+            border: black 1px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CSS 스타일 추가 */
+        #floor-guide {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 10px;
+            border: 1px solid #000;
+            font-size: 8px;
+
+            overflow-x: scroll;
+        }
+
+        .area {
+            width: 180px;
+            height: 100px;
+            margin: 2px;
+            border: 1px solid #e70000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .store-area {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            overflow-inline: visible;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .store-area > .store {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .store:hover {
+            font-size: 10px;
+            font-weight: bolder;
+            border: black 1.5px solid;
+            transform: scale(1.2);
+            background-color: #F3F6F9;
+        }
+
+        #store-info {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+
+            <div id="floor-guide">
+                <div class="d-flex justify-content-between w-auto">
+                    <div class="area">
+                        <div class="store store-area" data-name="난닝구" data-description="난닝구 Store">난닝구</div>
+                        <div class="store store-area" data-name="캉골" data-description="캉골 Store">캉골</div>
+                        <div class="store store-area" data-name="뉴에라" data-description="뉴에라 Store">뉴에라</div>
+                        <div class="store store-area" data-name="원더플레이스" data-description="원더플레이스 Store">원더플레이스</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="랩" data-description="랩 Store">랩</div>
+                        <div class="store store-area" data-name="유니클로" data-description="유니클로 Store">유니클로</div>
+                        <div class="store store-area" data-name="플라잉타이거 코펜하겐" data-description="플라잉타이거 코펜하겐 Store">플라잉타이거 코펜하겐
+                        </div>
+                        <div class="store store-area" data-name="사봉" data-description="사봉 Store">사봉</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="네스프레소" data-description="네스프레소 Store">네스프레소</div>
+                        <div class="store store-area" data-name="Apple" data-description="Apple Store">Apple</div>
+                        <div class="store store-area" data-name="스튜디오톰보이" data-description="스튜디오톰보이 Store">스튜디오톰보이</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="폴더" data-description="폴더 Store">폴더</div>
+                        <div class="store store-area" data-name="Nike" data-description="Nike Store">Nike</div>
+                        <div class="store store-area" data-name="에이랜드" data-description="에이랜드 Store">에이랜드</div>
+                        <div class="store store-area" data-name="캠퍼" data-description="캠퍼 Store">캠퍼</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="젠틀몬스터" data-description="젠틀몬스터 Store">젠틀몬스터</div>
+                        <div class="store store-area" data-name="탬버린즈" data-description="탬버린즈 Store">탬버린즈</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="자주" data-description="자주 Store">자주</div>
+                        <div class="store store-area" data-name="일렉트로마트" data-description="일렉트로마트 Store">일렉트로마트</div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between w-auto">
+                    <div class="area">
+                        <div class="store store-area" data-name="빈브라더스" data-description="빈브라더스 Store">빈브라더스</div>
+                        <div class="store-area">
+                            <div class="store" data-name="이솝" data-description="이솝 Store">이솝</div>
+                            <div class="store" data-name="로사케이" data-description="로사케이 Store">로사케이</div>
+                        </div>
+                    </div>
+                    <div class="area">
+                        <div class="store-area">
+                            <div class="store" data-name="록시땅" data-description="록시땅 Store">록시땅</div>
+                            <div class="store" data-name="클라베드제이" data-description="클라베드제이 Store">클라베드제이</div>
+                            <div class="store" data-name="플리츠미" data-description="플리츠 Store">플리츠</div>
+                        </div>
+                        <div class="store store-area" data-name="마리떼프랑소와 저버" data-description="마리떼프랑소와 저버 Store">마리떼프랑소와 저버</div>
+                        <div class="store store-area" data-name="탑텐" data-description="탑텐 Store">탑텐</div>
+                        <div class="store store-area" data-name="파리 생제르맹" data-description="파리 생제르맹 Store">파리 생제르맹</div>
+                        <div class="store store-area" data-name="슈스파" data-description="슈스파 Store">슈스파</div>
+                        <div class="store store-area" data-name="원더브라" data-description="원더브라 Store">원더브라</div>
+                        <div class="store store-area" data-name="지오다노" data-description="지오다노 Store">지오다노</div>
+                        <div class="store store-area" data-name="디자인스킨" data-description="디자인스킨 Store">디자인스킨</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="아웃도어 프로덕즈" data-description="아웃도어 프로덕즈 Store">아웃도어 프로덕즈</div>
+                        <div class="store store-area" data-name="플랙" data-description="플랙 Store">플랙</div>
+                        <div class="store store-area" data-name="게스" data-description="게스 Store">게스</div>
+                        <div class="store store-area" data-name="커버낫" data-description="커버낫 Store">커버낫</div>
+                        <div class="store store-area" data-name="널디" data-description="널디 Store">널디</div>
+                        <div class="store store-area" data-name="올리브영" data-description="올리브영 Store">올리브영</div>
+                        <div class="store store-area" data-name="쿠에르" data-description="쿠에르 Store">쿠에르</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="더일마" data-description="더일마 Store">더일마</div>
+                        <div class="store store-area" data-name="리스트" data-description="리스트 Store">리스트</div>
+                        <div class="store store-area" data-name="올스튜디오스" data-description="올스튜디오스 Store">올스튜디오스</div>
+                        <div class="store store-area" data-name="라수아 패밀리" data-description="라수아 패밀리 Store">라수아 패밀리</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="메그제이" data-description="메그제이 Store">메그제이</div>
+                        <div class="store store-area" data-name="나인" data-description="나인 Store">나인</div>
+                        <div class="store store-area" data-name="러쉬" data-description="러쉬 Store">러쉬</div>
+                        <div class="store-area">
+                            <div class="store" data-name="더바디샵" data-description="더바디샵 Store">더바디샵</div>
+                            <div class="store" data-name="로우로우" data-description="로우로우 Store">로우로우</div>
+                            <div class="store" data-name="라미" data-description="라미 Store">라미</div>
+                        </div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="미니골드" data-description="미니골드 Store">미니골드</div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between w-auto">
+                    <div class="area">
+                        <div class="store store-area" data-name="온더보더" data-description="온더보더 Store">온더보더</div>
+                        <div class="store store-area" data-name="풍월장" data-description="풍월장 Store">풍월장</div>
+                        <div class="store-area">
+                            <div class="store" data-name="레스트 인네이저" data-description="레스트 인네이저 Store">레스트 인네이저</div>
+                            <div class="store" data-name="이마트24 2호점" data-description="이마트24 2호점 Store">이마트24 2호점</div>
+                            <div class="store" data-name="아프리카" data-description="아프리카 Store">아프리카</div>
+                        </div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="바나나 시스터즈" data-description="바나나 시스터즈 Store">바나나 시스터즈</div>
+                        <div class="store store-area" data-name="슈퍼말자" data-description="슈퍼말자 Store">슈퍼말자</div>
+                        <div class="store store-area" data-name="묠라웨어" data-description="묠라웨어 Store">묠라웨어</div>
+                        <div class="store store-area" data-name="까웨" data-description="까웨 Store">까웨</div>
+                        <div class="store store-area" data-name="스케쳐스" data-description="스케쳐스 Store">스케쳐스</div>
+                        <div class="store store-area" data-name="반스" data-description="반스 Store">반스</div>
+                        <div class="store store-area" data-name="코닥" data-description="코닥 Store">코닥</div>
+                        <div class="store store-area" data-name="디스이즈 네버댓" data-description="디스이즈 네버댓 Store">디스이즈 네버댓</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="엄브로" data-description="엄브로 Store">엄브로</div>
+                        <div class="store store-area" data-name="MLB" data-description="MLB Store">MLB</div>
+                        <div class="store store-area" data-name="디스커버리" data-description="디스커버리 Store">디스커버리</div>
+                        <div class="store store-area" data-name="파타고니아" data-description="파타고니아 Store">파타고니아</div>
+                        <div class="store store-area" data-name="내셔널 지오그래픽" data-description="내셔널 지오그래픽 Store">내셔널 지오그래픽</div>
+                        <div class="store store-area" data-name="써스데이 아일랜드" data-description="써스데이 아일랜드 Store">써스데이 아일랜드</div>
+                        <div class="store store-area" data-name="스와치" data-description="스와치 Store">스와치</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="찰스엔 키스" data-description="찰스엔 키스 Store">찰스엔 키스</div>
+                        <div class="store store-area" data-name="쉬즈미스" data-description="쉬즈미스 Store">쉬즈미스</div>
+                        <div class="store store-area" data-name="현재모터 스튜디오" data-description="현재모터 스튜디오 Store">현재모터 스튜디오</div>
+                    </div>
+                    <div class="area">
+                        <div class="store-area">
+                            <div class="store" data-name="나무그림" data-description="나무그림 Store">나무그림</div>
+                            <div class="store" data-name="닥터마틴" data-description="닥터마틴 Store">닥터마틴</div>
+                            <div class="store" data-name="솔브 은가비" data-description="솔브 은가비 Store">솔브 은가비</div>
+                        </div>
+                    </div>
+                    <div class="area">
+                        <div class="store-area">
+                            <div class="store" data-name="알지오지아" data-description="알지오지아 Store">알지오지아</div>
+                            <div class="store" data-name="프로젝트엠" data-description="프로젝트엠 Store">프로젝트엠</div>
+                            <div class="store" data-name="마인드 브릿지" data-description="마인드 브릿지 Store">마인드 브릿지</div>
+                        </div>
+                        <div class="store store-area" data-name="H&M" data-description="H&M Store">H&M</div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between w-auto">
+                    <div class="area">
+                        <div class="store store-area" data-name="리프사운드" data-description="리프사운드 Store">리프사운드</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="이속우화구우몽" data-description="이속우화구우몽 Store">이속우화구우몽</div>
+                        <div class="store store-area" data-name="딤타오" data-description="딤타오 Store">딤타오</div>
+                        <div class="store store-area" data-name="에베레스트" data-description="에베레스트 Store">에베레스트</div>
+                        <div class="store store-area" data-name="이비티" data-description="이비티 Store">이비티</div>
+                        <div class="store store-area" data-name="일일향" data-description="일일향 Store">일일향</div>
+                        <div class="store store-area" data-name="공차" data-description="공차 Store">공차</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="젤라띠 젤라띠" data-description="젤라띠 젤라띠 Store">젤라띠 젤라띠</div>
+                        <div class="store store-area" data-name="띤띤 드티아린드" data-description="띤띤 드티아린드 Store">띤띤 드티아린드</div>
+                        <div class="store store-area" data-name="스타벅스 티바나" data-description="스타벅스 티바나 Store">스타벅스 티바나</div>
+                        <div class="store-area">
+                            <div class="store" data-name="노티드" data-description="노티드 Store">노티드</div>
+                            <div class="store" data-name="안스베이커리" data-description="안스베이커리 Store">안스베이커리</div>
+                        </div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="한우리" data-description="한우리 Store">한우리</div>
+                        <div class="store store-area" data-name="광화문 미진" data-description="광화문 미진 Store">광화문 미진</div>
+                        <div class="store store-area" data-name="소호정" data-description="소호정 Store">소호정</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="긴다코" data-description="긴다코 Store">긴다코</div>
+                        <div class="store store-area" data-name="훠궈야" data-description="훠궈야 Store">훠궈야</div>
+                    </div>
+                    <div class="area">
+                        <div class="store store-area" data-name="오렌즈" data-description="오렌즈 Store">오렌즈</div>
+                        <div class="store store-area" data-name="프레시가든" data-description="프레시가든 Store">프레시가든</div>
+                        <div class="store store-area" data-name="이마트24 1호점" data-description="이마트24 1호점 Store">이마트24 1호점</div>
+                        <div class="store store-area" data-name="몰리스펫샵" data-description="몰리스펫샵 Store">몰리스펫샵</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="store-info">
+        <h2>Store Information</h2>
+        <p>Select a store to see details here.</p>
+    </div>
+    <script>
+        document.querySelectorAll('.store').forEach(function(store) {
+            store.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.3)'; // 1.2 배 확대
+            });
+            store.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1)'; // 원래 크기로 복귀
+            });
+        });
+
+        // JavaScript to handle store click events
+        document.querySelectorAll('.store').forEach(function (store) {
+            store.addEventListener('click', function () {
+                var name = store.getAttribute('data-name');
+                var description = store.getAttribute('data-description');
+                document.getElementById('store-info').innerHTML = '<h2>' + name + '</h2><p>' + description + '</p>';
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
