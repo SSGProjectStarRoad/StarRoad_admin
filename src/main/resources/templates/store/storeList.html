@@ -10,10 +10,11 @@
     <!-- JQUERY LIBRARY -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        .form-group{
+        .form-group {
             text-align: left;
 
         }
+
         /* addStore 클래스는 버튼을 부모 컨테이너의 왼쪽에 고정시키기 위해 사용됩니다. */
         .addStore {
             /* 부모 컨테이너를 기준으로 위치를 절대적으로 설정합니다. */
@@ -35,7 +36,7 @@
     <div id="mallName"></div>
 
     <script th:inline="javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             // 초기에는 저장 버튼을 비활성화 한다.
             $('#create-button').prop('disabled', true);
 
@@ -55,19 +56,19 @@
                 url: '/complexmall/name',
                 type: 'GET',
                 dataType: 'text',
-                success: function(data) {
+                success: function (data) {
                     console.log('Data:', data);
                     // 수신된 데이터로 결과 div 업데이트
                     $('#mallName').html('<h1>' + data + ' 매장 리스트</h1>');
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     // 오류 처리
                     console.error('Error:', error);
                 }
             });
 
             // 사업자 아이디 중복 확인
-            $('#checkDuplicateEmail').click(function() {
+            $('#checkDuplicateEmail').click(function () {
                 const email = $('#createStoreManagerId').val();
                 const feedbackElement = $('#emailFeedback');
 
@@ -75,9 +76,9 @@
                     $.ajax({
                         url: '/manager/checkDuplicateEmail',
                         type: 'POST',
-                        data: JSON.stringify({ email: email }),
+                        data: JSON.stringify({email: email}),
                         contentType: 'application/json',
-                        success: function(response) {
+                        success: function (response) {
                             if (response.isDuplicate) {
                                 feedbackElement.text("이미 사용 중인 이메일입니다.").show();
                                 feedbackElement.css("color", "red");
@@ -88,7 +89,7 @@
                                 enableSubmitButton();
                             }
                         },
-                        error: function() {
+                        error: function () {
                             feedbackElement.text('중복 확인 중 오류가 발생했습니다.').show();
                             feedbackElement.css("color", "red");
                         }
@@ -100,16 +101,16 @@
             });
 
             // 사업자 번호 중복 확인
-            $('#checkDuplicateBusinessNumber').click(function() {
+            $('#checkDuplicateBusinessNumber').click(function () {
                 const businessNumber = $('#createBusinessNumber').val();
                 const feedbackElement = $('#businessNumberFeedback');
 
                 $.ajax({
                     url: '/manager/checkDuplicateBusinessNumber', // 서버의 엔드포인트 URL을 설정합니다.
                     type: 'POST',
-                    data: JSON.stringify({ businessNumber: businessNumber }),
+                    data: JSON.stringify({businessNumber: businessNumber}),
                     contentType: 'application/json',
-                    success: function(response) {
+                    success: function (response) {
                         if (response.isDuplicate) {
                             feedbackElement.text("이미 사용 중인 사업자 번호입니다.").show();
                             feedbackElement.css("color", "red");
@@ -120,7 +121,7 @@
                             enableSubmitButton();
                         }
                     },
-                    error: function() {
+                    error: function () {
                         feedbackElement.text('중복 확인 중 오류가 발생했습니다.').show();
                         feedbackElement.css("color", "red");
                     }
@@ -128,17 +129,17 @@
             });
 
             // 매장 추가 버튼을 클릭했을 때 모달을 띄우는 함수
-            $('.addStore').click(function() {
+            $('.addStore').click(function () {
                 $('#storeCreateModal').modal('show'); // 모달 표시
             });
 
             // 닫기 버튼을 눌렀을 때 모달 닫기
-            $('.modal-footer .btn-secondary').click(function() {
+            $('.modal-footer .btn-secondary').click(function () {
                 $('#storeCreateModal').modal('hide'); // 모달 닫기
             });
 
             // 사업자 번호 유효성 검사
-            $('#createBusinessNumber').on('input', function() {
+            $('#createBusinessNumber').on('input', function () {
                 validateBusinessNumber(this);
             });
 
@@ -174,8 +175,6 @@
             return regex.test(email);
         }
     </script>
-
-
 
 
     <div class="container-fluid pt-4 px-4">
@@ -234,11 +233,12 @@
                     <tbody>
                     <tr th:each="store : ${storeList}" th:onclick="|location.href='@{/store/detail/}' + ${store.id()}|">
                         <td class="text-center col" th:text="${(pages.number) * 10 + storeStat.count}">No</td>
-<!--                        <td class="text-center col-3">-->
-<!--                            <a th:text="${store.name()}" th:href="@{'/store/detail/' + ${store.id()}}">Store Name</a>-->
-<!--                        </td>-->
+                        <!--                        <td class="text-center col-3">-->
+                        <!--                            <a th:text="${store.name()}" th:href="@{'/store/detail/' + ${store.id()}}">Store Name</a>-->
+                        <!--                        </td>-->
                         <td class="text-center col-3" th:text="${store.name()}">Store Name</td>
-                        <td class="text-center col-2"><img th:src="${store.imagePath()}" alt="store logo" width="100" height="100"></td>
+                        <td class="text-center col-2"><img th:src="${store.imagePath()}" alt="store logo" width="100"
+                                                           height="100"></td>
                         <td class="text-center col-2" th:text="${store.storeType()}">Store Type</td>
                         <td class="text-center col-1" th:text="${store.floor().getFloor()} + 층">Store Floor</td>
                         <td class="text-center col-2" th:text="${store.contactNumber()}">Store Contact Number</td>
@@ -254,13 +254,15 @@
               end=${((pages.number + 1) * pages.size < pages.totalElements) ? (pages.number + 1) * pages.size : pages.totalElements}">
                 <!-- Button trigger modal -->
 
-                    <button type="button" class="mb-3 btn btn-primary addStore" data-toggle="modal" data-target="#storeCreateModal">
-                        매장추가
-                    </button>
+                <button type="button" class="mb-3 btn btn-primary addStore" data-toggle="modal"
+                        data-target="#storeCreateModal">
+                    매장추가
+                </button>
 
 
                 <!-- Modal -->
-                <div class="modal fade" id="storeCreateModal" tabindex="-1" role="dialog" aria-labelledby="storeCreateModalLabel" aria-hidden="true">
+                <div class="modal fade" id="storeCreateModal" tabindex="-1" role="dialog"
+                     aria-labelledby="storeCreateModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -269,41 +271,54 @@
                             </div>
                             <div class="modal-body">
                                 <!-- 여기에 매장 추가 폼을 넣습니다. -->
-                                <form action="/store/create" method="post" th:object="${storeCreateRequest}" enctype="multipart/form-data">
+                                <form action="/store/create" method="post" th:object="${storeCreateRequest}"
+                                      enctype="multipart/form-data">
                                     <!-- 폼 필드 예제 -->
                                     <div class="form-group">
                                         <label for="createStoreManagerName">사업자 이름</label>
-                                        <input type="text" class="form-control" id="createStoreManagerName" name="createStoreManagerName" required>
+                                        <input type="text" class="form-control" id="createStoreManagerName"
+                                               name="createStoreManagerName" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="createStoreManagerId">사업자 아이디</label>
                                         <div class="input-group">
-                                            <input type="email" class="form-control" id="createStoreManagerId" name="createStoreManagerId" required>
-                                            <button class="btn btn-primary" type="button" id="checkDuplicateEmail">중복 확인</button>
+                                            <input type="email" class="form-control" id="createStoreManagerId"
+                                                   name="createStoreManagerId" required>
+                                            <button class="btn btn-primary" type="button" id="checkDuplicateEmail">중복
+                                                확인
+                                            </button>
                                         </div>
                                         <!-- 경고 문구를 표시할 요소 추가 -->
                                         <div id="emailFeedback" class="invalid-feedback" style="display: none;"></div>
                                     </div>
                                     <div class="form-group">
                                         <label for="createStoreManagerPassword">사업자 비밀번호</label>
-                                        <input type="password" class="form-control" id="createStoreManagerPassword" name="createStoreManagerPassword" required>
+                                        <input type="password" class="form-control" id="createStoreManagerPassword"
+                                               name="createStoreManagerPassword" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="ConfirmStoreManagerPassword">비밀번호 확인</label>
-                                        <input type="password" class="form-control" id="ConfirmStoreManagerPassword" name="ConfirmStoreManagerPassword" required>
+                                        <input type="password" class="form-control" id="ConfirmStoreManagerPassword"
+                                               name="ConfirmStoreManagerPassword" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="createBusinessNumber">사업자 번호</label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="createBusinessNumber" name="createBusinessNumber" required oninput="validateBusinessNumber(this)">
-                                            <button class="btn btn-primary" type="button" id="checkDuplicateBusinessNumber">중복 확인</button>
+                                            <input type="text" class="form-control" id="createBusinessNumber"
+                                                   name="createBusinessNumber" required
+                                                   oninput="validateBusinessNumber(this)">
+                                            <button class="btn btn-primary" type="button"
+                                                    id="checkDuplicateBusinessNumber">중복 확인
+                                            </button>
                                         </div>
                                         <!-- 경고 문구를 표시할 요소 추가  -->
-                                        <div id="businessNumberFeedback" class="invalid-feedback" style="display: none;"></div>
+                                        <div id="businessNumberFeedback" class="invalid-feedback"
+                                             style="display: none;"></div>
                                     </div>
                                     <div class="form-group">
                                         <label for="createStoreName">매장 이름</label>
-                                        <input type="text" class="form-control" id="createStoreName" name="createStoreName" required>
+                                        <input type="text" class="form-control" id="createStoreName"
+                                               name="createStoreName" required>
                                     </div>
                                     <div class="form-group mt-2">
                                         <select class="form-select mt-2" id="createStoreFloor" name="createStoreFloor">
@@ -323,7 +338,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="createStoreGuideMap">매장 안내도</label>
-                                        <input type="file" class="form-control" accept="image/*" id="createStoreGuideMap" name="createStoreGuideMap" required>
+                                        <input type="file" class="form-control" accept="image/*"
+                                               id="createStoreGuideMap" name="createStoreGuideMap" required>
                                     </div>
                                     <!-- authority(권한) 이 부분은 무조건 store로 추가해야 함 -->
                                     <!-- 추가 폼 필드 여기에 추가 -->
