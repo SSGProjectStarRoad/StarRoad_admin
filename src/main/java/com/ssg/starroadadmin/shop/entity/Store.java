@@ -59,4 +59,5 @@ public class Store extends BaseTimeEntity {
     }
 
 
+
 }
