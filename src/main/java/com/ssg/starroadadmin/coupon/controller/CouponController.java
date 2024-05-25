@@ -32,7 +32,6 @@ public class CouponController {
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Long managerId = 5L; // 삭제해야할 부분
-
         Page<SearchCouponResponse> couponList = couponService.getCouponList(managerId, pageable);
 
         model.addAttribute("couponList", couponList);
@@ -47,7 +46,6 @@ public class CouponController {
             @RequestBody CreateCouponRequest request) {
         Long managerId = 5L; // 삭제해야할 부분
 
-        log.debug("request: {}", request);
         try {
             CreateCouponResponse savedCoupon = couponService.createCoupon(request, managerId);
             return new ResponseEntity<>(savedCoupon, HttpStatus.CREATED);

@@ -44,7 +44,7 @@
                 success: function (data) {
                     console.log('Data:', data);
                     // 수신된 데이터로 결과 div 업데이트
-                    $('#mallName').html('<h1>' + data + ' 매장 리스트</h1>');
+                    $('#mallName').html('<h1>' + data + ' 쿠폰 리스트</h1>');
                 },
                 error: function (xhr, status, error) {
                     // 오류 처리
@@ -54,16 +54,16 @@
         })
 
         // Show the modal on button click
-        $(document).on('click', '.addCoupon', function() {
+        $(document).on('click', '.addCoupon', function () {
             $('#couponCreateModal').modal('show');
         });
 
-        $(document).on('click', '.close', function() {
+        $(document).on('click', '.addCouponClose', function () {
             $('#couponCreateModal').modal('hide');
         });
 
         // 할인율 입력 필드에 값이 입력되면 할인금액 필드를 비활성화
-        $(document).on('input', '#modalCouponDiscountRate', function() {
+        $(document).on('input', '#modalCouponDiscountRate', function () {
             if ($(this).val().length > 0) { // 할인율 필드에 값이 있는지 확인
                 $('#modalCouponDiscountAmount').prop('disabled', true);
             } else {
@@ -72,34 +72,14 @@
         });
 
         // 할인금액 입력 필드에 값이 입력되면 할인율 필드를 비활성화
-        $(document).on('input', '#modalCouponDiscountAmount', function() {
+        $(document).on('input', '#modalCouponDiscountAmount', function () {
             if ($(this).val().length > 0) { // 할인금액 필드에 값이 있는지 확인
                 $('#modalCouponDiscountRate').prop('disabled', true);
+                $('#modalCouponMaxAmount').prop('disabled', true);
             } else {
                 $('#modalCouponDiscountRate').prop('disabled', false);
+                $('#modalCouponMaxAmount').prop('disabled', false);
             }
-        });
-
-
-        // Handle form submission
-        $('#couponCreateForm').submit(function(event) {
-            event.preventDefault(); // Prevent default form submission
-            $.ajax({
-                url: '/coupon/create',
-                type: 'POST',
-                data: $(this).serialize(), // Serialize form data
-                success: function(response) {
-                    // Handle success - you can show a message or update the table
-                    alert('쿠폰이 성공적으로 추가되었습니다!');
-                    $('#couponCreateModal').modal('hide'); // Hide the modal
-                    // couponModal.modal('hide');
-                },
-                error: function(xhr, status, error) {
-                    // Handle error
-                    console.error('Error:', error);
-                    alert('쿠폰 추가 중 오류가 발생했습니다.');
-                }
-            });
         });
     </script>
 
@@ -130,8 +110,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="coupon : ${couponList}"
-                        th:onclick="|location.href='@{/coupon/detail/}' + ${coupon.couponId()}|">
+                    <tr th:each="coupon : ${couponList}" th:data-coupon-id="${coupon.couponId()}">
                         <td class="text-center col" th:text="${(pages.number) * 10 + couponStat.count}">No</td>
                         <td class="text-center col-2" th:text="${coupon.couponName()}">쿠폰 이름</td>
                         <td class="text-center col-1">
@@ -203,8 +182,9 @@
 
         </div>
     </div>
-    <!-- Modal Structure -->
-    <div class="modal fade" id="couponCreateModal" tabindex="-1" role="dialog" aria-labelledby="couponCreateModalLabel" aria-hidden="true">
+    <!-- 쿠폰 추가 모달 -->
+    <div class="modal fade" id="couponCreateModal" tabindex="-1" role="dialog" aria-labelledby="couponCreateModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -212,43 +192,100 @@
                 </div>
                 <div class="modal-body">
                     <!-- Modal Body Content -->
-                    <form id="couponCreateForm" method="post" th:object="${storeCreateRequest}">
+                    <form id="couponCreateForm">
                         <div class="form-group">
                             <label for="modalCouponName">쿠폰 이름</label>
-                            <input type="text" class="form-control" id="modalCouponName" name="modalCouponName" placeholder="쿠폰 이름을 입력하세요" required>
+                            <input type="text" class="form-control" id="modalCouponName" name="modalCouponName"
+                                   placeholder="쿠폰 이름을 입력하세요" required>
                         </div>
                         <div class="form-group">
                             <label for="modalCouponDiscountRate">할인율</label>
-                            <input type="number" class="form-control" id="modalCouponDiscountRate" name="modalCouponDiscountRate" placeholder="할인율을 입력하세요">
+                            <input type="number" class="form-control" id="modalCouponDiscountRate"
+                                   name="modalCouponDiscountRate" placeholder="할인율을 입력하세요">
                         </div>
                         <div class="form-group">
                             <label for="modalCouponDiscountAmount">할인금액</label>
-                            <input type="number" class="form-control" id="modalCouponDiscountAmount" name="modalCouponDiscountAmount" placeholder="할인금액을 입력하세요">
+                            <input type="number" class="form-control" id="modalCouponDiscountAmount"
+                                   name="modalCouponDiscountAmount" placeholder="할인금액을 입력하세요">
                         </div>
                         <div class="form-group">
                             <label for="modalCouponMaxAmount">최대금액</label>
-                            <input type="number" class="form-control" id="modalCouponMaxAmount" name="modalCouponMaxAmount" placeholder="최대금액을 입력하세요" required>
+                            <input type="number" class="form-control" id="modalCouponMaxAmount"
+                                   name="modalCouponMaxAmount" placeholder="최대금액을 입력하세요">
                         </div>
                         <div class="form-group">
                             <label for="modalCouponMinAmount">최소금액</label>
-                            <input type="number" class="form-control" id="modalCouponMinAmount" name="modalCouponMinAmount" placeholder="최소금액을 입력하세요" required>
+                            <input type="number" class="form-control" id="modalCouponMinAmount"
+                                   name="modalCouponMinAmount" placeholder="최소금액을 입력하세요" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponShopType">매장 타입</label>
+                            <select class="form-control" id="modalCouponShopType" name="modalCouponShopType" required>
+                                <option th:each="storeType : ${T(com.ssg.starroadadmin.shop.enums.StoreType).values()}"
+                                        th:value="${storeType.getName()}"
+                                        th:text="${storeType.getName()}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponExpiredAt">만료날짜</label>
+                            <input type="date" class="form-control" id="modalCouponExpiredAt"
+                                   name="modalCouponExpiredAt" placeholder="기간을 입력하세요" required>
                         </div>
                         <div class="form-group">
                             <label for="modalCouponStatus">상태</label>
                             <select class="form-control" id="modalCouponStatus" name="modalCouponStatus" required>
-                                <option value="ACTIVE">ACTIVE</option>
                                 <option value="INACTIVE">INACTIVE</option>
+                                <option value="ACTIVE">ACTIVE</option>
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary close" data-dismiss="modal">닫기</button>
-                            <button type="submit" class="btn btn-primary">저장</button>
+                            <button type="button" class="btn btn-secondary addCouponClose" data-dismiss="modal">닫기</button>
+                            <button type="submit" class="btn btn-primary" id="saveCoupon">저장</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function () {
+            // 저장 버튼 클릭 시
+            $("#saveCoupon").click(function () {
+                // 폼 데이터 가져오기
+                var formData = {
+                    modalCouponName: $("#modalCouponName").val(),
+                    modalCouponDiscountRate: $("#modalCouponDiscountRate").val(),
+                    modalCouponDiscountAmount: $("#modalCouponDiscountAmount").val(),
+                    modalCouponMaxAmount: $("#modalCouponMaxAmount").val(),
+                    modalCouponMinAmount: $("#modalCouponMinAmount").val(),
+                    modalCouponStatus: $("#modalCouponStatus").val(),
+                    modalCouponShopType: $("#modalCouponShopType").val(),
+                    modalCouponExpiredAt: $("#modalCouponExpiredAt").val()
+                };
+
+                console.log('formData:', formData);
+
+                // AJAX로 데이터 서버에 전송
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/coupon/create",
+                    data: JSON.stringify(formData),
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('쿠폰 추가 성공:', data);
+                        // 성공 메시지 표시 등의 추가 작업
+                    },
+                    error: function (e) {
+                        console.log('쿠폰 추가 실패:', e);
+                        // 실패 메시지 표시 등의 추가 작업
+                    }
+                });
+            });
+        });
+    </script>
+
 </div>
 </body>
 </html>

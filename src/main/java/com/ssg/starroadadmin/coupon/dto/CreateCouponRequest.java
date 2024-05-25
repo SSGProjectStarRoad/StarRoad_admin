@@ -2,24 +2,30 @@ package com.ssg.starroadadmin.coupon.dto;
 
 import com.ssg.starroadadmin.coupon.entity.Coupon;
 
+import java.time.LocalDate;
+
 public record CreateCouponRequest(
-        String couponName,
-        int discountRate,
-        int discountAmount,
-        int maxDiscountAmount,
-        int minPurchaseAmount,
-        String status
+        String modalCouponName,
+        int modalCouponDiscountRate,
+        int modalCouponDiscountAmount,
+        int modalCouponMaxAmount,
+        int modalCouponMinAmount,
+        LocalDate modalCouponExpiredAt,
+        String modalCouponShopType,
+        String modalCouponStatus
 ) {
 
     public Coupon toEntity(String mallName) {
         return Coupon.builder()
-                .name(couponName)
-                .discountRate(discountRate)
-                .discountAmount(discountAmount)
-                .maxAmount(maxDiscountAmount)
-                .minAmount(minPurchaseAmount)
+                .name(modalCouponName)
+                .discountRate(modalCouponDiscountRate)
+                .discountAmount(modalCouponDiscountAmount)
+                .maxAmount(modalCouponMaxAmount)
+                .minAmount(modalCouponMinAmount)
+                .expiredAt(modalCouponExpiredAt)
+                .shopType(modalCouponShopType)
+                .status(modalCouponStatus)
                 .complexShoppingmall(mallName)
-                .status(status)
                 .build();
     }
 }
