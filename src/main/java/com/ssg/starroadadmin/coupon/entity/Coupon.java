@@ -2,6 +2,8 @@ package com.ssg.starroadadmin.coupon.entity;
 
 import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,8 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class Coupon extends BaseTimeEntity {
 

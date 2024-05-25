@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Coupon-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .form-group {
+            text-align: left;
+        }
+
+        /* addCoupon 클래스는 버튼을 부모 컨테이너의 왼쪽에 고정시키기 위해 사용됩니다. */
+        .addCoupon {
+            /* 부모 컨테이너를 기준으로 위치를 절대적으로 설정합니다. */
+            position: absolute;
+            /* 버튼을 부모 컨테이너의 가장 왼쪽에 배치합니다. */
+            left: 0;
+        }
+
+        /* page-num 클래스는 버튼의 위치 설정을 위한 기준을 제공하기 위해 사용됩니다. */
+        .page-num {
+            /* 자식 요소들이 이 컨테이너를 기준으로 위치를 설정할 수 있도록 합니다. */
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div id="mallName"></div>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            // 페이지 로드 시 AJAX 요청
+            $.ajax({
+                url: '/complexmall/name',
+                type: 'GET',
+                dataType: 'text',
+                success: function (data) {
+                    console.log('Data:', data);
+                    // 수신된 데이터로 결과 div 업데이트
+                    $('#mallName').html('<h1>' + data + ' 쿠폰 리스트</h1>');
+                },
+                error: function (xhr, status, error) {
+                    // 오류 처리
+                    console.error('Error:', error);
+                }
+            });
+        })
+
+        // Show the modal on button click
+        $(document).on('click', '.addCoupon', function () {
+            $('#couponCreateModal').modal('show');
+        });
+
+        $(document).on('click', '.addCouponClose', function () {
+            $('#couponCreateModal').modal('hide');
+        });
+
+        // 할인율 입력 필드에 값이 입력되면 할인금액 필드를 비활성화
+        $(document).on('input', '#modalCouponDiscountRate', function () {
+            if ($(this).val().length > 0) { // 할인율 필드에 값이 있는지 확인
+                $('#modalCouponDiscountAmount').prop('disabled', true);
+            } else {
+                $('#modalCouponDiscountAmount').prop('disabled', false);
+            }
+        });
+
+        // 할인금액 입력 필드에 값이 입력되면 할인율 필드를 비활성화
+        $(document).on('input', '#modalCouponDiscountAmount', function () {
+            if ($(this).val().length > 0) { // 할인금액 필드에 값이 있는지 확인
+                $('#modalCouponDiscountRate').prop('disabled', true);
+                $('#modalCouponMaxAmount').prop('disabled', true);
+            } else {
+                $('#modalCouponDiscountRate').prop('disabled', false);
+                $('#modalCouponMaxAmount').prop('disabled', false);
+            }
+        });
+    </script>
+
+    <div class="container-fluid pt-4 px-4">
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
+            <!--            storeListResponses데이터 들고와서 테이블로 출력-->
+            <div class="table-responsive my-2">
+                <table class="table text-start align-middle table-bordered table-hover mb-0">
+                    <thead>
+                    <tr class="text-dark align-middle">
+                        <th class="text-center col" scope="col">No</th>
+                        <th class="text-center col" scope="col">쿠폰 이름</th>
+                        <th class="text-center col" scope="col">할인 금액(률)</th>
+                        <th class="text-center col" scope="col">
+                            <div>최대 할인 금액</div>
+                            <hr class="my-0">
+                            <div>최소 구매 금액</div>
+                        </th>
+                        <th class="text-center col" scope="col">매장 타입</th>
+                        <th class="text-center col" scope="col">상태</th>
+                        <th class="text-center col" scope="col">유효 백화점</th>
+                        <th class="text-center col" scope="col">
+                            <div>생성 날짜</div>
+                            <hr class="my-0">
+                            <div>수정 날짜</div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="coupon : ${couponList}" th:data-coupon-id="${coupon.couponId()}">
+                        <td class="text-center col" th:text="${(pages.number) * 10 + couponStat.count}">No</td>
+                        <td class="text-center col-2" th:text="${coupon.couponName()}">쿠폰 이름</td>
+                        <td class="text-center col-1">
+                            <div th:if="${coupon.couponDiscountAmount() != 0}"
+                                 th:text="${coupon.couponDiscountAmount} + 원">할인 금액
+                            </div>
+                            <hr th:if="${coupon.couponDiscountAmount() != 0 && coupon.couponDiscountRate() != 0}"
+                                class="my-0">
+                            <div th:if="${coupon.couponDiscountRate() != 0}"
+                                 th:text="${coupon.couponDiscountRate} + '%'">할인률
+                            </div>
+                        </td>
+                        <td class="text-center col-2">
+                            <div th:text="${coupon.couponMaxAmount()}"></div>
+                            <hr class="my-0">
+                            <div th:text="${coupon.couponMinAmount()}"></div>
+                        </td>
+                        <td class="text-center col" th:text="${coupon.couponShopType()}">매장 타입</td>
+                        <td class="text-center col-1" th:text="${coupon.couponStatus()}">상태</td>
+                        <td class="text-center col-2" th:text="${coupon.couponComplexShoppingmallName()}">사용가능한 쇼핑몰</td>
+                        <td class="text-center col">
+                            <div th:text="${coupon.couponCreatedAt().toLocalDate()}">생성 날짜</div>
+                            <div th:text="${coupon.couponModifiedAt().toLocalDate()}">수정 날짜</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation"
+                 th:with="start=${pages.number * pages.size + 1},
+                  end=${((pages.number + 1) * pages.size < pages.totalElements) ? (pages.number + 1) * pages.size : pages.totalElements}">
+
+                <!-- 모달창 생성 버튼 -->
+                <button type="button" class="btn btn-primary addCoupon">쿠폰 추가</button>
+
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=0)}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=${pages.number - 1})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=${page})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=${pages.number + 1})}"
+                           th:text="'>'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/store/list(page=${pages.totalPages - 1})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+    <!-- 쿠폰 추가 모달 -->
+    <div class="modal fade" id="couponCreateModal" tabindex="-1" role="dialog" aria-labelledby="couponCreateModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="couponCreateModalLabel">쿠폰 추가</h5>
+                </div>
+                <div class="modal-body">
+                    <!-- Modal Body Content -->
+                    <form id="couponCreateForm">
+                        <div class="form-group">
+                            <label for="modalCouponName">쿠폰 이름</label>
+                            <input type="text" class="form-control" id="modalCouponName" name="modalCouponName"
+                                   placeholder="쿠폰 이름을 입력하세요" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponDiscountRate">할인율</label>
+                            <input type="number" class="form-control" id="modalCouponDiscountRate"
+                                   name="modalCouponDiscountRate" placeholder="할인율을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponDiscountAmount">할인금액</label>
+                            <input type="number" class="form-control" id="modalCouponDiscountAmount"
+                                   name="modalCouponDiscountAmount" placeholder="할인금액을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponMaxAmount">최대금액</label>
+                            <input type="number" class="form-control" id="modalCouponMaxAmount"
+                                   name="modalCouponMaxAmount" placeholder="최대금액을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponMinAmount">최소금액</label>
+                            <input type="number" class="form-control" id="modalCouponMinAmount"
+                                   name="modalCouponMinAmount" placeholder="최소금액을 입력하세요" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponShopType">매장 타입</label>
+                            <select class="form-control" id="modalCouponShopType" name="modalCouponShopType" required>
+                                <option th:each="storeType : ${T(com.ssg.starroadadmin.shop.enums.StoreType).values()}"
+                                        th:value="${storeType.getName()}"
+                                        th:text="${storeType.getName()}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponExpiredAt">만료날짜</label>
+                            <input type="date" class="form-control" id="modalCouponExpiredAt"
+                                   name="modalCouponExpiredAt" placeholder="기간을 입력하세요" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalCouponStatus">상태</label>
+                            <select class="form-control" id="modalCouponStatus" name="modalCouponStatus" required>
+                                <option value="INACTIVE">INACTIVE</option>
+                                <option value="ACTIVE">ACTIVE</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary addCouponClose" data-dismiss="modal">닫기</button>
+                            <button type="submit" class="btn btn-primary" id="saveCoupon">저장</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // 저장 버튼 클릭 시
+            $("#saveCoupon").click(function () {
+                // 폼 데이터 가져오기
+                var formData = {
+                    modalCouponName: $("#modalCouponName").val(),
+                    modalCouponDiscountRate: $("#modalCouponDiscountRate").val(),
+                    modalCouponDiscountAmount: $("#modalCouponDiscountAmount").val(),
+                    modalCouponMaxAmount: $("#modalCouponMaxAmount").val(),
+                    modalCouponMinAmount: $("#modalCouponMinAmount").val(),
+                    modalCouponStatus: $("#modalCouponStatus").val(),
+                    modalCouponShopType: $("#modalCouponShopType").val(),
+                    modalCouponExpiredAt: $("#modalCouponExpiredAt").val()
+                };
+
+                console.log('formData:', formData);
+
+                // AJAX로 데이터 서버에 전송
+                $.ajax({
+                    type: "POST",
+                    contentType: "application/json",
+                    url: "/coupon/create",
+                    data: JSON.stringify(formData),
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('쿠폰 추가 성공:', data);
+                        // 성공 메시지 표시 등의 추가 작업
+                    },
+                    error: function (e) {
+                        console.log('쿠폰 추가 실패:', e);
+                        // 실패 메시지 표시 등의 추가 작업
+                    }
+                });
+            });
+        });
+    </script>
+
+</div>
+</body>
+</html>
