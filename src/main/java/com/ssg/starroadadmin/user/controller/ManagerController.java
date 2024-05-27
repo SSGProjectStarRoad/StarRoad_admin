@@ -1,18 +1,21 @@
 package com.ssg.starroadadmin.user.controller;
 
-import com.ssg.starroadadmin.user.repository.ManagerRepository;
+import com.ssg.starroadadmin.global.config.JwtTokenProvider;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.service.ManagerService;
-import com.ssg.starroadadmin.user.service.impl.ManagerDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpClient;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @Slf4j
 @Controller
@@ -21,6 +24,9 @@ import java.util.Map;
 public class ManagerController {
 
     private final ManagerService managerService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/checkDuplicateEmail")
     @ResponseBody
@@ -32,7 +38,6 @@ public class ManagerController {
         return response;
     }
 
-//     사업자 번호 중복 확인 엔드포인트
     @PostMapping("/checkDuplicateBusinessNumber")
     @ResponseBody
     public Map<String, Boolean> checkDuplicateBusinessNumber(@RequestBody Map<String, String> requestBody) {
@@ -43,16 +48,34 @@ public class ManagerController {
         return response;
     }
 
-    // 로그인 페이지로 이동하는 요청을 처리하는 메서드
     @GetMapping("/login")
     public String login() {
-        return "signin"; // signin.html의 경로를 반환합니다.
+        return "login"; // login.html의 경로를 반환합니다.
     }
 
-    // 회원가입 페이지로 이동하는 요청을 처리하는 메서드
     @GetMapping("/signup")
     public String signup() {
         System.out.println("goto signup@@@@");
         return "signup"; // signup.html의 경로를 반환합니다.
     }
+
+    @PostMapping("/login")
+    @ResponseBody
+    public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
+
+            String token = jwtTokenProvider.generateToken(authentication);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+
+            return ResponseEntity.ok(response);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(401).body("Invalid username or password");
+        }
+    }
+
+
 }
