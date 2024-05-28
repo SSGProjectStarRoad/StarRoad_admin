@@ -33,6 +33,8 @@ public class RewardRepositoryCustomImpl implements RewardRepositoryCustom {
                         reward.modifiedAt
                 ))
                 .from(reward)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .orderBy(orderSpecifier(sortType))
                 .fetch();
 

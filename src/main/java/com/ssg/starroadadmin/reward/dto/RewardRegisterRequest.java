@@ -1,7 +1,9 @@
 package com.ssg.starroadadmin.reward.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public record RewardRegisterRequest(
-        String rewardName,
-        String rewardImageUrl
+        String createRewardName,
+        MultipartFile createRewardImage
 ) {
 }
