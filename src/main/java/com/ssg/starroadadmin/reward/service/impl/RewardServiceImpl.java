@@ -51,8 +51,18 @@ public class RewardServiceImpl implements RewardService {
         managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
-        Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByCondition(request.sortType(), pageable);
+        Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByCondition(request, pageable);
 
+        return rewardList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<RewardListResponse> searchUserRewardList(Long mallManagerId, Long userId, RewardListRequest searchRequest, Pageable pageable) {
+        managerRepository.findByIdAndAuthority(mallManagerId,Authority.ADMIN)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+
+        Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByUserId(userId, searchRequest, pageable);
         return rewardList;
     }
 }

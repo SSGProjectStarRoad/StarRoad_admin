@@ -26,4 +26,15 @@ public interface RewardService {
      * @return 리워드 목록
      */
     Page<RewardListResponse> searchRewardList(Long mallManagerId, RewardListRequest request, Pageable pageable);
+
+    /**
+     * 사용자 리워드 목록 조회
+     *
+     * @param mallManagerId 관리자 ID
+     * @param userId        사용자 ID
+     * @param searchRequest 사용자 리워드 목록 조회 요청
+     * @param pageable      페이지 정보
+     * @return 사용자 리워드 목록
+     */
+    Page<RewardListResponse> searchUserRewardList(Long mallManagerId, Long userId, RewardListRequest searchRequest, Pageable pageable);
 }

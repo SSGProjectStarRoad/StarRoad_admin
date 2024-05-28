@@ -12,10 +12,7 @@
  import org.springframework.data.web.PageableDefault;
  import org.springframework.stereotype.Controller;
  import org.springframework.ui.Model;
- import org.springframework.web.bind.annotation.GetMapping;
- import org.springframework.web.bind.annotation.ModelAttribute;
- import org.springframework.web.bind.annotation.PostMapping;
- import org.springframework.web.bind.annotation.RequestMapping;
+ import org.springframework.web.bind.annotation.*;
 
  @Slf4j
 @Controller
@@ -53,5 +50,24 @@ public class RewardController {
         rewardService.createReward(adminManagerId, request);
 
         return "redirect:/rewards/list";
+    }
+
+    @GetMapping("/list/user/{userId}")
+    public String rewardListByUser(
+            Model model,
+            @PathVariable Long userId,
+            // jwt로 받아온 관리자 ID
+            @ModelAttribute("searchRequest") RewardListRequest searchRequest,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+
+        Long mallManagerId = 8L; // 삭제해야할 부분
+
+        Page<RewardListResponse> rewardListResponses = rewardService.searchUserRewardList(mallManagerId, userId, searchRequest, pageable);
+
+        model.addAttribute("rewardList", rewardListResponses);
+        model.addAttribute("pages", rewardListResponses);
+
+        return "reward/userRewardHistoryList";
     }
 }

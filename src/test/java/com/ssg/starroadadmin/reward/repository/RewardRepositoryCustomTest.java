@@ -1,5 +1,6 @@
 package com.ssg.starroadadmin.reward.repository;
 
+import com.ssg.starroadadmin.reward.dto.RewardListRequest;
 import com.ssg.starroadadmin.reward.dto.RewardListResponse;
 import com.ssg.starroadadmin.reward.enums.RewardSortType;
 import org.junit.jupiter.api.DisplayName;
@@ -30,10 +31,12 @@ class RewardRepositoryCustomTest {
         int page = 0;
         int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        RewardSortType sortType = RewardSortType.NAME_ASC;
+        RewardListRequest request = RewardListRequest.builder()
+                .sortType(RewardSortType.NAME_ASC)
+                .build();
 
         // when
-        Page<RewardListResponse> result = rewardRepositoryCustom.findAllByCondition(sortType, pageable);
+        Page<RewardListResponse> result = rewardRepositoryCustom.findAllByCondition(request, pageable);
 
         // then
         assertNotNull(result);
@@ -50,10 +53,12 @@ class RewardRepositoryCustomTest {
         int page = 0;
         int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        RewardSortType sortType = RewardSortType.NAME_DESC;
+        RewardListRequest request = RewardListRequest.builder()
+                .sortType(RewardSortType.NAME_DESC)
+                .build();
 
         // when
-        Page<RewardListResponse> result = rewardRepositoryCustom.findAllByCondition(sortType, pageable);
+        Page<RewardListResponse> result = rewardRepositoryCustom.findAllByCondition(request, pageable);
 
         // then
         assertNotNull(result);
@@ -70,10 +75,12 @@ class RewardRepositoryCustomTest {
         int page = 0;
         int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        RewardSortType sortType = RewardSortType.CREATED_AT_ASC;
+        RewardListRequest request = RewardListRequest.builder()
+                .sortType(RewardSortType.CREATED_AT_ASC)
+                .build();
 
         // when
-        Page<RewardListResponse> result = rewardRepositoryCustom.findAllByCondition(sortType, pageable);
+        Page<RewardListResponse> result = rewardRepositoryCustom.findAllByCondition(request, pageable);
 
         // then
         assertNotNull(result);
@@ -90,10 +97,12 @@ class RewardRepositoryCustomTest {
         int page = 0;
         int size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        RewardSortType sortType = RewardSortType.CREATED_AT_DESC;
+        RewardListRequest request = RewardListRequest.builder()
+                .sortType(RewardSortType.CREATED_AT_DESC)
+                .build();
 
         // when
-        Page<RewardListResponse> result = rewardRepositoryCustom.findAllByCondition(sortType, pageable);
+        Page<RewardListResponse> result = rewardRepositoryCustom.findAllByCondition(request, pageable);
 
         // then
         assertNotNull(result);
