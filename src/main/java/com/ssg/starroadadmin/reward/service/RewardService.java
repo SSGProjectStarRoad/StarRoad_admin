@@ -4,10 +4,26 @@ import com.ssg.starroadadmin.reward.dto.RewardListRequest;
 import com.ssg.starroadadmin.reward.dto.RewardListResponse;
 import com.ssg.starroadadmin.reward.dto.RewardRegisterRequest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface RewardService {
 
+    /**
+     * 리워드 등록
+     *
+     * @param adminManagerId 관리자 ID
+     * @param request         리워드 등록 요청
+     * @return 리워드 ID
+     */
     Long createReward(Long adminManagerId, RewardRegisterRequest request);
 
-    Page<RewardListResponse> searchRewardList(Long mallManagerId, RewardListRequest request);
+    /**
+     * 리워드 목록 조회
+     *
+     * @param mallManagerId 관리자 ID
+     * @param request       리워드 목록 조회 요청
+     * @param pageable      페이지 정보
+     * @return 리워드 목록
+     */
+    Page<RewardListResponse> searchRewardList(Long mallManagerId, RewardListRequest request, Pageable pageable);
 }

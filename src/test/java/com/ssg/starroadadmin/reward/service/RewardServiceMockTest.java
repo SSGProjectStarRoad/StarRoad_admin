@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -53,7 +56,7 @@ public class RewardServiceMockTest {
                 .rewardImagePath("https://image.url")
                 .build();
 
-        rewardRequest = new RewardRegisterRequest("Gift Card", "https://image.url");
+        rewardRequest = new RewardRegisterRequest("Gift Card", (MultipartFile) new File("img/starroad-1-no-text.png"));
 
         when(managerRepository.findByIdAndAuthority(1L, Authority.ADMIN)).thenReturn(Optional.of(adminManager1));
         when(rewardRepository.save(any(Reward.class))).thenReturn(reward);

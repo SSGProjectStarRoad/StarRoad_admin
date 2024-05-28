@@ -230,10 +230,8 @@ public class StoreServiceImpl implements StoreService {
             throw new ShopException(ShopErrorCode.ACCESS_DENIED);
         }
 
-        System.out.println(store.getName() + "의 신뢰도 확인");
         ConfidenceType storeConfidence = storeRepositoryCustom.findStoreConfidence(storeId)
                 .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
-        System.out.println(store.getName() + " = " + storeConfidence.name());
         return new StoreConfidenceResponse(storeConfidence.name());
     }
 
