@@ -23,21 +23,36 @@ public class ReviewFeedbackController {
 
     @ResponseBody
     @GetMapping("/{storeId}")
-    public ResponseEntity<List<StoreFeedbackResponse>> storeFeedback(Model model,
+    public ResponseEntity<List<StoreFeedbackResponse>> storeFeedback(
                                                                      // jwt로 받아온 관리자 ID
                                                                      @PathVariable Long storeId) {
         Long managerId = 5L; // 삭제해야할 부분
 
         List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreFeedback(managerId, storeId);
 
-            System.out.println("====================");
-        System.out.println(feedbackResponse.size());
-        for (StoreFeedbackResponse storeFeedbackResponse : feedbackResponse) {
-            System.out.println(storeFeedbackResponse.reviewFeedbackSelection());
-            System.out.println(storeFeedbackResponse.count());
-            System.out.println("====================");
-        }
-            System.out.println("====================");
+        return ResponseEntity.ok(feedbackResponse);
+    }
+
+    @ResponseBody
+    @GetMapping("/required/{storeId}")
+    public ResponseEntity<List<StoreFeedbackResponse>> requiredFeedback(
+                                   // jwt로 받아온 관리자 ID
+                                   @PathVariable Long storeId) {
+        Long managerId = 5L; // 삭제해야할 부분
+
+        List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreRequiredFeedback(managerId, storeId);
+
+        return ResponseEntity.ok(feedbackResponse);
+    }
+
+    @ResponseBody
+    @GetMapping("/optional/{storeId}")
+    public ResponseEntity<List<StoreFeedbackResponse>> optionalFeedback(
+                                   // jwt로 받아온 관리자 ID
+                                   @PathVariable Long storeId) {
+        Long managerId = 5L; // 삭제해야할 부분
+
+        List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreOptionalFeedback(managerId, storeId);
 
         return ResponseEntity.ok(feedbackResponse);
     }

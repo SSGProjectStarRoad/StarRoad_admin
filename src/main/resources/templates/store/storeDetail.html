@@ -8,7 +8,31 @@
     <title>Store-Detail</title>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <style>
+        .review-chart {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .feedbacks {
+            display: flex;
+            align-items: center;
+        }
+
+        .required-feedback, .optional-feedback {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .justify-content-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -113,12 +137,14 @@
                                 <form action="/store/logo" method="POST" enctype="multipart/form-data">
                                     <input class="col-8" type="file" name="logo" accept="image/*" id="logoInput">
                                     <input type="hidden" id="storeId" name="storeId" th:value="${storeResponse.id()}">
-                                    <button class="col-3 img-update-btn btn btn-primary" type="submit" id="submitBtn" disabled>이미지 변경</button>
+                                    <button class="col-3 img-update-btn btn btn-primary" type="submit" id="submitBtn"
+                                            disabled>이미지 변경
+                                    </button>
                                 </form>
                             </div>
                         </div>
                         <script>
-                            document.getElementById('logoInput').addEventListener('change', function() {
+                            document.getElementById('logoInput').addEventListener('change', function () {
                                 var submitBtn = document.getElementById('submitBtn');
                                 submitBtn.disabled = !this.files.length;  // Disable button if no files are selected
                             });
@@ -210,7 +236,8 @@
                         if (data.length === 0) {
                             $('.feedback').append('<div class="d-flex justify-content-center">피드백이 없습니다.</div>');
                             return;
-                        };
+                        }
+                        ;
 
                         data.forEach(function (feedback) {
                             totalReviewCount += feedback.count;
@@ -220,8 +247,8 @@
                         data.forEach(function (feedback) {
                             var width = (feedback.count / totalReviewCount * 100); // 프로그레스 바 너비 계산
                             var selection = feedback.reviewFeedbackSelection;
-                            feedbackHtml += '<div class="d-flex justify-content-center">';
-                            feedbackHtml += '<div class="col-4 align-self-center me-1">' + selection + '</div>';
+                            feedbackHtml += '<div class="justify-content-center">';
+                            feedbackHtml += '<div class="col align-self-center me-1">' + selection + '</div>';
                             feedbackHtml += '<div class="progress my-2 col" style="height: 40px;">';
                             feedbackHtml += '<div class="progress-bar" role="progressbar" style="width: ' + width + '%" ';
                             feedbackHtml += 'aria-valuenow="' + width + '" aria-valuemin="0" aria-valuemax="100">' + feedback.count + '개</div>';
@@ -235,17 +262,127 @@
                         console.error(xhr.responseText);
                     }
                 });
+
+                $.ajax({
+                    type: "GET",
+                    url: "/feedback/required/" + storeId, // 상점 ID를 URL에 포함시킵니다.
+                    success: function (data) {
+                        // AJAX 요청이 성공하면 받은 데이터를 처리합니다.
+                        // 받은 데이터는 StoreFeedbackResponse의 배열일 것입니다.
+                        // 각 객체에서 reviewFeedbackSelection과 count를 사용할 수 있습니다.
+                        var totalReviewCount = 0;
+                        if (data.length === 0) {
+                            $('.required-feedback').append('<div class="d-flex justify-content-center">피드백이 없습니다.</div>');
+                            return;
+                        }
+                        ;
+
+                        data.forEach(function (feedback) {
+                            totalReviewCount += feedback.count;
+                        });
+
+                        var feedbackHtml = '';
+                        data.forEach(function (feedback) {
+                            var width = (feedback.count / totalReviewCount * 100); // 프로그레스 바 너비 계산
+                            var selection = feedback.reviewFeedbackSelection;
+                            feedbackHtml += '<div class="justify-content-center">';
+                            feedbackHtml += '<div class="col-4 align-self-center mx-1">' + selection + '</div>';
+                            feedbackHtml += '<div class="progress my-2 col" style="height: 40px;">';
+                            feedbackHtml += '<div class="progress-bar fw-bolder" role="progressbar" style="width: ' + width + '%" ';
+                            feedbackHtml += 'aria-valuenow="' + width + '" aria-valuemin="0" aria-valuemax="100">' + feedback.count + '개</div>';
+                            feedbackHtml += '</div>';
+                            feedbackHtml += '</div>';
+                        });
+                        $('.required-feedback').append(feedbackHtml);
+                    },
+                    error: function (xhr, status, error) {
+                        // AJAX 요청이 실패하면 에러 메시지를 출력합니다.
+                        console.error(xhr.responseText);
+                    }
+                });
+
+                $.ajax({
+                    type: "GET",
+                    url: "/feedback/optional/" + storeId, // 상점 ID를 URL에 포함시킵니다.
+                    success: function (data) {
+                        var totalReviewCount = 0;
+                        if (data.length === 0) {
+                            $('.optional-feedback').append('<div class="d-flex justify-content-center">피드백이 없습니다.</div>');
+                            return;
+                        }
+                        ;
+
+                        data.forEach(function (feedback) {
+                            totalReviewCount += feedback.count;
+                        });
+
+                        var feedbackHtml = '';
+                        data.forEach(function (feedback) {
+                            var width = (feedback.count / totalReviewCount * 100); // 프로그레스 바 너비 계산
+                            var selection = feedback.reviewFeedbackSelection;
+                            feedbackHtml += '<div class="justify-content-center">';
+                            feedbackHtml += '<div class="col-4 align-self-center mx-1">' + selection + '</div>';
+                            feedbackHtml += '<div class="progress my-2 col" style="height: 40px;">';
+                            feedbackHtml += '<div class="progress-bar fw-bolder" role="progressbar" style="width: ' + width + '%" ';
+                            feedbackHtml += 'aria-valuenow="' + width + '" aria-valuemin="0" aria-valuemax="100">' + feedback.count + '개</div>';
+                            feedbackHtml += '</div>';
+                            feedbackHtml += '</div>';
+                        });
+                        $('.optional-feedback').append(feedbackHtml);
+                    },
+                    error: function (xhr, status, error) {
+                        // AJAX 요청이 실패하면 에러 메시지를 출력합니다.
+                        console.error(xhr.responseText);
+                    }
+                });
+
+                $.ajax({
+                    url: "/chart/store/" + storeId, // 상점 ID를 URL에 포함시킵니다.
+                    type: "GET",
+                    success: function (data) {
+                        const labels = ['Positive', 'Negative', 'Neutral'];
+                        let positiveReviewCount = 0;
+                        let negativeReviewCount = 0;
+                        let neutralReviewCount = 0;
+
+                        data.forEach(item => {
+                            positiveReviewCount += (item.positiveReviewCount);
+                            negativeReviewCount += (item.negativeReviewCount);
+                            neutralReviewCount += (item.neutralReviewCount);
+                        });
+
+                        const chartCanvas = document.getElementById('monthlyReview');
+                        new Chart(chartCanvas, {
+                            type: 'pie',
+                            data: {
+                                labels : labels,
+                                datasets: [{
+                                    data: [positiveReviewCount, negativeReviewCount, neutralReviewCount],
+                                    backgroundColor: ['rgba(0, 156, 255, .5)', 'rgba(255, 0, 0, .5)', 'rgba(255, 255, 0, .5)']
+                                }]
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        // Log any errors to the console
+                        console.error('Error fetching data:', error);
+                    }
+                });
             });
         </script>
 
         <div class="bg-light text-center rounded p-4 my-2">
             <div>
                 <h3>피드백 정보</h3>
-                <div></div>
             </div>
-            <div class="bg-light rounded h-100 p-4">
-                <!-- 피드백 정보가 여기에 동적으로 추가됩니다 -->
-                <div class="feedback"></div>
+            <div class="bg-light rounded h-100">
+                <div class="feedbacks d-flex">
+                    <div class="required-feedback"></div>
+                    <div class="optional-feedback"></div>
+                </div>
+                <div class="review-chart col align-middle">
+                    <canvas id="monthlyReview"></canvas>
+                </div>
             </div>
         </div>
     </div>
