@@ -47,12 +47,15 @@
             object-fit: fill;
         }
 
+        .user-container {
+            width: 500px;
+        }
     </style>
 </head>
 
 <body>
 <div layout:fragment="content">
-    <h1>리워드 상세 리스트</h1>
+    <h1>리워드 상세 페이지</h1>
 
     <div class="container-fluid pt-4 px-4">
 
@@ -67,7 +70,7 @@
                     <form action="/rewards/image" method="POST" enctype="multipart/form-data">
                         <input class="col-8" type="file" name="logo" accept="image/*" id="logoInput">
                         <input type="hidden" id="rewardId" name="rewardId" th:value="${rewardDetail.rewardId()}">
-                        <button class="col-3 img-update-btn btn btn-primary" type="submit" id="submitBtn" disabled>이미지
+                        <button class="col-3 m-2 img-update-btn btn btn-primary" type="submit" id="submitBtn" disabled>이미지
                             변경
                         </button>
                     </form>
@@ -81,8 +84,9 @@
             </script>
         </div>
 
-        <div class="bg-light text-center rounded px-4 pt-4 my-3">
-            <div class="table-responsive my-2">
+        <div class="bg-light text-center rounded px-4 pt-4 my-3 d-flex justify-content-center">
+            <div>
+            <div class="table-responsive my-2 user-container">
                 <table class="table text-start align-middle table-hover mb-0">
                     <thead>
                     <tr class="text-dark text-center align-middle">
@@ -95,10 +99,10 @@
                     <tbody>
                     <tr th:each="user : ${rewardDetail.userList()}" th:onclick="|location.href='@{/user/detail/}' + ${user.userId()}|">
                         <td class="text-center col" th:text="${(pages.number) * 10 + userStat.count}">No</td>
-                        <td class="text-center col-1" th:text="${user.userNickname()}">User Nickname</td>
-                        <td class="text-center col-1"><img th:src="${user.userImage()}" alt="user profile image"
+                        <td class="text-center col" th:text="${user.userNickname()}">User Nickname</td>
+                        <td class="text-center col"><img th:src="${user.userImage()}" alt="user profile image"
                                                            width="100" height="100"></td>
-                        <td class="text-center col-1" th:text="${user.rewardCount()}">User Reward Count</td>
+                        <td class="text-center col" th:text="${user.rewardCount()}">User Reward Count</td>
                     </tr>
                     </tbody>
                 </table>
@@ -137,6 +141,7 @@
                     </li>
                 </ul>
             </nav>
+            </div>
         </div>
     </div>
 </div>
