@@ -1,8 +1,6 @@
 package com.ssg.starroadadmin.coupon.service;
 
-import com.ssg.starroadadmin.coupon.dto.CreateCouponRequest;
-import com.ssg.starroadadmin.coupon.dto.CreateCouponResponse;
-import com.ssg.starroadadmin.coupon.dto.SearchCouponResponse;
+import com.ssg.starroadadmin.coupon.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,4 +26,14 @@ public interface CouponService {
      * @return
      */
     CreateCouponResponse createCoupon(CreateCouponRequest request, Long managerId);
+
+    /**
+     * 쿠폰 사용 내역 조회
+     *
+     * @param managerId
+     * @param request
+     * @param pageable
+     * @return
+     */
+    Page<UserCouponResponse> getUserCouponList(Long managerId, UserCouponRequest request, Pageable pageable);
 }

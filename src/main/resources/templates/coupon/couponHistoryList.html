@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Coupon-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .form-group {
+            text-align: left;
+        }
+
+        /* page-num 클래스는 버튼의 위치 설정을 위한 기준을 제공하기 위해 사용됩니다. */
+        .page-num {
+            /* 자식 요소들이 이 컨테이너를 기준으로 위치를 설정할 수 있도록 합니다. */
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+
+            <form action="#" th:action="@{/coupon/history}"
+                  th:object="${userCouponRequest}" method="get">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" th:field="*{startDate}" class="form-control" id="startDate">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" th:field="*{endDate}" class="form-control" id="endDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="sortType">Sort Type :</label>
+                            <select th:field="*{sortType}" class="form-control" id="sortType">
+                                <option value="">Select Sort Type</option>
+                                <option
+                                        th:each="sortType : ${T(com.ssg.starroadadmin.coupon.enums.CouponSortType).values()}"
+                                        th:value="${sortType}" th:text="${sortType.getField()}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="usageStatus">Usage Status :</label>
+                            <select th:field="*{usageStatus}" class="form-control" id="usageStatus">
+                                <option value="">Select Usage Status</option>
+                                <option value="Y">사용</option>
+                                <option value="N">미사용</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label for="userNickname">User Nickname :</label>
+                    <input type="text" th:field="*{userNickname}" class="form-control" id="userNickname"
+                           placeholder="Enter user Nickname">
+                </div>
+                <div class="form-group mt-2">
+                    <label for="couponName">Coupon Name :</label>
+                    <input type="text" th:field="*{couponName}" class="form-control" id="couponName"
+                           placeholder="Enter Coupon Name">
+                </div>
+                <button type="submit" class="m-2 btn btn-primary">Search</button>
+            </form>
+
+        </div>
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
+            <!--            storeListResponses데이터 들고와서 테이블로 출력-->
+            <div class="table-responsive my-2">
+                <table class="table text-start align-middle table-bordered table-hover mb-0">
+                    <thead>
+                    <tr class="text-dark align-middle">
+                        <th class="text-center col" scope="col">No</th>
+                        <th class="text-center col" scope="col">유저 닉네임</th>
+                        <th class="text-center col" scope="col">쿠폰 이름</th>
+                        <th class="text-center col" scope="col">매장 타입</th>
+                        <th class="text-center col" scope="col">할인율</th>
+                        <th class="text-center col" scope="col">사용 유무</th>
+                        <th class="text-center col" scope="col">유효 날짜</th>
+                        <th class="text-center col" scope="col">
+                            <div>생성 날짜</div>
+                            <hr class="my-1">
+                            <div>수정 날짜</div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="couponHistory : ${userCouponList}" th:data-coupon-id="${couponHistory.couponId()}">
+                        <td class="text-center col" th:text="${(pages.number) * 10 + couponHistoryStat.count}">No</td>
+                        <td class="text-center col-1" th:text="${couponHistory.userNickname()}">유저 닉네임</td>
+                        <td class="text-center col-3" th:text="${couponHistory.couponName()}">쿠폰 이름</td>
+                        <td class="text-center col" th:text="${couponHistory.couponShopType()}">매장 타입</td>
+                        <td class="text-center col-1" th:text="${couponHistory.discountRate()}+'%'">상태</td>
+                        <td class="text-center col-1">
+                            <div th:if="${couponHistory.useStatus()}">사용됨</div>
+                            <div th:unless="${couponHistory.useStatus()}">미사용</div>
+                        </td>
+                        <td class="text-center col" th:text="${couponHistory.expiredAt()}">만료 날짜</td>
+                        <td class="text-center col">
+                            <div th:text="${couponHistory.createdAt().toLocalDate()}">생성 날짜</div>
+                            <div th:text="${couponHistory.modifiedAt().toLocalDate()}">수정 날짜</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation"
+                 th:with="start=${pages.number * pages.size + 1},
+                  end=${((pages.number + 1) * pages.size < pages.totalElements) ? (pages.number + 1) * pages.size : pages.totalElements}">
+
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/coupon/history(page=0, userNickname=${userCouponRequest.userNickname}, couponName=${userCouponRequest.couponName}, startDate=${userCouponRequest.startDate}, endDate=${userCouponRequest.endDate}, sortType=${userCouponRequest.sortType}, usageStatus=${userCouponRequest.usageStatus})}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/coupon/history(page=${pages.number - 1}, userNickname=${userCouponRequest.userNickname}, couponName=${userCouponRequest.couponName}, startDate=${userCouponRequest.startDate}, endDate=${userCouponRequest.endDate}, sortType=${userCouponRequest.sortType}, usageStatus=${userCouponRequest.usageStatus})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/coupon/history(page=${page}, userNickname=${userCouponRequest.userNickname}, couponName=${userCouponRequest.couponName}, startDate=${userCouponRequest.startDate}, endDate=${userCouponRequest.endDate}, sortType=${userCouponRequest.sortType}, usageStatus=${userCouponRequest.usageStatus})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/coupon/history(page=${pages.number + 1}, userNickname=${userCouponRequest.userNickname}, couponName=${userCouponRequest.couponName}, startDate=${userCouponRequest.startDate}, endDate=${userCouponRequest.endDate}, sortType=${userCouponRequest.sortType}, usageStatus=${userCouponRequest.usageStatus})}"
+                           th:text="'>'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/coupon/history(page=${pages.totalPages - 1}, userNickname=${userCouponRequest.userNickname}, couponName=${userCouponRequest.couponName}, startDate=${userCouponRequest.startDate}, endDate=${userCouponRequest.endDate}, sortType=${userCouponRequest.sortType}, usageStatus=${userCouponRequest.usageStatus})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>
