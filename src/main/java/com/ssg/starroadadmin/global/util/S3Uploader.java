@@ -69,7 +69,7 @@ public class S3Uploader {
      * @param multipartFile
      * @param dirName
      */
-    public String upload(MultipartFile[] multipartFile, String dirName) {
+    public List<String> upload(MultipartFile[] multipartFile, String dirName) {
         List<String> urlList = new ArrayList<>();
         for (MultipartFile file : multipartFile) {
             // 파일명과 확장자 분리
@@ -101,7 +101,7 @@ public class S3Uploader {
             urlList.add(amazonS3.getUrl(bucket, s3FileName).toString());
         }
 
-        return urlList.toString();
+        return urlList;
     }
 
     public void delete(String fileName) {
