@@ -2,7 +2,7 @@ package com.ssg.starroadadmin.reward.service.impl;
 
 import com.ssg.starroadadmin.global.error.code.ManagerErrorCode;
 import com.ssg.starroadadmin.global.error.exception.ManagerException;
-import com.ssg.starroadadmin.global.service.S3Uploader;
+import com.ssg.starroadadmin.global.util.S3Uploader;
 import com.ssg.starroadadmin.reward.dto.RewardListRequest;
 import com.ssg.starroadadmin.reward.dto.RewardListResponse;
 import com.ssg.starroadadmin.reward.dto.RewardRegisterRequest;

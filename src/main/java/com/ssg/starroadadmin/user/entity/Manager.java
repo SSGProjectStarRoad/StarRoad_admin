@@ -7,9 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +19,9 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
-public class Manager extends BaseTimeEntity implements UserDetails {
+public class Manager extends BaseTimeEntity
+//        implements UserDetails
+        {
     // UserDetails를 상속받아 인증객체로 사용
 
     @Id
@@ -39,32 +38,32 @@ public class Manager extends BaseTimeEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.authority.name()));
-    }
-
-    // 계정 만료 여부 반환
-    @Override
-    public boolean isAccountNonExpired() {
-        return true; // 계정 만료되지 않음
-    }
-
-    // 계정 잠금 여부 반환
-    @Override
-    public boolean isAccountNonLocked() {
-        return true; // 계정 잠금되지 않음
-    }
-
-    // 패스워드의 만료 여부 반환
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true; // 패스워드 만료되지 않음
-    }
-
-    // 계정 사용 가능 여부 반환
-    @Override
-    public boolean isEnabled() {
-        return true; // 계정 사용 가능
-    }
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return List.of(new SimpleGrantedAuthority(this.authority.name()));
+//    }
+//
+//    // 계정 만료 여부 반환
+//    @Override
+//    public boolean isAccountNonExpired() {
+//        return true; // 계정 만료되지 않음
+//    }
+//
+//    // 계정 잠금 여부 반환
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return true; // 계정 잠금되지 않음
+//    }
+//
+//    // 패스워드의 만료 여부 반환
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+//        return true; // 패스워드 만료되지 않음
+//    }
+//
+//    // 계정 사용 가능 여부 반환
+//    @Override
+//    public boolean isEnabled() {
+//        return true; // 계정 사용 가능
+//    }
 }
