@@ -109,36 +109,26 @@ const stores = [
     {name: '몰리스펫샵', x: 1100, y: 615, width: 20, height: 20, storeId: 0},
 ];
 
-// Load the background image
 const backgroundImage = new Image();
-backgroundImage.src = 'https://starfield.co.kr/images/hanam/floor/1F.svg'; // Set the path to your image
+backgroundImage.src = 'https://starfield.co.kr/images/hanam/floor/1F.svg';
 
 backgroundImage.onload = () => {
-    // Draw the background image on the canvas
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
     stores.forEach(store => drawStoreArea(store));
 };
 
-async function drawStoreArea(store) {
-    const name = store.name;
-    const x = store.x;
-    const y = store.y;
-    const width = store.width;
-    const height = store.height;
+function drawStoreArea(store) {
+    const {name, x, y, width, height} = store;
     const textX = store.textX || x;
     const textY = store.textY || y;
 
-
-    // Draw the store area
-    // ctx.fillStyle = '#000000';
     ctx.fillStyle = 'rgba(255,255,255,0)';
     ctx.fillRect(x, y, width, height);
 
     let fontColor = 'black';
     if (store.storeId != 0) {
-        try {
-            const confidence = await storeReviewColor(store.storeId);
-            switch (confidence) {
+        storeReviewColor(store.storeId).then(confidence => {
+            switch (confidence == null ? 'UNKNOWN' : confidence) {
                 case 'POSITIVE':
                     fontColor = 'blue';
                     break;
@@ -149,52 +139,50 @@ async function drawStoreArea(store) {
                     fontColor = 'yellow';
                     break;
                 default:
-                    fontColor = 'black'; // 기본값으로 설정
+                    fontColor = 'black';
             }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+            drawStoreName(name, textX, textY, width, height, fontColor);
+        }).catch(error => {
+            drawStoreName(name, textX, textY, width, height, fontColor);
+            console.error('Error fetching data:', error)
+        });
+    } else {
+        drawStoreName(name, textX, textY, width, height, fontColor);
     }
+}
 
-    // Draw the store name
+function drawStoreName(name, textX, textY, width, height, fontColor) {
     ctx.fillStyle = fontColor;
     ctx.font = '12px Arial';
-    const splitName = name.split(' '); // Split the name by space
+    const splitName = name.split(' ');
     if (splitName.length < 2) {
         const textWidth = ctx.measureText(name).width;
-        // Center the text horizontally and vertically
         ctx.fillText(name, textX + (width - textWidth) / 2, textY + (height + 16) / 2);
     } else {
-        const part1 = splitName[0];
-        const part2 = splitName[1];
-
-        // Calculate width and adjust for centering
+        const [part1, part2] = splitName;
         const part1Width = ctx.measureText(part1).width;
         const part2Width = ctx.measureText(part2).width;
-
-        // Draw the first part
         ctx.fillText(part1, textX + (width - part1Width) / 2, textY + 8);
-        // Draw the second part on the next line
         ctx.fillText(part2, textX + (width - part2Width) / 2, textY + 20);
     }
-
-    canvas.addEventListener('click', (event) => {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const clickX = (event.clientX - rect.left) * scaleX;
-        const clickY = (event.clientY - rect.top) * scaleY;
-
-        if (
-            clickX >= store.x &&
-            clickX <= store.x + store.width &&
-            clickY >= store.y &&
-            clickY <= store.y + store.height
-        ) {
-            showStoreInfo(store);
-        }
-    });
 }
+
+canvas.addEventListener('click', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clickX = (event.clientX - rect.left) * scaleX;
+    const clickY = (event.clientY - rect.top) * scaleY;
+
+    const clickedStore = stores.find(store =>
+        clickX >= store.x && clickX <= store.x + store.width &&
+        clickY >= store.y && clickY <= store.y + store.height
+    );
+
+    if (clickedStore) {
+        showStoreInfo(clickedStore);
+    }
+});
 
 function showStoreInfo(store) {
     const storeInfoDiv = document.getElementById('store-info');
@@ -202,14 +190,13 @@ function showStoreInfo(store) {
     const storeDescription = document.getElementById('store-description');
     storeDescription.innerHTML = `여기에 <strong>${store.name}</strong> 매장 정보 확인하러하러 가기`;
     storeDescription.innerHTML += `<br><a type="button" class="btn btn-primary btn-sm" href="/store/detail/${store.storeId}">매장 정보 확인</a>`;
-
     drawChart(store.storeId);
 }
 
 function storeReviewColor(storeId) {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: '/store/' + storeId + '/color', // 실제 데이터를 가져올 URL로 수정해야 합니다.
+            url: '/store/' + storeId + '/color',
             type: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -224,36 +211,35 @@ function storeReviewColor(storeId) {
 }
 
 function drawChart(storeId) {
-    // Ajax 요청을 통해 데이터 가져오기
     $.ajax({
-        url: '/chart/store/' + storeId, // 실제 데이터를 가져올 URL로 수정해야 합니다.
+        url: '/chart/store/' + storeId,
         type: 'GET',
         dataType: 'json',
         success: function (data) {
-            // 데이터 배열 초기화
-            var labels = [];
-            var totalReviewCount = [];
-            var positiveReviewCount = [];
-            var negativeReviewCount = [];
-            var neutralReviewCount = [];
+            const labels = [];
+            const totalReviewCount = [];
+            const positiveReviewCount = [];
+            const negativeReviewCount = [];
+            const neutralReviewCount = [];
 
-            // 데이터를 추출하여 배열에 저장
-            for (var i = 0; i < data.length; i++) {
-                labels.push(data[i].reviewYear + '-' + data[i].reviewMonth);
-                totalReviewCount.push(data[i].reviewCount);
-                positiveReviewCount.push(data[i].positiveReviewCount);
-                negativeReviewCount.push(data[i].negativeReviewCount);
-                neutralReviewCount.push(data[i].neutralReviewCount);
-            }
+            data.forEach(item => {
+                labels.push(`${item.reviewYear}-${item.reviewMonth}`);
+                totalReviewCount.push(item.reviewCount);
+                positiveReviewCount.push(item.positiveReviewCount);
+                negativeReviewCount.push(item.negativeReviewCount);
+                neutralReviewCount.push(item.neutralReviewCount);
+            });
 
-            // monthlyReview 요소가 존재하는지 확인
             const chartCanvas = document.getElementById('monthlyReview');
             if (chartCanvas) {
-                var ctx = chartCanvas.getContext('2d');
-                new Chart(ctx, {
+                const ctx = chartCanvas.getContext('2d');
+                if (window.storeChart) {
+                    window.storeChart.destroy();
+                }
+                window.storeChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: labels,
+                        labels,
                         datasets: [
                             {
                                 label: "Positive",
@@ -291,7 +277,6 @@ function drawChart(storeId) {
             }
         },
         error: function (xhr, status, error) {
-            // 오류를 콘솔에 기록
             console.error('Error fetching data:', error);
         }
     });
