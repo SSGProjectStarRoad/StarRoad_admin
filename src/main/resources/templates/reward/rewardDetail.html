@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>User-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .reward-info {
+            position: relative;
+            display: flex;
+            justify-content: center; /* Center the reward name */
+            align-items: center; /* Vertically center the items */
+        }
+
+        .reward-name {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .reward-createdAt {
+            position: absolute;
+            right: 0;
+            display: flex;
+            align-items: center; /* Vertically center the text */
+            text-align: center;
+        }
+
+        .reward-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto; /* Centering the image container horizontally */
+            overflow: hidden;
+        }
+
+        .reward-image img {
+            width: auto;
+            height: 100%;
+            object-fit: fill;
+        }
+
+        .user-container {
+            width: 500px;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <h1>리워드 상세 페이지</h1>
+
+    <div class="container-fluid pt-4 px-4">
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
+            <div class="d-flex justify-content-center reward-info">
+                <div th:text="${rewardDetail.rewardName()}" class="reward-name"></div>
+                <div th:text="${rewardDetail.rewardCreatedAt().toLocalDate()}" class="reward-createdAt"></div>
+            </div>
+            <div class="reward-image"><img th:src="${rewardDetail.rewardImage()}"></div>
+            <div class="row m-2">
+                <div class="col">
+                    <form action="/rewards/image" method="POST" enctype="multipart/form-data">
+                        <input class="col-8" type="file" name="logo" accept="image/*" id="logoInput">
+                        <input type="hidden" id="rewardId" name="rewardId" th:value="${rewardDetail.rewardId()}">
+                        <button class="col-3 m-2 img-update-btn btn btn-primary" type="submit" id="submitBtn" disabled>이미지
+                            변경
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <script>
+                document.getElementById('logoInput').addEventListener('change', function () {
+                    var submitBtn = document.getElementById('submitBtn');
+                    submitBtn.disabled = !this.files.length;  // Disable button if no files are selected
+                });
+            </script>
+        </div>
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3 d-flex justify-content-center">
+            <div>
+            <div class="table-responsive my-2 user-container">
+                <table class="table text-start align-middle table-hover mb-0">
+                    <thead>
+                    <tr class="text-dark text-center align-middle">
+                        <th class="text-center col" scope="col">No</th>
+                        <th class="text-center col" scope="col">유저명</th>
+                        <th class="text-center col" scope="col">프로필 사진</th>
+                        <th class="text-center col" scope="col">리워드 수</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${rewardDetail.userList()}" th:onclick="|location.href='@{/user/detail/}' + ${user.userId()}|">
+                        <td class="text-center col" th:text="${(pages.number) * 10 + userStat.count}">No</td>
+                        <td class="text-center col" th:text="${user.userNickname()}">User Nickname</td>
+                        <td class="text-center col"><img th:src="${user.userImage()}" alt="user profile image"
+                                                           width="100" height="100"></td>
+                        <td class="text-center col" th:text="${user.rewardCount()}">User Reward Count</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/rewards/detail/{rewardId}(rewardId=${rewardDetail.rewardId()},page=0)}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/rewards/detail/{rewardId}(rewardId=${rewardDetail.rewardId()},page=${pages.number - 1})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/rewards/detail/{rewardId}(rewardId=${rewardDetail.rewardId()},page=${page})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/rewards/detail/{rewardId}(rewardId=${rewardDetail.rewardId()},page=${pages.number + 1})}"
+                           th:text="'>'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/rewards/detail/{rewardId}(rewardId=${rewardDetail.rewardId()},page=${pages.totalPages - 1})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

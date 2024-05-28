@@ -1,12 +1,14 @@
 package com.ssg.starroadadmin.reward.service.impl;
 
 import com.ssg.starroadadmin.global.error.code.ManagerErrorCode;
+import com.ssg.starroadadmin.global.error.code.RewardErrorCode;
 import com.ssg.starroadadmin.global.error.exception.ManagerException;
-import com.ssg.starroadadmin.global.util.*;
-import com.ssg.starroadadmin.reward.dto.RewardListRequest;
-import com.ssg.starroadadmin.reward.dto.RewardListResponse;
-import com.ssg.starroadadmin.reward.dto.RewardRegisterRequest;
+import com.ssg.starroadadmin.global.error.exception.RewardException;
+import com.ssg.starroadadmin.global.util.S3Uploader;
+import com.ssg.starroadadmin.reward.dto.*;
 import com.ssg.starroadadmin.reward.entity.Reward;
+import com.ssg.starroadadmin.reward.entity.RewardHistory;
+import com.ssg.starroadadmin.reward.repository.RewardHistoryRepository;
 import com.ssg.starroadadmin.reward.repository.RewardRepository;
 import com.ssg.starroadadmin.reward.repository.RewardRepositoryCustom;
 import com.ssg.starroadadmin.reward.service.RewardService;
@@ -17,6 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +56,52 @@ public class RewardServiceImpl implements RewardService {
         managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
-        Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByCondition(request.sortType(), pageable);
+        Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByCondition(request, pageable);
 
         return rewardList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<RewardListResponse> searchUserRewardList(Long adminManagerId, Long userId, RewardListRequest searchRequest, Pageable pageable) {
+        managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+
+        Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByUserId(userId, searchRequest, pageable);
+        return rewardList;
+    }
+
+    @Override
+    public RewardDetailResponse searchRewardDetail(Long adminManagerId, Long rewardId, Pageable pageable) {
+        managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+
+        Reward reward = rewardRepository.findById(rewardId)
+                .orElseThrow(() -> new RewardException(RewardErrorCode.REWARD_NOT_FOUND));
+
+        Page<RewardDetailUser> page = rewardRepositoryCustom.findAllByRewardId(reward.getId(), pageable);
+
+        return RewardDetailResponse.builder()
+                .rewardId(reward.getId())
+                .rewardName(reward.getName())
+                .rewardImage(reward.getRewardImagePath())
+                .rewardCreatedAt(reward.getCreatedAt())
+                .userList(page)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void uploadImage(Long mallManagerId, Long rewardId, MultipartFile image) {
+        // 총 관리자인지 확인
+        managerRepository.findByIdAndAuthority(mallManagerId, Authority.ADMIN)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+
+        Reward reward = rewardRepository.findById(rewardId)
+                .orElseThrow(() -> new RewardException(RewardErrorCode.REWARD_NOT_FOUND));
+
+        String uploadURL = s3Uploader.upload(image, "ssg/starroad/rewards");
+
+        reward.updateRewardImagePath(uploadURL);
     }
 }

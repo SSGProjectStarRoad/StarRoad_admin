@@ -23,4 +23,8 @@ public class Reward extends BaseTimeEntity {
 
     private String name;
     private String rewardImagePath;
+
+    public void updateRewardImagePath(String uploadURL) {
+        this.rewardImagePath = uploadURL;
+    }
 }

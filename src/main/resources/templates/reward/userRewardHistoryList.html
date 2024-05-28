@@ -5,7 +5,7 @@
       layout:decorate="~{layout/layout}">
 
 <head>
-    <title>Reward-List</title>
+    <title>Reward-History-List</title>
 
     <!-- JQUERY LIBRARY -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -66,52 +66,11 @@
 
 <body>
 <div layout:fragment="content">
-    <div id="mallName"></div>
-
-    <script th:inline="javascript">
-        $(document).ready(function () {
-
-            // 페이지 로드 시 AJAX 요청
-            $.ajax({
-                url: '/complexmall/name',
-                type: 'GET',
-                dataType: 'text',
-                success: function (data) {
-                    // 수신된 데이터로 결과 div 업데이트
-                    $('#mallName').html('<h1>' + data + ' 매장 리스트</h1>');
-                },
-                error: function (xhr, status, error) {
-                    // 오류 처리
-                    console.error('Error:', error);
-                }
-            });
-
-
-            $('#openAddRewardModal').click(function() {
-                $('#rewardCreateModal').modal('show');
-            });
-        });
-
-        function readURL(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('imagePreview').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = "block";
-                };
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                document.getElementById('imagePreview').src = "";
-            }
-        }
-
-    </script>
-
-
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light text-center rounded p-4">
 
-            <form action="#" th:action="@{/rewards/list}" th:object="${searchRequest}" method="get">
+            <form action="#" th:action="@{/rewards/list/user/{userId}(userId=${searchRequest.userId()})}"
+                  th:object="${searchRequest}" method="get">
                 <div class="form-group mt-2">
                     <label for="sortType">Sort Type:</label>
                     <select th:field="*{sortType}" class="form-control" id="sortType">
@@ -137,7 +96,7 @@
                     <p>No rewards available.</p>
                 </div>
                 <div th:each="reward, iterStat : ${rewardList}">
-                    <div class="reward-item" th:onclick="|location.href='@{/rewards/detail/}' + ${reward.id()}|">
+                    <div class="reward-item" th:onclick="|location.href='@{/reward/detail/}' + ${reward.id()}|">
                         <div class="d-flex align-items-center reward-name">
                             <span th:text="${reward.name()}" class="fs-4">Reward Name</span>
                             <div class="reward-date">
@@ -157,65 +116,35 @@
             </div>
 
             <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
-                <button type="button" class="mb-3 btn btn-primary addReward" id="openAddRewardModal" data-toggle="modal" data-target="#rewardCreateModal">
-                    리워드 추가
-                </button>
-
-                <!-- Add Reward Modal -->
-                <div class="modal fade" id="rewardCreateModal" tabindex="-1" role="dialog" aria-labelledby="rewardCreateModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="rewardCreateModalLabel">리워드 추가</h5>
-                            </div>
-                            <div class="modal-body">
-                                <form id="createRewardForm" action="/rewards/create" enctype="multipart/form-data" method="post">
-                                    <div class="form-group">
-                                        <label for="createRewardName">리워드 이름</label>
-                                        <input type="text" class="form-control" id="createRewardName"
-                                               name="createRewardName" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="createRewardImage">리워드 이미지</label>
-                                        <input type="file" class="form-control" id="createRewardImage"
-                                               name="createRewardImage" accept="image/*" onchange="readURL(this)" required>
-                                        <img id="imagePreview" style="max-width: 100%; margin-top: 20px; display: none;">
-                                    </div>
-                                    <button type="submit" id="reward-create-button" class="btn btn-primary mt-3">저장</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <ul class="pagination">
                     <li class="page-item" th:if="${pages.number > 0}">
                         <a class="page-link"
-                           th:href="@{/rewards/list(page=0,storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
+                           th:href="@{/rewards/list/user/{userId}(userId=${searchRequest.userId}, page=0,storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
                            th:text="'<<'"></a>
                     </li>
                     <li class="page-item" th:if="${pages.number > 0}">
                         <a class="page-link"
-                           th:href="@{/rewards/list(page=${pages.number - 1},storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
+                           th:href="@{/rewards/list/user/{userId}(userId=${searchRequest.userId}, page=${pages.number - 1},storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
                            th:text="'<'"></a>
                     </li>
 
                     <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
                         <a class="page-link"
-                           th:href="@{/rewards/list(page=${pages.number},storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
+                           th:href="@{/rewards/list/user/{userId}(userId=${searchRequest.userId}, page=${pages.number},storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
                            th:text="${page + 1}"
                            th:classappend="${page == pages.number} ? 'active'"></a>
                     </li>
 
                     <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
                         <a class="page-link"
-                           th:href="@{/rewards/list(page=${pages.number + 1},storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
+                           th:href="@{/rewards/list/user/{userId}(userId=${searchRequest.userId}, page=${pages.number + 1},storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
                            th:text="'>'"></a>
                     </li>
 
                     <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
                         <a class="page-link"
-                           th:href="@{/rewards/list(page=${pages.totalPages - 1},storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
+                           th:href="@{/rewards/list/user/{userId}(userId=${searchRequest.userId}, page=${pages.totalPages - 1},storeName=${searchRequest.rewardName},storeType=${searchRequest.sortType})}"
                            th:text="'>>'"></a>
                     </li>
                 </ul>
@@ -223,8 +152,5 @@
         </div>
     </div>
 </div>
-
-
-
 </body>
 </html>

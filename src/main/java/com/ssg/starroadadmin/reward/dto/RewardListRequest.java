@@ -5,6 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record RewardListRequest(
+        Long userId,
         String rewardName,
         RewardSortType sortType
 ) {

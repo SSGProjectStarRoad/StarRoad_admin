@@ -36,9 +36,6 @@ public class ReviewController {
 
         Page<ReviewListWithDasyAgoResponse> reviewListResponses = reviewService.searchReviewList(mallManagerId, searchRequest, pageable);
 
-        for (ReviewListWithDasyAgoResponse reviewListResponse : reviewListResponses) {
-            System.out.println(reviewListResponse.reviewId() + " : " + reviewListResponse.userName() + " : " + reviewListResponse.reviewImagePaths().size());
-        }
         model.addAttribute("reviewList", reviewListResponses);
         model.addAttribute("pages", reviewListResponses);
 
