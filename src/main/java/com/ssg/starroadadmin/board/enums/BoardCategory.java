@@ -1,14 +1,17 @@
 package com.ssg.starroadadmin.board.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum BoardCategory {
     NOTICE("공지사항"),
     FAQ("FAQ"),
     QNA("Q&A"),
     EVENT("이벤트");
 
-    private String desc;
+    private String discription;
 
-    BoardCategory(String desc) {
-        this.desc = desc;
+    BoardCategory(String discription) {
+        this.discription = discription;
     }
 }

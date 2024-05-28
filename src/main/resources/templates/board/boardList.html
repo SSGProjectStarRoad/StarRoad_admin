@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Board-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .form-group {
+            text-align: left;
+
+        }
+
+        .addBoard {
+            /* 부모 컨테이너를 기준으로 위치를 절대적으로 설정합니다. */
+            position: absolute;
+            /* 버튼을 부모 컨테이너의 가장 왼쪽에 배치합니다. */
+            left: 0;
+        }
+
+        /* page-num 클래스는 버튼의 위치 설정을 위한 기준을 제공하기 위해 사용됩니다. */
+        .page-num {
+            /* 자식 요소들이 이 컨테이너를 기준으로 위치를 설정할 수 있도록 합니다. */
+            position: relative;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $(".addBoard").click(function () {
+                $("#boardCreateModal").modal('show');
+            });
+        });
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+
+            <form action="#" th:action="@{/board/list}" th:object="${searchRequest}" method="get">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="boardCategory">Board Type:</label>
+                            <select th:field="*{boardCategory}" class="form-control" id="boardCategory">
+                                <option value="">Select a Board Category</option>
+                                <option th:each="boardCategory : ${T(com.ssg.starroadadmin.board.enums.BoardCategory).values()}"
+                                        th:value="${boardCategory}" th:text="${boardCategory.getDiscription()}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="sortType">Sort Type :</label>
+                            <select th:field="*{sortType}" class="form-control" id="sortType">
+                                <option value="">Select Sort Type</option>
+                                <option
+                                        th:each="sortType : ${T(com.ssg.starroadadmin.board.enums.BoardSortType).values()}"
+                                        th:value="${sortType}" th:text="${sortType.getDiscription()}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label for="boardName">Board Name:</label>
+                    <input type="text" th:field="*{boardName}" class="form-control" id="boardName"
+                           placeholder="Enter board name">
+                </div>
+                <button type="submit" class="m-2 btn btn-primary">Search</button>
+            </form>
+        </div>
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
+            <div class="table-responsive my-2">
+                <table class="table text-start align-middle table-bordered table-hover mb-0">
+                    <thead>
+                    <tr class="text-dark align-middle">
+                        <th class="text-center col" scope="col">No</th>
+                        <th class="text-center col" scope="col">제목</th>
+                        <th class="text-center col" scope="col">타입</th>
+                        <th class="text-center col" scope="col">쇼핑몰</th>
+                        <th class="text-center col" scope="col">
+                            <div>생성일</div>
+                            <hr class="m-1">
+                            <div>수정일</div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="board : ${boardList}" th:onclick="|location.href='@{/board/detail/}' + ${board.id()}|">
+                        <td class="text-center col" th:text="${(pages.number) * 10 + boardStat.count}">No</td>
+                        <!--                        <td class="text-center col-3">-->
+                        <!--                            <a th:text="${board.name()}" th:href="@{'/board/detail/' + ${board.id()}}">Board Name</a>-->
+                        <!--                        </td>-->
+                        <td class="text-center col-5" th:text="${board.title()}">Board Name</td>
+                        <td class="text-center col-2" th:text="${board.boardCategory().getDiscription()}">Board
+                            Category
+                        </td>
+                        <td class="text-center col-2" th:text="${board.shoppingmallName()}">Board Type</td>
+                        <td class="text-center col-2">
+                            <div th:text="${board.createdAt().toLocalDate()}"></div>
+                            <hr class="m-1">
+                            <div th:text="${board.modifiedAt().toLocalDate()}"></div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!--             페이지네이션-->
+            <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation"
+                 th:with="start=${pages.number * pages.size + 1},
+              end=${((pages.number + 1) * pages.size < pages.totalElements) ? (pages.number + 1) * pages.size : pages.totalElements}">
+                <!-- Button trigger modal -->
+
+                <button type="button" class="mb-3 btn btn-primary addBoard" data-toggle="modal"
+                        data-target="#boardCreateModal">
+                    게시글 추가
+                </button>
+
+
+                <!-- Modal -->
+                <div class="modal fade" id="boardCreateModal" tabindex="-1" role="dialog"
+                     aria-labelledby="boardCreateModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="boardCreateModalLabel">매장 추가</h5>
+
+                            </div>
+                            <div class="modal-body">
+                                <form action="/board/create" method="post" th:object="${boardCreateRequest}"
+                                      enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label for="createBoardTitle">제목</label>
+                                        <input type="text" class="form-control" id="createBoardTitle"
+                                               name="createBoardTitle" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="createBoardContents">내용</label>
+                                        <input type="text" class="form-control" id="createBoardContents"
+                                               name="createBoardContents" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="createBoardCategory">게시판 타입</label>
+                                        <select class="form-control" id="createBoardCategory"
+                                                name="createBoardCategory">
+                                            <option value="">Select a Board Category</option>
+                                            <option th:each="boardCategory : ${T(com.ssg.starroadadmin.board.enums.BoardCategory).values()}"
+                                                    th:value="${boardCategory}"
+                                                    th:text="${boardCategory.getDiscription()}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="createBoardImages">게시판 이미지들</label>
+                                        <input type="file" class="form-control" accept="image/*"
+                                               id="createBoardImages" name="createBoardImages" multiple>
+                                    </div>
+                                    <button type="submit" id="create-button" class="btn btn-primary mt-3">저장</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="pagination">
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/board/list(page=0,boardName=${searchRequest.boardName},boardCategory=${searchRequest.boardCategory})}"
+                           th:text="'<<'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number > 0}">
+                        <a class="page-link"
+                           th:href="@{/board/list(page=${pages.number - 1},boardName=${searchRequest.boardName},boardCategory=${searchRequest.boardCategory})}"
+                           th:text="'<'"></a>
+                    </li>
+
+                    <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                        <a class="page-link"
+                           th:href="@{/board/list(page=${page},boardName=${searchRequest.boardName},boardCategory=${searchRequest.boardCategory})}"
+                           th:text="${page + 1}"
+                           th:classappend="${page == pages.number} ? 'active'"></a>
+                    </li>
+
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/board/list(page=${pages.number + 1},boardName=${searchRequest.boardName},boardCategory=${searchRequest.boardCategory})}"
+                           th:text="'>'"></a>
+                    </li>
+                    <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                        <a class="page-link"
+                           th:href="@{/board/list(page=${pages.totalPages - 1},boardName=${searchRequest.boardName},boardCategory=${searchRequest.boardCategory})}"
+                           th:text="'>>'"></a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

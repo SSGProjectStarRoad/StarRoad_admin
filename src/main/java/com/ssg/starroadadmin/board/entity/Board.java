@@ -5,6 +5,8 @@ import com.ssg.starroadadmin.global.entity.BaseTimeEntity;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +15,9 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@Builder
 @NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class Board extends BaseTimeEntity {
 
     @Id
