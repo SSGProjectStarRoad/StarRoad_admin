@@ -29,18 +29,41 @@ public class ReviewFeedbackServiceImpl implements ReviewFeedbackService {
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
-        Store store = null;
-        if (manager.getAuthority() == Authority.STORE) {
-            store = storeRepository.findByIdAndManagerId(storeId, managerId)
-                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
-        } else if (manager.getAuthority() == Authority.MALL) {
-            store = storeRepository.findByIdAndComplexShoppingmallManagerId(storeId, managerId)
-                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
-        } else { // 총 관리자일 겨웅
-            store = storeRepository.findById(storeId)
-                    .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
-        }
+        Store store = checkStoreAccessLevel(storeId, manager);
 
         return reviewFeedbackRepositoryCustom.getStoreFeedback(store.getId());
+    }
+
+    @Override
+    public List<StoreFeedbackResponse> getStoreRequiredFeedback(Long managerId, Long storeId) {
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        Store store = checkStoreAccessLevel(storeId, manager);
+
+        return reviewFeedbackRepositoryCustom.getStoreRequiredFeedback(store.getId());
+    }
+
+    @Override
+    public List<StoreFeedbackResponse> getStoreOptionalFeedback(Long managerId, Long storeId) {
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        Store store = checkStoreAccessLevel(storeId, manager);
+
+        return reviewFeedbackRepositoryCustom.getStoreOptionalFeedback(store.getId());
+    }
+
+    private Store checkStoreAccessLevel(Long storeId, Manager manager) {
+        if (manager.getAuthority() == Authority.STORE) {
+            return storeRepository.findByIdAndManagerId(storeId, manager.getId())
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
+        } else if (manager.getAuthority() == Authority.MALL) {
+            return storeRepository.findByIdAndComplexShoppingmallManagerId(storeId, manager.getId())
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
+        } else { // 총 관리자일 겨웅
+            return storeRepository.findById(storeId)
+                    .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
+        }
     }
 }
