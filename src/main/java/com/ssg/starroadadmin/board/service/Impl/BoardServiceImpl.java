@@ -2,6 +2,7 @@ package com.ssg.starroadadmin.board.service.Impl;
 
 import com.ssg.starroadadmin.board.dto.BoardCreateRequest;
 import com.ssg.starroadadmin.board.dto.BoardListResponse;
+import com.ssg.starroadadmin.board.dto.BoardResponse;
 import com.ssg.starroadadmin.board.dto.SearchBoardRequest;
 import com.ssg.starroadadmin.board.entity.Board;
 import com.ssg.starroadadmin.board.entity.BoardImage;
@@ -9,8 +10,10 @@ import com.ssg.starroadadmin.board.repository.BoardImageRepository;
 import com.ssg.starroadadmin.board.repository.BoardRepository;
 import com.ssg.starroadadmin.board.repository.BoardRepositoryCustom;
 import com.ssg.starroadadmin.board.service.BoardService;
+import com.ssg.starroadadmin.global.error.code.BoardErrorCode;
 import com.ssg.starroadadmin.global.error.code.ManagerErrorCode;
 import com.ssg.starroadadmin.global.error.code.ShopErrorCode;
+import com.ssg.starroadadmin.global.error.exception.BoardException;
 import com.ssg.starroadadmin.global.error.exception.ManagerException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
 import com.ssg.starroadadmin.global.util.S3Uploader;
@@ -26,8 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -89,5 +90,27 @@ public class BoardServiceImpl implements BoardService {
                 .toList();
 
         boardImageRepository.saveAll(list);
+    }
+
+    @Override
+    public BoardResponse getBoardDetail(Long mallManagerId, Long boardId) {
+        Manager manager = managerRepository.findById(mallManagerId)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BoardException(BoardErrorCode.BOARD_NOT_FOUND));
+
+        List<BoardImage> boardImages = boardImageRepository.findAllByBoardId(boardId);
+
+        return BoardResponse.builder()
+                .id(board.getId())
+                .title(board.getTitle())
+                .writer(board.getManager().getName())
+                .contents(board.getContent())
+                .category(board.getCategory())
+                .images(boardImages.stream().map(BoardImage::getImagePath).toList())
+                .createdAt(board.getCreatedAt())
+                .modifiedAt(board.getModifiedAt())
+                .build();
     }
 }

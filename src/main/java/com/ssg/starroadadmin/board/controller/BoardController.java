@@ -2,6 +2,7 @@ package com.ssg.starroadadmin.board.controller;
 
 import com.ssg.starroadadmin.board.dto.BoardCreateRequest;
 import com.ssg.starroadadmin.board.dto.BoardListResponse;
+import com.ssg.starroadadmin.board.dto.BoardResponse;
 import com.ssg.starroadadmin.board.dto.SearchBoardRequest;
 import com.ssg.starroadadmin.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
@@ -47,5 +45,16 @@ public class BoardController {
 
         boardService.createBoard(mallManagerId, request);
         return "redirect:/board/list";
+    }
+
+    @GetMapping("/detail/{boardId}")
+    public String detail(Model model,
+                         // jwt로 받아온 관리자 ID
+                         @PathVariable Long boardId) {
+        Long mallManagerId = 5L; // 삭제해야할 부분
+
+        BoardResponse response = boardService.getBoardDetail(mallManagerId, boardId);
+        model.addAttribute("boardResponse", response);
+        return "board/boardDetail";
     }
 }
