@@ -8,7 +8,7 @@ import com.ssg.starroadadmin.global.error.code.UserErrorCode;
 import com.ssg.starroadadmin.global.error.exception.ManagerException;
 import com.ssg.starroadadmin.global.error.exception.ReviewException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
-import com.ssg.starroadadmin.global.error.exception.UserException;
+import com.ssg.starroadadmin.global.error.exception.UsersException;
 import com.ssg.starroadadmin.review.dto.*;
 import com.ssg.starroadadmin.review.entity.*;
 import com.ssg.starroadadmin.review.repository.*;
@@ -105,7 +105,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
         User user = userRepository.findById(reviewSearchRequest.userId())
-                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UsersException(UserErrorCode.USER_NOT_FOUND));
 
         System.out.println("user.getId() = " + user.getId());
 
@@ -193,7 +193,7 @@ public class ReviewServiceImpl implements ReviewService {
         return recentReviewList.stream()
                 .map(review -> {
                     User user = userRepository.findById(review.getUser().getId())
-                            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+                            .orElseThrow(() -> new UsersException(UserErrorCode.USER_NOT_FOUND));
 
                     Long followerCount = followRepository.countByToUser_Id(user.getId());
                     Long followingCount = followRepository.countByFromUser_Id(user.getId());
