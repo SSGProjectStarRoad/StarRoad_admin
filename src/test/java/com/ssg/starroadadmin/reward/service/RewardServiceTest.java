@@ -12,7 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 
@@ -120,7 +122,7 @@ class RewardServiceTest {
         String rewardImageUrl = "https://example.com/image.jpg";
 
         // when
-        Long rewardId = rewardService.createReward(adminManagerId, new RewardRegisterRequest(name, rewardImageUrl));
+        Long rewardId = rewardService.createReward(adminManagerId, new RewardRegisterRequest(name, (MultipartFile) new File(rewardImageUrl)));
 
         // then
         assertNotNull(rewardId);
@@ -136,7 +138,7 @@ class RewardServiceTest {
 
         // when & then
         assertThrows(ManagerException.class, () -> {
-            rewardService.createReward(nonAdminManagerId, new RewardRegisterRequest(name, rewardImageUrl));
+            rewardService.createReward(nonAdminManagerId, new RewardRegisterRequest(name, (MultipartFile) new File(rewardImageUrl));
         });
     }
 }

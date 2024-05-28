@@ -5,6 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ssg.starroadadmin.reward.dto.RewardDetailUser;
 import com.ssg.starroadadmin.reward.dto.RewardListRequest;
 import com.ssg.starroadadmin.reward.dto.RewardListResponse;
 import com.ssg.starroadadmin.reward.entity.Reward;
@@ -85,6 +86,37 @@ public class RewardRepositoryCustomImpl implements RewardRepositoryCustom {
                 );
 
         return PageableExecutionUtils.getPage(result, pageable, count::fetchCount);
+    }
+
+    @Override
+    public Page<RewardDetailUser> findAllByRewardId(Long rewardId, Pageable pageable) {
+        List<RewardDetailUser> fetch = queryFactory
+                .select(Projections.constructor(RewardDetailUser.class,
+                        rewardHistory.user.id.as("userId"),
+                        rewardHistory.user.nickname.as("userNickname"),
+                        rewardHistory.user.imagePath.as("userImage"),
+                        rewardHistory.count().as("rewardCount")
+                ))
+                .from(rewardHistory)
+                .where(rewardHistory.rewardId.eq(rewardId))
+                .groupBy(rewardHistory.user.id)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(orderHistorySpecifier(RewardSortType.CREATED_AT_DESC))
+                .fetch();
+
+        JPAQuery<RewardDetailUser> count = queryFactory
+                .select(Projections.constructor(RewardDetailUser.class,
+                        rewardHistory.user.id,
+                        rewardHistory.user.nickname,
+                        rewardHistory.user.imagePath,
+                        rewardHistory.count()
+                ))
+                .from(rewardHistory)
+                .where(rewardHistory.rewardId.eq(rewardId))
+                .groupBy(rewardHistory.user.id);
+
+        return PageableExecutionUtils.getPage(fetch, pageable, count::fetchCount);
     }
 
     private BooleanExpression rewardNameContains(String rewardName) {

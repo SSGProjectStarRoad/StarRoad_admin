@@ -137,7 +137,7 @@
                     <p>No rewards available.</p>
                 </div>
                 <div th:each="reward, iterStat : ${rewardList}">
-                    <div class="reward-item" th:onclick="|location.href='@{/reward/detail/}' + ${reward.id()}|">
+                    <div class="reward-item" th:onclick="|location.href='@{/rewards/detail/}' + ${reward.id()}|">
                         <div class="d-flex align-items-center reward-name">
                             <span th:text="${reward.name()}" class="fs-4">Reward Name</span>
                             <div class="reward-date">

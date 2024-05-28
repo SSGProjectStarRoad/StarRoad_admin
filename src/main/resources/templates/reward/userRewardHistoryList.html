@@ -69,7 +69,8 @@
     <div class="container-fluid pt-4 px-4">
         <div class="bg-light text-center rounded p-4">
 
-            <form action="#" th:action="@{/rewards/list/user/{userId}(userId=${searchRequest.userId()})}" th:object="${searchRequest}" method="get">
+            <form action="#" th:action="@{/rewards/list/user/{userId}(userId=${searchRequest.userId()})}"
+                  th:object="${searchRequest}" method="get">
                 <div class="form-group mt-2">
                     <label for="sortType">Sort Type:</label>
                     <select th:field="*{sortType}" class="form-control" id="sortType">
@@ -151,8 +152,5 @@
         </div>
     </div>
 </div>
-
-
-
 </body>
 </html>

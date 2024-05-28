@@ -1,5 +1,6 @@
 package com.ssg.starroadadmin.reward.service;
 
+import com.ssg.starroadadmin.reward.dto.RewardDetailResponse;
 import com.ssg.starroadadmin.reward.dto.RewardListRequest;
 import com.ssg.starroadadmin.reward.dto.RewardListResponse;
 import com.ssg.starroadadmin.reward.dto.RewardRegisterRequest;
@@ -37,4 +38,13 @@ public interface RewardService {
      * @return 사용자 리워드 목록
      */
     Page<RewardListResponse> searchUserRewardList(Long mallManagerId, Long userId, RewardListRequest searchRequest, Pageable pageable);
+
+    /**
+     * 리워드 상세 조회
+     *
+     * @param mallManagerId
+     * @param rewardId
+     * @return
+     */
+    RewardDetailResponse searchRewardDetail(Long mallManagerId, Long rewardId, Pageable pageable);
 }

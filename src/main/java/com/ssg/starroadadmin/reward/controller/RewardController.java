@@ -1,5 +1,6 @@
  package com.ssg.starroadadmin.reward.controller;
 
+ import com.ssg.starroadadmin.reward.dto.RewardDetailResponse;
  import com.ssg.starroadadmin.reward.dto.RewardListRequest;
  import com.ssg.starroadadmin.reward.dto.RewardListResponse;
  import com.ssg.starroadadmin.reward.dto.RewardRegisterRequest;
@@ -69,5 +70,24 @@ public class RewardController {
         model.addAttribute("pages", rewardListResponses);
 
         return "reward/userRewardHistoryList";
+    }
+
+    @GetMapping("/detail/{rewardId}")
+    public String rewardDetail(
+            Model model,
+            // jwt로 받아온 관리자 ID
+            @PathVariable Long rewardId,
+            @PageableDefault Pageable pageable
+    ) {
+        // jwt로 받아온 관리자 ID
+        Long mallManagerId = 8L; // 삭제해야할 부분
+
+        // 리워드 상세 조회
+        RewardDetailResponse rewardDetail = rewardService.searchRewardDetail(mallManagerId, rewardId, pageable);
+
+        model.addAttribute("rewardDetail", rewardDetail);
+        model.addAttribute("pages", rewardDetail.userList());
+
+        return "reward/rewardDetail";
     }
 }
