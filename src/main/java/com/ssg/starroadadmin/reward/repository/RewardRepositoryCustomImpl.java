@@ -43,12 +43,11 @@ public class RewardRepositoryCustomImpl implements RewardRepositoryCustom {
     }
 
     private OrderSpecifier orderSpecifier(RewardSortType sortType) {
-        return switch (sortType) {
+        return switch (sortType == null ? RewardSortType.NAME_ASC : sortType) {
             case NAME_ASC -> reward.name.asc();
             case NAME_DESC -> reward.name.desc();
             case CREATED_AT_ASC -> reward.createdAt.asc();
             case CREATED_AT_DESC -> reward.createdAt.desc();
-            default -> reward.name.asc();
         };
     }
 }

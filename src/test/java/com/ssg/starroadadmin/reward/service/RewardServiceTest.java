@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Comparator;
 import java.util.List;
@@ -30,18 +32,17 @@ class RewardServiceTest {
         // given
         Long mallManagerId = 8L;
         RewardListRequest request = RewardListRequest.builder()
-                .page(0)
-                .size(10)
                 .sortType(RewardSortType.NAME_ASC)
                 .build();
+        Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<RewardListResponse> result = rewardService.searchRewardList(mallManagerId, request);
+        Page<RewardListResponse> result = rewardService.searchRewardList(mallManagerId, request, pageable);
 
         // then
         assertNotNull(result);
-        assertEquals(request.size(), result.getSize());
-        assertEquals(request.page(), result.getNumber());
+        assertEquals(pageable.getPageSize(), result.getSize());
+        assertEquals(pageable.getPageNumber(), result.getNumber());
         List<RewardListResponse> content = result.getContent();
         assertThat(content).extracting(RewardListResponse::name).isSorted();
     }
@@ -52,18 +53,17 @@ class RewardServiceTest {
         // given
         Long mallManagerId = 8L;
         RewardListRequest request = RewardListRequest.builder()
-                .page(0)
-                .size(10)
                 .sortType(RewardSortType.NAME_DESC)
                 .build();
+        Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<RewardListResponse> result = rewardService.searchRewardList(mallManagerId, request);
+        Page<RewardListResponse> result = rewardService.searchRewardList(mallManagerId, request, pageable);
 
         // then
         assertNotNull(result);
-        assertEquals(request.size(), result.getSize());
-        assertEquals(request.page(), result.getNumber());
+        assertEquals(pageable.getPageSize(), result.getSize());
+        assertEquals(pageable.getPageNumber(), result.getNumber());
         List<RewardListResponse> content = result.getContent();
         assertThat(content).extracting(RewardListResponse::name).isSortedAccordingTo(Comparator.reverseOrder());
     }
@@ -74,18 +74,17 @@ class RewardServiceTest {
         // given
         Long mallManagerId = 8L;
         RewardListRequest request = RewardListRequest.builder()
-                .page(0)
-                .size(10)
                 .sortType(RewardSortType.CREATED_AT_ASC)
                 .build();
+        Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<RewardListResponse> result = rewardService.searchRewardList(mallManagerId, request);
+        Page<RewardListResponse> result = rewardService.searchRewardList(mallManagerId, request, pageable);
 
         // then
         assertNotNull(result);
-        assertEquals(request.size(), result.getSize());
-        assertEquals(request.page(), result.getNumber());
+        assertEquals(pageable.getPageSize(), result.getSize());
+        assertEquals(pageable.getPageNumber(), result.getNumber());
         List<RewardListResponse> content = result.getContent();
         assertThat(content).extracting(RewardListResponse::createdAt).isSorted();
     }
@@ -96,18 +95,18 @@ class RewardServiceTest {
         // given
         Long mallManagerId = 8L;
         RewardListRequest request = RewardListRequest.builder()
-                .page(0)
-                .size(10)
                 .sortType(RewardSortType.CREATED_AT_DESC)
                 .build();
 
+        Pageable pageable = PageRequest.of(0, 10);
+
         // when
-        Page<RewardListResponse> result = rewardService.searchRewardList(mallManagerId, request);
+        Page<RewardListResponse> result = rewardService.searchRewardList(mallManagerId, request, pageable);
 
         // then
         assertNotNull(result);
-        assertEquals(request.size(), result.getSize());
-        assertEquals(request.page(), result.getNumber());
+        assertEquals(pageable.getPageSize(), result.getSize());
+        assertEquals(pageable.getPageNumber(), result.getNumber());
         List<RewardListResponse> content = result.getContent();
         assertThat(content).extracting(RewardListResponse::createdAt).isSortedAccordingTo(Comparator.reverseOrder());
     }

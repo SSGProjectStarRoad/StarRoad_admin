@@ -1,0 +1,175 @@
+ <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Reward-List</title>
+
+    <!-- JQUERY LIBRARY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .form-group {
+            text-align: left;
+
+        }
+
+        .reward-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .reward-item {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1rem;
+            background-color: #e3e5e8;
+        }
+
+        .reward-name {
+            position: relative;
+        }
+
+        .reward-date {
+            position: absolute;
+            right: 0;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .addReward {
+            position: absolute;
+            left: 0;
+        }
+
+        .page-num {
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div id="mallName"></div>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+
+            // 페이지 로드 시 AJAX 요청
+            $.ajax({
+                url: '/complexmall/name',
+                type: 'GET',
+                dataType: 'text',
+                success: function (data) {
+                    // 수신된 데이터로 결과 div 업데이트
+                    $('#mallName').html('<h1>' + data + ' 매장 리스트</h1>');
+                },
+                error: function (xhr, status, error) {
+                    // 오류 처리
+                    console.error('Error:', error);
+                }
+            });
+
+            // 매장 추가 버튼을 클릭했을 때 모달을 띄우는 함수
+            $('.addReward').click(function () {
+                $('#rewardCreateModal').modal('show'); // 모달 표시
+            });
+
+            // 닫기 버튼을 눌렀을 때 모달 닫기
+            $('.modal-footer .btn-secondary').click(function () {
+                $('#rewardCreateModal').modal('hide'); // 모달 닫기
+            });
+        });
+    </script>
+
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-light text-center rounded p-4">
+
+            <form action="#" th:action="@{/rewards/list}" th:object="${searchRequest}" method="get">
+                <div class="form-group mt-2">
+                    <label for="sortType">Sort Type:</label>
+                    <select th:field="*{sortType}" class="form-control" id="sortType">
+                        <option value="">Select a sortType</option>
+                        <option th:each="sortType : ${T(com.ssg.starroadadmin.reward.enums.RewardSortType).values()}"
+                                th:value="${sortType}" th:text="${sortType.getField()}">
+                        </option>
+                    </select>
+                    <div class="form-group mt-2">
+                        <label for="rewardName">Reward Name:</label>
+                        <input type="text" th:field="*{rewardName}" class="form-control" id="rewardName"
+                               placeholder="Enter store name">
+                    </div>
+                    <button type="submit" class="m-2 btn btn-primary">Search</button>
+            </form>
+        </div>
+
+        <div class="bg-light text-center rounded px-4 pt-4 my-3">
+            <!-- 리스트 출력 -->
+            <div class="reward-container">
+                                <div th:if="${rewardList.isEmpty()}">
+                                    <p>No rewards available.</p>
+                                </div>
+                <div th:each="reward, iterStat : ${rewardList}">
+                    <div class="reward-item" th:onclick="|location.href='@{/reward/detail/}' + ${reward.id()}|">
+                        <div class="d-flex align-items-center reward-name">
+                            <span th:text="${reward.name()}" class="fs-4">Reward Name</span>
+                            <div class="reward-date">
+                                <p th:text="'생성일 : ' + ${reward.createdAt().toLocalDate()}" class="fs-6 m-1">Created At</p>
+                                <p th:text="'수정일 : ' + ${reward.modifiedAt().toLocalDate()}" class="fs-6 m-1">Updated At</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center image-container">
+                            <!-- 리워드 이미지 -->
+                            <!--                            <img th:src="${reward.rewardImagePath()}">-->
+                            <img src="/img/starroad-1-no-text.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                        <nav class="page-num d-flex justify-content-center mt-3" aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item" th:if="${pages.number > 0}">
+                                    <a class="page-link"
+                                       th:href="@{/rewards/list/(page=0)}"
+                                       th:text="'<<'"></a>
+                                </li>
+                                <li class="page-item" th:if="${pages.number > 0}">
+                                    <a class="page-link"
+                                       th:href="@{/rewards/list/(page=${pages.number - 1})}"
+                                       th:text="'<'"></a>
+                                </li>
+
+                                <li class="page-item" th:each="page : ${#numbers.sequence(0, pages.totalPages - 1)}">
+                                    <a class="page-link"
+                                       th:href="@{/rewards/list/(page=${page})}"
+                                       th:text="${page + 1}"
+                                       th:classappend="${page == pages.number} ? 'active'"></a>
+                                </li>
+
+                                <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                                    <a class="page-link"
+                                       th:href="@{/rewards/list/(page=${pages.number + 1})}"
+                                       th:text="'>'"></a>
+                                </li>
+
+                                <li class="page-item" th:if="${pages.number + 1 < pages.totalPages}">
+                                    <a class="page-link"
+                                       th:href="@{/rewards/list/(page=${pages.totalPages - 1})}"
+                                       th:text="'>>'"></a>
+                                </li>
+                            </ul>
+                        </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

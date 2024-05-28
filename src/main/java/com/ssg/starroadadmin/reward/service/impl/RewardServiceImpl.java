@@ -9,6 +9,7 @@ import com.ssg.starroadadmin.reward.entity.Reward;
 import com.ssg.starroadadmin.reward.repository.RewardRepository;
 import com.ssg.starroadadmin.reward.repository.RewardRepositoryCustom;
 import com.ssg.starroadadmin.reward.service.RewardService;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class RewardServiceImpl implements RewardService {
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
         Reward savedReward = rewardRepository.save(Reward.builder()
-                .name(request.name())
+                .name(request.rewardName())
                 .rewardImagePath(request.rewardImageUrl())
                 .build()
         );
@@ -41,12 +42,9 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public Page<RewardListResponse> searchRewardList(Long adminManagerId, RewardListRequest request) {
-        // 총 관리자인지 확인
+    public Page<RewardListResponse> searchRewardList(Long adminManagerId, RewardListRequest request, Pageable pageable) {
         managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
-
-        Pageable pageable = PageRequest.of(request.page(), request.size());
 
         Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByCondition(request.sortType(), pageable);
 
