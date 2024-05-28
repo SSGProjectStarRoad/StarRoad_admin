@@ -14,6 +14,7 @@
  import org.springframework.stereotype.Controller;
  import org.springframework.ui.Model;
  import org.springframework.web.bind.annotation.*;
+ import org.springframework.web.multipart.MultipartFile;
 
  @Slf4j
 @Controller
@@ -90,4 +91,17 @@ public class RewardController {
 
         return "reward/rewardDetail";
     }
+
+    @PostMapping("/image")
+     public String uploadImage(
+             @RequestParam("image") MultipartFile image,
+             @RequestParam("rewardId") Long rewardId
+     ) {
+         // jwt로 받아온 관리자 ID
+         Long mallManagerId = 8L; // 삭제해야할 부분
+
+         rewardService.uploadImage(mallManagerId, rewardId, image);
+
+         return "redirect:/rewards/detail/" + rewardId;
+     }
 }

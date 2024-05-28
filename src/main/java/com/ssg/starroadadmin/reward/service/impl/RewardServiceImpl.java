@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,7 +31,6 @@ public class RewardServiceImpl implements RewardService {
     private final RewardRepositoryCustom rewardRepositoryCustom;
     private final ManagerRepository managerRepository;
     private final S3Uploader s3Uploader;
-    private final RewardHistoryRepository rewardHistoryRepository;
 
     @Override
     @Transactional
@@ -79,21 +79,6 @@ public class RewardServiceImpl implements RewardService {
         Reward reward = rewardRepository.findById(rewardId)
                 .orElseThrow(() -> new RewardException(RewardErrorCode.REWARD_NOT_FOUND));
 
-//        Page<RewardHistory> rewardHistories = rewardHistoryRepository.findAllByRewardId(reward.getId(), pageable);
-
-//        Page<RewardDetailUser> page = rewardHistories.map(rewardHistory -> {
-//                    List<RewardHistory> histories = rewardHistoryRepository.findAllByUser(rewardHistory.getUser())
-//                            .orElseThrow(() -> new RewardException(RewardErrorCode.REWARD_HISTORY_NOT_FOUND));
-//
-//                    return RewardDetailUser.builder()
-//                            .userId(rewardHistory.getUser().getId())
-//                            .userNickname(rewardHistory.getUser().getNickname())
-//                            .userImage(rewardHistory.getUser().getImagePath())
-//                            .rewardCount(histories.size())
-//                            .build();
-//                }
-//        );
-
         Page<RewardDetailUser> page = rewardRepositoryCustom.findAllByRewardId(reward.getId(), pageable);
 
         return RewardDetailResponse.builder()
@@ -103,5 +88,20 @@ public class RewardServiceImpl implements RewardService {
                 .rewardCreatedAt(reward.getCreatedAt())
                 .userList(page)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void uploadImage(Long mallManagerId, Long rewardId, MultipartFile image) {
+        // 총 관리자인지 확인
+        managerRepository.findByIdAndAuthority(mallManagerId, Authority.ADMIN)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+
+        Reward reward = rewardRepository.findById(rewardId)
+                .orElseThrow(() -> new RewardException(RewardErrorCode.REWARD_NOT_FOUND));
+
+        String uploadURL = s3Uploader.upload(image, "ssg/starroad/rewards");
+
+        reward.updateRewardImagePath(uploadURL);
     }
 }
