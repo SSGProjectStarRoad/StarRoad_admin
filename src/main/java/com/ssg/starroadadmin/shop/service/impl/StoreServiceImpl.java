@@ -6,15 +6,11 @@ import com.ssg.starroadadmin.global.error.code.ShopErrorCode;
 import com.ssg.starroadadmin.global.error.exception.ManagerException;
 import com.ssg.starroadadmin.global.error.exception.ReviewException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
-import com.ssg.starroadadmin.global.service.S3Uploader;
-import com.ssg.starroadadmin.review.entity.Review;
+import com.ssg.starroadadmin.global.util.S3Uploader;
 import com.ssg.starroadadmin.review.enums.ConfidenceType;
-import com.ssg.starroadadmin.review.repository.ReviewRepository;
 import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.entity.ComplexShoppingmall;
 import com.ssg.starroadadmin.shop.entity.Store;
-import com.ssg.starroadadmin.shop.enums.Floor;
-import com.ssg.starroadadmin.shop.enums.StoreType;
 import com.ssg.starroadadmin.shop.repository.ComplexShoppingmallRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepository;
 import com.ssg.starroadadmin.shop.repository.StoreRepositoryCustom;
@@ -22,18 +18,13 @@ import com.ssg.starroadadmin.shop.service.StoreService;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
-import com.ssg.starroadadmin.user.service.ManagerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
