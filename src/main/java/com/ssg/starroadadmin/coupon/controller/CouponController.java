@@ -1,6 +1,5 @@
 package com.ssg.starroadadmin.coupon.controller;
 
-import com.ssg.starroadadmin.board.dto.BoardCreateRequest;
 import com.ssg.starroadadmin.coupon.dto.*;
 import com.ssg.starroadadmin.coupon.service.CouponService;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -66,6 +63,6 @@ public class CouponController {
         model.addAttribute("userCouponList", userCouponList);
         model.addAttribute("pages", userCouponList);
 
-        return "/coupon/userCouponList";
+        return "couponHistoryList";
     }
 }
