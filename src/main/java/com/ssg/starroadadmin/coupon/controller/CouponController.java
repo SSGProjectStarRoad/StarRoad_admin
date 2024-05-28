@@ -1,8 +1,7 @@
 package com.ssg.starroadadmin.coupon.controller;
 
-import com.ssg.starroadadmin.coupon.dto.CreateCouponRequest;
-import com.ssg.starroadadmin.coupon.dto.CreateCouponResponse;
-import com.ssg.starroadadmin.coupon.dto.SearchCouponResponse;
+import com.ssg.starroadadmin.board.dto.BoardCreateRequest;
+import com.ssg.starroadadmin.coupon.dto.*;
 import com.ssg.starroadadmin.coupon.service.CouponService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,5 +51,21 @@ public class CouponController {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/history")
+    public String getUserCouponList(
+            Model model,
+            // jwt로 받아온 관리자 ID
+            @ModelAttribute("userCouponRequest") UserCouponRequest request,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Long managerId = 8L; // 삭제해야할 부분
+
+        Page<UserCouponResponse> userCouponList = couponService.getUserCouponList(managerId, request, pageable);
+
+        model.addAttribute("userCouponList", userCouponList);
+        model.addAttribute("pages", userCouponList);
+
+        return "/coupon/userCouponList";
     }
 }

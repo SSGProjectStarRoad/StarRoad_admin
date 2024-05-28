@@ -27,5 +27,5 @@ public class CouponHistory extends BaseTimeEntity {
     private Long couponId;
     private boolean usageStatus;
     private LocalDate expiredAt;
-
+    private int discountRate;
 }
