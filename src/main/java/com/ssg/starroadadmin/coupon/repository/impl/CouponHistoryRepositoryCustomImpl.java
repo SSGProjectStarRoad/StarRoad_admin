@@ -7,10 +7,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssg.starroadadmin.coupon.dto.UserCouponRequest;
 import com.ssg.starroadadmin.coupon.dto.UserCouponResponse;
-import com.ssg.starroadadmin.coupon.entity.CouponHistory;
 import com.ssg.starroadadmin.coupon.enums.CouponSortType;
 import com.ssg.starroadadmin.coupon.repository.CouponHistoryRepositoryCustom;
-import com.ssg.starroadadmin.reward.entity.Reward;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,7 +28,6 @@ import static com.ssg.starroadadmin.user.entity.QUser.user;
 @RequiredArgsConstructor
 public class CouponHistoryRepositoryCustomImpl implements CouponHistoryRepositoryCustom {
     private final JPAQueryFactory queryFactory;
-
 
     @Override
     public Page<UserCouponResponse> findAllByCondition(UserCouponRequest request, Pageable pageable) {

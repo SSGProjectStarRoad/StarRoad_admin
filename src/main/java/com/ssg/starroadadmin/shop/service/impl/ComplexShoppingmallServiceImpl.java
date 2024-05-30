@@ -18,9 +18,15 @@ public class ComplexShoppingmallServiceImpl implements ComplexShoppingmallServic
     private final ManagerRepository managerRepository;
     private final ComplexShoppingmallRepository complexShoppingmallRepository;
 
+    /**
+     * 복합몰 이름 가져오기
+     *
+     * @param email
+     * @return
+     */
     @Override
-    public String getComplexShoppingmallName(Long mallManagerId) {
-        Manager mallManager = managerRepository.findById(mallManagerId)
+    public String getComplexShoppingmallName(String email) {
+        Manager mallManager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         ComplexShoppingmall mall = complexShoppingmallRepository.findByManagerId(mallManager.getId())

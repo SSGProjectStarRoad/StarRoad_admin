@@ -21,4 +21,5 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
     Optional<Manager> findByIdAndAuthorityNot(Long id, Authority authority);
 
     Optional<Manager> findByIdAndAuthority(Long mallManagerId, Authority authority);
+    Optional<Manager> findByUsernameAndAuthority(String username, Authority authority);
 }

@@ -1,23 +1,27 @@
 package com.ssg.starroadadmin.user.service.impl;
 
-import com.ssg.starroadadmin.global.entity.CustomUserDetails;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
 import com.ssg.starroadadmin.user.service.ManagerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ManagerServiceImpl implements ManagerService {
     private final ManagerRepository managerRepository;
+    private final BCryptPasswordEncoder encoder;
 
     @Override
     public boolean isEmailDuplicate(String username) {
@@ -56,18 +60,7 @@ public class ManagerServiceImpl implements ManagerService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Manager manager = managerRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Manager not found with username: " + username));
-
-        List<GrantedAuthority> authorities = (List<GrantedAuthority>) manager.getAuthorities();
-
-        return new CustomUserDetails(manager.getUsername(), manager.getPassword(), authorities, manager.getUsername());
+        return manager;
     }
-
-//    @Override
-//    public Manager createManager(String username, String password, String businessNumber, String name, Authority authority) {
-//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-//        String encodedPassword = passwordEncoder.encode(password);
-//        Manager manager = new Manager(username, encodedPassword, businessNumber, name, authority);
-//        return managerRepository.save(manager);
-//    }
 
 }

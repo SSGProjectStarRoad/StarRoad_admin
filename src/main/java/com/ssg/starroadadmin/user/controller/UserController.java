@@ -1,6 +1,6 @@
 package com.ssg.starroadadmin.user.controller;
 
-import com.ssg.starroadadmin.global.entity.CustomUserDetails;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.dto.SearchUserRequest;
 import com.ssg.starroadadmin.user.dto.UserListResponse;
 import com.ssg.starroadadmin.user.dto.UserResponse;
@@ -24,10 +24,10 @@ public class UserController {
 
     @GetMapping("/list")
     public String userList(Model model,
-                           @AuthenticationPrincipal CustomUserDetails userDetails,
+                           @AuthenticationPrincipal Manager manager,
                            @ModelAttribute("searchRequest") SearchUserRequest searchRequest,
                            Pageable pageable) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         Page<UserListResponse> userListResponses = userService.searchUserList(email, searchRequest, pageable);
 
@@ -39,9 +39,9 @@ public class UserController {
 
     @GetMapping("/detail/{userId}")
     public String userDetail(Model model,
-                             @AuthenticationPrincipal CustomUserDetails userDetails,
+                             @AuthenticationPrincipal Manager manager,
                              @PathVariable Long userId) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         UserResponse userResponse = userService.getUser(email, userId);
 

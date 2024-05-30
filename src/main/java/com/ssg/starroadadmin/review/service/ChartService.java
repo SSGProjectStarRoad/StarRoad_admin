@@ -12,22 +12,22 @@ public interface ChartService {
     /**
      * 월별 리뷰 수 조회하여 차트 데이터로 반환
      *
-     * @param mallManagerId
+     * @param email
      */
-    List<MallReviewCountResponse> gerMallReviewCount(Long mallManagerId);
+    List<MallReviewCountResponse> gerMallReviewCount(String email);
 
     /**
      * 최근 3개월 매장별 리뷰 수 조회하여 차트 데이터로 반환
      *
-     * @param mallManagerId
+     * @param email
      */
-    List<StoreReviewCountResponse> gerStoreReviewCount(Long mallManagerId);
+    List<StoreReviewCountResponse> gerStoreReviewCount(String email);
 
     /**
      * 매장별 월별 리뷰 수 조회하여 차트 데이터로 반환
      *
-     * @param mallManagerId
+     * @param email
      * @param storeId
      */
-    List<MonthlyStoreReviewResponse> gerMonthlyStoreReview(Long mallManagerId, Long storeId);
+    List<MonthlyStoreReviewResponse> gerMonthlyStoreReview(String email, Long storeId);
 }

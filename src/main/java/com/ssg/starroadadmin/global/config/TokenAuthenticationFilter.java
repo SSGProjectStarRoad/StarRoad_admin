@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import java.io.IOException;
 // Spring Security에서 제공하는 OncePerRequestFilter 클래스를 상속받아 구현하는 것이 일반적
 // OncePerRequestFilter를 사용하면, 필터가 한 요청에 대해 한 번만 실행되는 것을 보장
 // doFilterInternal 메소드를 오버라이드하여 필터의 로직을 구현
+@Slf4j
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
@@ -33,9 +35,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final static String TOKEN_PREFIX = "Bearer ";
     // 인증 헤더에 사용되는 토큰의 접두사 실제 토큰 값만 추출하기 위해 사용
-
-    private final static Logger log = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
-    // 로깅
 
     // 실제 필터의 로직을 구현하는 메소드
     // 요청의 헤더에서 토큰을 추출하고, 이 토큰이 유효한 경우에만
@@ -62,6 +61,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     // 사용자 상태 확인
                     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
                     if (userDetails instanceof Manager) {
+                        log.info("UserDetails in tokenprovide: {}", userDetails);
                         Manager manager = (Manager) userDetails;
                         if (!manager.isEnabled()) {
                             log.info("User is not enabled: {}", manager.getUsername());

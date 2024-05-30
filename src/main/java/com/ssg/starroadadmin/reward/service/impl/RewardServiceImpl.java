@@ -12,6 +12,7 @@ import com.ssg.starroadadmin.reward.repository.RewardHistoryRepository;
 import com.ssg.starroadadmin.reward.repository.RewardRepository;
 import com.ssg.starroadadmin.reward.repository.RewardRepositoryCustom;
 import com.ssg.starroadadmin.reward.service.RewardService;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,14 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     @Transactional
-    public Long createReward(Long adminManagerId, RewardRegisterRequest request) {
+    public Long createReward(String email, RewardRegisterRequest request) {
         // 총 관리자인지 확인
-        managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+        Manager manager = managerRepository.findByUsername(email)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        if (manager.getAuthority() != Authority.ADMIN) {
+            throw new ManagerException(ManagerErrorCode.ACCESS_DENIED);
+        }
 
         String uploadURL = s3Uploader.upload(request.createRewardImage(), "ssg/starroad/rewards");
 
@@ -52,9 +57,13 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<RewardListResponse> searchRewardList(Long adminManagerId, RewardListRequest request, Pageable pageable) {
-        managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+    public Page<RewardListResponse> searchRewardList(String email, RewardListRequest request, Pageable pageable) {
+        Manager manager = managerRepository.findByUsername(email)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        if (manager.getAuthority() != Authority.ADMIN) {
+            throw new ManagerException(ManagerErrorCode.ACCESS_DENIED);
+        }
 
         Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByCondition(request, pageable);
 
@@ -63,18 +72,26 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<RewardListResponse> searchUserRewardList(Long adminManagerId, Long userId, RewardListRequest searchRequest, Pageable pageable) {
-        managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+    public Page<RewardListResponse> searchUserRewardList(String email, Long userId, RewardListRequest searchRequest, Pageable pageable) {
+        Manager manager = managerRepository.findByUsername(email)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        if (manager.getAuthority() != Authority.ADMIN) {
+            throw new ManagerException(ManagerErrorCode.ACCESS_DENIED);
+        }
 
         Page<RewardListResponse> rewardList = rewardRepositoryCustom.findAllByUserId(userId, searchRequest, pageable);
         return rewardList;
     }
 
     @Override
-    public RewardDetailResponse searchRewardDetail(Long adminManagerId, Long rewardId, Pageable pageable) {
-        managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+    public RewardDetailResponse searchRewardDetail(String email, Long rewardId, Pageable pageable) {
+        Manager manager = managerRepository.findByUsername(email)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        if (manager.getAuthority() != Authority.ADMIN) {
+            throw new ManagerException(ManagerErrorCode.ACCESS_DENIED);
+        }
 
         Reward reward = rewardRepository.findById(rewardId)
                 .orElseThrow(() -> new RewardException(RewardErrorCode.REWARD_NOT_FOUND));
@@ -92,10 +109,14 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     @Transactional
-    public void uploadImage(Long mallManagerId, Long rewardId, MultipartFile image) {
+    public void uploadImage(String email, Long rewardId, MultipartFile image) {
         // 총 관리자인지 확인
-        managerRepository.findByIdAndAuthority(mallManagerId, Authority.ADMIN)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+        Manager manager = managerRepository.findByUsername(email)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        if (manager.getAuthority() != Authority.ADMIN) {
+            throw new ManagerException(ManagerErrorCode.ACCESS_DENIED);
+        }
 
         Reward reward = rewardRepository.findById(rewardId)
                 .orElseThrow(() -> new RewardException(RewardErrorCode.REWARD_NOT_FOUND));

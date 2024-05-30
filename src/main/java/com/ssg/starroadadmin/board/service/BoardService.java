@@ -11,27 +11,27 @@ public interface BoardService {
     /**
      * 권한 및 쇼핑몰 별 게시판 목록 조회
      *
-     * @param mallManagerId
+     * @param email
      * @param searchRequest
      * @param pageable
      * @return
      */
-    Page<BoardListResponse> searchBoardList(Long mallManagerId, SearchBoardRequest searchRequest, Pageable pageable);
+    Page<BoardListResponse> searchBoardList(String email, SearchBoardRequest searchRequest, Pageable pageable);
 
     /**
      * 게시판 생성
      *
-     * @param mallManagerId
+     * @param email
      * @param request
      */
-    void createBoard(Long mallManagerId, BoardCreateRequest request);
+    void createBoard(String email, BoardCreateRequest request);
 
     /**
      * 게시판 상세 조회
      *
-     * @param mallManagerId
+     * @param email
      * @param boardId
      * @return
      */
-    BoardResponse getBoardDetail(Long mallManagerId, Long boardId);
+    BoardResponse getBoardDetail(String email, Long boardId);
 }

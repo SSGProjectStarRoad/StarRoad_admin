@@ -9,5 +9,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CouponHistoryRepository extends JpaRepository<CouponHistory, Long> {
-    Page<CouponHistory> findAllByUser(User user, Pageable pageable);
 }

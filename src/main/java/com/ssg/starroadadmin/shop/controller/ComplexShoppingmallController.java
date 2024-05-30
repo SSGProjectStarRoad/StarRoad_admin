@@ -1,6 +1,6 @@
 package com.ssg.starroadadmin.shop.controller;
 
-import com.ssg.starroadadmin.global.entity.CustomUserDetails;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.shop.service.ComplexShoppingmallService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +20,9 @@ public class ComplexShoppingmallController {
     @GetMapping("/name")
     @ResponseBody
     public String getMallName(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal Manager manager
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         String mallName = complexShoppingmallService.getComplexShoppingmallName(email);
 
@@ -31,9 +31,9 @@ public class ComplexShoppingmallController {
 
     @GetMapping("/info")
     public String getMallInfo(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal Manager manager
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
 //        String mallInfo = complexShoppingmallService.getComplexShoppingmallInfo(managerId);
 
@@ -42,9 +42,9 @@ public class ComplexShoppingmallController {
 
     @GetMapping("/info2")
     public String getMallInfo2(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal Manager manager
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
 //        String mallInfo = complexShoppingmallService.getComplexShoppingmallInfo(managerId);
 

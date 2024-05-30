@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,14 +58,16 @@ public class ManagerController {
         try {
             // 인증 객체 생성
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+            log.info("인증 성공: authenticationToken={}", authenticationToken.getPrincipal().toString());
 
             // 인증 시도
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            log.info("인증 성공: username={}", loginRequest.getUsername());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            log.info("authentication.getPrincipal(): {}", authentication.getPrincipal());
             // 인증된 사용자 정보 가져오기
             Manager manager = (Manager) authentication.getPrincipal();
+            log.info("사용자 정보: {}", manager.getUsername());
 
             // 액세스 토큰 및 리프레시 토큰 생성
             String accessToken = tokenProvider.generateAccessToken(manager);
@@ -76,7 +79,6 @@ public class ManagerController {
             // 토큰 정보를 응답
             LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken);
 
-            log.info("로그인 성공: username={}", loginRequest.getUsername());
             return ResponseEntity.ok(loginResponse);
         } catch (Exception e) {
             // 예외 발생 시 로그 출력 및 JSON 형식으로 응답

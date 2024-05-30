@@ -1,6 +1,6 @@
  package com.ssg.starroadadmin.reward.controller;
 
- import com.ssg.starroadadmin.global.entity.CustomUserDetails;
+ import com.ssg.starroadadmin.user.entity.Manager;
  import com.ssg.starroadadmin.reward.dto.RewardDetailResponse;
  import com.ssg.starroadadmin.reward.dto.RewardListRequest;
  import com.ssg.starroadadmin.reward.dto.RewardListResponse;
@@ -29,12 +29,12 @@ public class RewardController {
     @GetMapping("/list")
     public String rewardList(
             Model model,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @AuthenticationPrincipal Manager manager,
             @ModelAttribute("searchRequest") RewardListRequest searchRequest,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         Page<RewardListResponse> rewardListResponses = rewardService.searchRewardList(email, searchRequest, pageable);
 
@@ -46,10 +46,10 @@ public class RewardController {
 
     @PostMapping("/create")
     public String createReward(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @AuthenticationPrincipal Manager manager,
             @ModelAttribute("storeCreateRequest") RewardRegisterRequest request
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         rewardService.createReward(email, request);
 
@@ -60,12 +60,12 @@ public class RewardController {
     public String rewardListByUser(
             Model model,
             @PathVariable Long userId,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @AuthenticationPrincipal Manager manager,
             @ModelAttribute("searchRequest") RewardListRequest searchRequest,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         Page<RewardListResponse> rewardListResponses = rewardService.searchUserRewardList(email, userId, searchRequest, pageable);
 
@@ -78,11 +78,11 @@ public class RewardController {
     @GetMapping("/detail/{rewardId}")
     public String rewardDetail(
             Model model,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @AuthenticationPrincipal Manager manager,
             @PathVariable Long rewardId,
             @PageableDefault Pageable pageable
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         // 리워드 상세 조회
         RewardDetailResponse rewardDetail = rewardService.searchRewardDetail(email, rewardId, pageable);
@@ -97,9 +97,9 @@ public class RewardController {
      public String uploadImage(
              @RequestParam("image") MultipartFile image,
              @RequestParam("rewardId") Long rewardId,
-             @AuthenticationPrincipal CustomUserDetails userDetails
+             @AuthenticationPrincipal Manager manager
      ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
          rewardService.uploadImage(email, rewardId, image);
 

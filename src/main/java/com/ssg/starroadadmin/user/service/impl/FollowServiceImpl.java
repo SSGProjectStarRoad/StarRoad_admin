@@ -21,11 +21,9 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public List<PopularUserResponse> getPopularUserList() {
-        System.out.println("===========getPopularUserList()===========");
         List<PopularUserResponse> top5ByUserList = followRepository.findTop5ByFollow();
 //        List<PopularUserResponse> top5ByUserList = followRepositoryCustom.findTop5ByUser()
 //                .orElseThrow(() -> new FollowException(FollowErrorCode.FOLLOW_LIST_NOT_FOUND));
-        System.out.println("===========getPopularUserList()===========");
         log.info("top5ByUserList: {}", top5ByUserList);
         return top5ByUserList;
     }

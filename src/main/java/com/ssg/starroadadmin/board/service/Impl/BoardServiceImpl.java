@@ -41,9 +41,17 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final S3Uploader s3Uploader;
 
+    /**
+     * 게시물 목록 조회
+     *
+     * @param email
+     * @param searchRequest
+     * @param pageable
+     * @return
+     */
     @Override
-    public Page<BoardListResponse> searchBoardList(Long mallManagerId, SearchBoardRequest searchRequest, Pageable pageable) {
-        Manager manager = managerRepository.findById(mallManagerId)
+    public Page<BoardListResponse> searchBoardList(String email, SearchBoardRequest searchRequest, Pageable pageable) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         if (manager.getAuthority() == Authority.MALL) {
@@ -58,12 +66,12 @@ public class BoardServiceImpl implements BoardService {
     /**
      * 게시물 저장
      *
-     * @param mallManagerId
+     * @param email
      * @param request
      */
     @Override
-    public void createBoard(Long mallManagerId, BoardCreateRequest request) {
-        Manager manager = managerRepository.findById(mallManagerId)
+    public void createBoard(String email, BoardCreateRequest request) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         // 게시물 저장
@@ -75,7 +83,7 @@ public class BoardServiceImpl implements BoardService {
                 .build()
         );
 
-        ComplexShoppingmall complexShoppingmall = complexShoppingmallRepository.findByManagerId(mallManagerId)
+        ComplexShoppingmall complexShoppingmall = complexShoppingmallRepository.findByManagerId(manager.getId())
                 .orElseThrow(() -> new ShopException(ShopErrorCode.SHOPPINGMALL_NOT_FOUND));
 
         // 이미지 S3에 저장
@@ -92,9 +100,16 @@ public class BoardServiceImpl implements BoardService {
         boardImageRepository.saveAll(list);
     }
 
+    /**
+     * 게시물 상세 조회
+     *
+     * @param email
+     * @param boardId
+     * @return
+     */
     @Override
-    public BoardResponse getBoardDetail(Long mallManagerId, Long boardId) {
-        Manager manager = managerRepository.findById(mallManagerId)
+    public BoardResponse getBoardDetail(String email, Long boardId) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Board board = boardRepository.findById(boardId)

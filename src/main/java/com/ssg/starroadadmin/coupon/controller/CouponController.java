@@ -2,6 +2,7 @@ package com.ssg.starroadadmin.coupon.controller;
 
 import com.ssg.starroadadmin.coupon.dto.*;
 import com.ssg.starroadadmin.coupon.service.CouponService;
+import com.ssg.starroadadmin.user.entity.Manager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +21,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/coupon")
 @RequiredArgsConstructor
 public class CouponController {
-     private final CouponService couponService;
+    private final CouponService couponService;
 
+    /**
+     * 쿠폰 목록 조회
+     * @param model
+     * @param pageable
+     * @return
+     */
     @GetMapping("/list")
     public String getCouponList(
             Model model,
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal Manager manager,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Long managerId = 5L; // 삭제해야할 부분
-        Page<SearchCouponResponse> couponList = couponService.getCouponList(managerId, pageable);
+        Page<SearchCouponResponse> couponList = couponService.getCouponList(manager.getUsername(), pageable);
 
         model.addAttribute("couponList", couponList);
         model.addAttribute("pages", couponList);
@@ -38,12 +45,11 @@ public class CouponController {
     @ResponseBody
     @PostMapping("/create")
     public ResponseEntity<CreateCouponResponse> createCoupon(
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal Manager manager,
             @RequestBody CreateCouponRequest request) {
-        Long managerId = 5L; // 삭제해야할 부분
 
         try {
-            CreateCouponResponse savedCoupon = couponService.createCoupon(request, managerId);
+            CreateCouponResponse savedCoupon = couponService.createCoupon(request, manager.getUsername());
             return new ResponseEntity<>(savedCoupon, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -53,12 +59,11 @@ public class CouponController {
     @GetMapping("/history")
     public String getUserCouponList(
             Model model,
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal Manager manager,
             @ModelAttribute("userCouponRequest") UserCouponRequest request,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Long managerId = 8L; // 삭제해야할 부분
 
-        Page<UserCouponResponse> userCouponList = couponService.getUserCouponList(managerId, request, pageable);
+        Page<UserCouponResponse> userCouponList = couponService.getUserCouponList(manager.getUsername(), request, pageable);
 
         model.addAttribute("userCouponList", userCouponList);
         model.addAttribute("pages", userCouponList);

@@ -11,29 +11,29 @@ public interface CouponService {
      * 쿠폰 목록 조회
      * 로그인한 아이디를 기준으로 쿠폰 목록을 조회한다.
      *
-     * @param managerId
+     * @param email
      * @param pageable
      * @return
      */
-    Page<SearchCouponResponse> getCouponList(Long managerId, Pageable pageable);
+    Page<SearchCouponResponse> getCouponList(String email, Pageable pageable);
 
     /**
      * 쿠폰 생성
      * 쿠폰을 생성한다.
      *
      * @param request
-     * @param managerId
+     * @param email
      * @return
      */
-    CreateCouponResponse createCoupon(CreateCouponRequest request, Long managerId);
+    CreateCouponResponse createCoupon(CreateCouponRequest request, String email);
 
     /**
      * 쿠폰 사용 내역 조회
      *
-     * @param managerId
+     * @param email
      * @param request
      * @param pageable
      * @return
      */
-    Page<UserCouponResponse> getUserCouponList(Long managerId, UserCouponRequest request, Pageable pageable);
+    Page<UserCouponResponse> getUserCouponList(String email, UserCouponRequest request, Pageable pageable);
 }

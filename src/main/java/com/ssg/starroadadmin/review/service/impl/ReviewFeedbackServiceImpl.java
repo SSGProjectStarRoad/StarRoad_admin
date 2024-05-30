@@ -24,9 +24,18 @@ public class ReviewFeedbackServiceImpl implements ReviewFeedbackService {
     private final ManagerRepository managerRepository;
     private final StoreRepository storeRepository;
     private final ReviewFeedbackRepositoryCustom reviewFeedbackRepositoryCustom;
+
+    /**
+     * 매장 피드백 조회
+     * 매장 피드백을 조회
+     *
+     * @param email
+     * @param storeId
+     * @return
+     */
     @Override
-    public List<StoreFeedbackResponse> getStoreFeedback(Long managerId, Long storeId) {
-        Manager manager = managerRepository.findById(managerId)
+    public List<StoreFeedbackResponse> getStoreFeedback(String email, Long storeId) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Store store = checkStoreAccessLevel(storeId, manager);
@@ -34,9 +43,17 @@ public class ReviewFeedbackServiceImpl implements ReviewFeedbackService {
         return reviewFeedbackRepositoryCustom.getStoreFeedback(store.getId());
     }
 
+    /**
+     * 매장 필수 피드백 조회
+     * 매장 필수 피드백을 조회
+     *
+     * @param email
+     * @param storeId
+     * @return
+     */
     @Override
-    public List<StoreFeedbackResponse> getStoreRequiredFeedback(Long managerId, Long storeId) {
-        Manager manager = managerRepository.findById(managerId)
+    public List<StoreFeedbackResponse> getStoreRequiredFeedback(String email, Long storeId) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Store store = checkStoreAccessLevel(storeId, manager);
@@ -44,9 +61,17 @@ public class ReviewFeedbackServiceImpl implements ReviewFeedbackService {
         return reviewFeedbackRepositoryCustom.getStoreRequiredFeedback(store.getId());
     }
 
+    /**
+     * 매장 선택 피드백 조회
+     * 매장 선택 피드백을 조회
+     *
+     * @param email
+     * @param storeId
+     * @return
+     */
     @Override
-    public List<StoreFeedbackResponse> getStoreOptionalFeedback(Long managerId, Long storeId) {
-        Manager manager = managerRepository.findById(managerId)
+    public List<StoreFeedbackResponse> getStoreOptionalFeedback(String email, Long storeId) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Store store = checkStoreAccessLevel(storeId, manager);
@@ -54,6 +79,14 @@ public class ReviewFeedbackServiceImpl implements ReviewFeedbackService {
         return reviewFeedbackRepositoryCustom.getStoreOptionalFeedback(store.getId());
     }
 
+    /**
+     * 매장 접근 권한 확인
+     * 매장 접근 권한을 확인
+     *
+     * @param storeId
+     * @param manager
+     * @return
+     */
     private Store checkStoreAccessLevel(Long storeId, Manager manager) {
         if (manager.getAuthority() == Authority.STORE) {
             return storeRepository.findByIdAndManagerId(storeId, manager.getId())

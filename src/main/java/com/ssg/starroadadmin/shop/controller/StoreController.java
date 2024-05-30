@@ -1,6 +1,6 @@
 package com.ssg.starroadadmin.shop.controller;
 
-import com.ssg.starroadadmin.global.entity.CustomUserDetails;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.service.StoreService;
 import com.ssg.starroadadmin.user.entity.Manager;
@@ -31,9 +31,9 @@ public class StoreController {
     @PostMapping("/create")
     public String create(
             @ModelAttribute("storeCreateRequest") StoreCreateRequest storeCreateRequest,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal Manager manager) {
 
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         // 1. 받아온 데이터에서 일단 매장 관리자 메소드로 추가하기
         String username = storeCreateRequest.createStoreManagerId();
@@ -56,11 +56,12 @@ public class StoreController {
     public String storeList(Model model,
                             @ModelAttribute("searchRequest") SearchStoreRequest searchRequest,
                             @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
-                            @AuthenticationPrincipal CustomUserDetails userDetails
+                            @AuthenticationPrincipal Manager manager
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        log.info("Manager: {}", manager);
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
-        Page<StoreListResponse> storeListResponses = storeService.searchStoreList(Long.valueOf(email), searchRequest, pageable);
+        Page<StoreListResponse> storeListResponses = storeService.searchStoreList(email, searchRequest, pageable);
         model.addAttribute("storeList", storeListResponses);
         model.addAttribute("pages", storeListResponses);
 
@@ -69,10 +70,10 @@ public class StoreController {
 
     @GetMapping("/detail/{storeId}")
     public String storeDetail(Model model
-            , @PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+            , @PathVariable Long storeId, @AuthenticationPrincipal Manager manager) {
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
-        StoreResponse storeResponse = storeService.getStore(Long.valueOf(email), storeId);
+        StoreResponse storeResponse = storeService.getStore(email, storeId);
 
         model.addAttribute("storeResponse", storeResponse);
 
@@ -81,9 +82,9 @@ public class StoreController {
 
     @PostMapping("/logo")
     public String updateStoreLogo(@RequestParam("storeId") Long storeId,
-                                  @AuthenticationPrincipal CustomUserDetails userDetails,
+                                  @AuthenticationPrincipal Manager manager,
                                   @RequestParam("logo") MultipartFile file) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
         if (file.isEmpty()) {
             return "redirect:/store/detail/" + storeId;
         }
@@ -95,9 +96,9 @@ public class StoreController {
 
     @PostMapping("/{storeId}/modify")
     public String modifyStoreInfo(@PathVariable("storeId") Long storeId,
-                                  @AuthenticationPrincipal CustomUserDetails userDetails,
+                                  @AuthenticationPrincipal Manager manager,
                                   StoreModifyRequest storeModifyRequest) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         storeService.updateStore(email, storeId, storeModifyRequest);
         return "redirect:/store/detail/" + storeId;
@@ -106,9 +107,9 @@ public class StoreController {
     @ResponseBody
     @GetMapping("/{storeId}/color")
     public ResponseEntity<StoreConfidenceResponse> getStoreConfidenceColor(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @AuthenticationPrincipal Manager manager,
             @PathVariable Long storeId) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         StoreConfidenceResponse storeConfidenceResponse = storeService.getStoreConfidenceColor(email, storeId);
 

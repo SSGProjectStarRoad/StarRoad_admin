@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
 
 
-    Page<UserListResponse> searchUserList(Long adminManagerId, SearchUserRequest request, Pageable pageable);
+    Page<UserListResponse> searchUserList(String email, SearchUserRequest request, Pageable pageable);
 
-    UserResponse getUser(Long adminManagerId, Long userId);
+    UserResponse getUser(String email, Long userId);
 }
