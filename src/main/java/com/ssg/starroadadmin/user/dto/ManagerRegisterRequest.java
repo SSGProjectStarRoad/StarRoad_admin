@@ -1,6 +1,7 @@
 package com.ssg.starroadadmin.user.dto;
 
 
+import com.ssg.starroadadmin.user.enums.Authority;
 import lombok.*;
 
 @Getter
@@ -9,4 +10,8 @@ import lombok.*;
 @Builder
 public class ManagerRegisterRequest {
     private String username;
+    private String password;
+    private String name;
+    private String businessNumber;
+    private Authority authority;
 }

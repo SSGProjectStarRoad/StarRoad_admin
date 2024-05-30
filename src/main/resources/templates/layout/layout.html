@@ -174,7 +174,7 @@
                     <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                         <a href="#" class="dropdown-item">My Profile</a>
                         <a href="#" class="dropdown-item">Settings</a>
-                        <a href="#" class="dropdown-item">Log Out</a>
+                        <a href="#" class="dropdown-item" id="logoutButton">Log Out</a>
                     </div>
                 </div>
             </div>
@@ -226,6 +226,29 @@
 
 <!-- Template Javascript -->
 <script src="/js/main.js"></script>
+<script>
+    document.getElementById('logoutButton').addEventListener('click', async () => {
+        const refreshToken = sessionStorage.getItem('refreshToken');
+        const response = await fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'refreshToken': refreshToken
+            }
+        });
+
+        const data = await response.text();  // 응답이 JSON이 아니라면 text로 받아봄
+        console.log(data);  // 응답 내용을 콘솔에 출력
+
+        if (response.ok) {
+            sessionStorage.removeItem('accessToken');
+            sessionStorage.removeItem('refreshToken');
+            window.location.href = '/login';
+        } else {
+            console.error('Logout failed');
+        }
+    });
+</script>
 </body>
 
 </html>
