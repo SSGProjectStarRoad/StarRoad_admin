@@ -1,8 +1,10 @@
 package com.ssg.starroadadmin.shop.controller;
 
+import com.ssg.starroadadmin.global.entity.CustomUserDetails;
 import com.ssg.starroadadmin.shop.service.ComplexShoppingmallService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,20 +20,20 @@ public class ComplexShoppingmallController {
     @GetMapping("/name")
     @ResponseBody
     public String getMallName(
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long managerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        String mallName = complexShoppingmallService.getComplexShoppingmallName(managerId);
+        String mallName = complexShoppingmallService.getComplexShoppingmallName(email);
 
         return mallName;
     }
 
     @GetMapping("/info")
     public String getMallInfo(
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long managerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
 //        String mallInfo = complexShoppingmallService.getComplexShoppingmallInfo(managerId);
 
@@ -40,9 +42,9 @@ public class ComplexShoppingmallController {
 
     @GetMapping("/info2")
     public String getMallInfo2(
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long managerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
 //        String mallInfo = complexShoppingmallService.getComplexShoppingmallInfo(managerId);
 

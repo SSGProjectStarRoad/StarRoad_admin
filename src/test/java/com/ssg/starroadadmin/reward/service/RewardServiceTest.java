@@ -138,7 +138,7 @@ class RewardServiceTest {
 
         // when & then
         assertThrows(ManagerException.class, () -> {
-            rewardService.createReward(nonAdminManagerId, new RewardRegisterRequest(name, (MultipartFile) new File(rewardImageUrl));
+            rewardService.createReward(nonAdminManagerId, new RewardRegisterRequest(name, (MultipartFile) new File(rewardImageUrl)));
         });
     }
 }

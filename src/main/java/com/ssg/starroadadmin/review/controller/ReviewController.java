@@ -1,5 +1,6 @@
 package com.ssg.starroadadmin.review.controller;
 
+import com.ssg.starroadadmin.global.entity.CustomUserDetails;
 import com.ssg.starroadadmin.review.dto.*;
 import com.ssg.starroadadmin.review.service.ChartService;
 import com.ssg.starroadadmin.review.service.ReviewService;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,14 +29,14 @@ public class ReviewController {
 
     @GetMapping("/store/{storeId}")
     public String storeReviewList(Model model,
-                                  // jwt로 받아온 관리자 ID
+                                  @AuthenticationPrincipal CustomUserDetails userDetails,
                                   @PathVariable Long storeId,
                                   @ModelAttribute("searchRequest") StoreReviewSearchRequest searchRequest,
                                   @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Long mallManagerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        Page<ReviewListWithDasyAgoResponse> reviewListResponses = reviewService.searchReviewList(mallManagerId, searchRequest, pageable);
+        Page<ReviewListWithDasyAgoResponse> reviewListResponses = reviewService.searchReviewList(email, searchRequest, pageable);
 
         model.addAttribute("reviewList", reviewListResponses);
         model.addAttribute("pages", reviewListResponses);
@@ -44,14 +46,14 @@ public class ReviewController {
 
     @GetMapping("/user/{userId}")
     public String userReviewList(Model model,
-                                  // jwt로 받아온 관리자 ID
+                                 @AuthenticationPrincipal CustomUserDetails userDetails,
                                   @PathVariable Long userId,
                                   @ModelAttribute("searchRequest") UserReviewSearchRequest searchRequest,
                                   @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Long mallManagerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        Page<ReviewListWithDasyAgoResponse> reviewListResponses = reviewService.searchReviewList(mallManagerId, searchRequest, pageable);
+        Page<ReviewListWithDasyAgoResponse> reviewListResponses = reviewService.searchReviewList(email, searchRequest, pageable);
 
         for (ReviewListWithDasyAgoResponse reviewListResponse : reviewListResponses) {
             System.out.println(reviewListResponse.reviewId() + " : " + reviewListResponse.userName() + " : " + reviewListResponse.reviewImagePaths().size());
@@ -64,13 +66,13 @@ public class ReviewController {
 
     @GetMapping("/detail/{reviewId}")
     public String reviewDetail(Model model,
-                               // jwt로 받아온 관리자 ID
+                               @AuthenticationPrincipal CustomUserDetails userDetails,
                                  @PathVariable Long reviewId
     ) {
-        Long mallManagerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
         log.debug("reviewId : {}", reviewId);
-        ReviewDetailResponse reviewDetailResponse = reviewService.getReview(mallManagerId, reviewId);
+        ReviewDetailResponse reviewDetailResponse = reviewService.getReview(email, reviewId);
 
         model.addAttribute("review", reviewDetailResponse);
 

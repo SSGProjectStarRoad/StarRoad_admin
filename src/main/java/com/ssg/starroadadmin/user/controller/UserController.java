@@ -1,5 +1,6 @@
 package com.ssg.starroadadmin.user.controller;
 
+import com.ssg.starroadadmin.global.entity.CustomUserDetails;
 import com.ssg.starroadadmin.user.dto.SearchUserRequest;
 import com.ssg.starroadadmin.user.dto.UserListResponse;
 import com.ssg.starroadadmin.user.dto.UserResponse;
@@ -7,6 +8,7 @@ import com.ssg.starroadadmin.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +24,12 @@ public class UserController {
 
     @GetMapping("/list")
     public String userList(Model model,
-                           // jwt로 받아온 관리자 ID
+                           @AuthenticationPrincipal CustomUserDetails userDetails,
                            @ModelAttribute("searchRequest") SearchUserRequest searchRequest,
                            Pageable pageable) {
-        Long adminManagerId = 8L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        Page<UserListResponse> userListResponses = userService.searchUserList(adminManagerId, searchRequest, pageable);
+        Page<UserListResponse> userListResponses = userService.searchUserList(email, searchRequest, pageable);
 
         model.addAttribute("userList", userListResponses);
         model.addAttribute("pages", userListResponses);
@@ -37,11 +39,11 @@ public class UserController {
 
     @GetMapping("/detail/{userId}")
     public String userDetail(Model model,
-                             // jwt로 받아온 관리자 ID
+                             @AuthenticationPrincipal CustomUserDetails userDetails,
                              @PathVariable Long userId) {
-        Long adminManagerId = 8L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        UserResponse userResponse = userService.getUser(adminManagerId, userId);
+        UserResponse userResponse = userService.getUser(email, userId);
 
         model.addAttribute("userResponse", userResponse);
 

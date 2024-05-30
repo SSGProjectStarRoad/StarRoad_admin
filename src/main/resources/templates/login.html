@@ -52,7 +52,7 @@
                         </a>
                         <h4>로그인</h4>
                     </div>
-                    <form id="loginForm" action="/manager/login" method="post">
+                    <form id="loginForm">
                         <div class="form-floating mb-3">
                             <input type="email" class="form-control" id="floatingInput" name="username" placeholder="name@example.com" required>
                             <label for="floatingInput">아이디(이메일)</label>
@@ -90,6 +90,81 @@
 
 <!-- Template Javascript -->
 <script src="/js/main.js"></script>
-</body>
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('floatingInput').value;
+        const password = document.getElementById('floatingPassword').value;
 
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // 토큰 저장
+                sessionStorage.setItem('accessToken', data.accessToken);
+                sessionStorage.setItem('refreshToken', data.refreshToken);
+                alert('Login successful');
+                window.location.href = '/index';
+            } else {
+                const errorData = await response.json();
+                alert('Login failed: ' + (errorData.error || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('Login failed: ' + error.message);
+        }
+    });
+
+    // 토큰 갱신
+    // 응답이 401이면 리프레시 토큰 사용해 새 액세스 토큰 발급
+    // 그래서 리프레시 토큰 서버로 전송
+    // 새 액세스 토큰 사용해 처음 요청 다시 시도
+    // 로그인 유도 재인증 실패하면 사용자는 다시 로그인하도록
+    async function fetchWithAuth(url, options = {}) {
+        const accessToken = sessionStorage.getItem('accessToken');
+        options.headers = {
+            ...options.headers,
+            'Authorization': `Bearer ${accessToken}`
+        };
+
+        let response = await fetch(url, options);
+
+        if (response.status === 401) {
+            // 액세스 토큰이 만료된 경우
+            const refreshToken = sessionStorage.getItem('refreshToken');
+            const tokenResponse = await fetch('/api/token/access-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ refreshToken })
+            });
+
+            if (tokenResponse.ok) {
+                const tokenData = await tokenResponse.json();
+                sessionStorage.setItem('accessToken', tokenData.accessToken);
+
+                // 다시 시도
+                options.headers['Authorization'] = `Bearer ${tokenData.accessToken}`;
+                response = await fetch(url, options);
+                // fetch 함수 완료될 때까지 기다린 후 완료되면 응답 객체를 response에 넣음
+            } else {
+                alert('Session expired, please login again.');
+                window.location.href = '/login';
+            }
+        }
+
+        return response;
+    }
+</script>
+</body>
 </html>

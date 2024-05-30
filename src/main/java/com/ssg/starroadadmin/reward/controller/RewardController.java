@@ -1,5 +1,6 @@
  package com.ssg.starroadadmin.reward.controller;
 
+ import com.ssg.starroadadmin.global.entity.CustomUserDetails;
  import com.ssg.starroadadmin.reward.dto.RewardDetailResponse;
  import com.ssg.starroadadmin.reward.dto.RewardListRequest;
  import com.ssg.starroadadmin.reward.dto.RewardListResponse;
@@ -11,6 +12,7 @@
  import org.springframework.data.domain.Pageable;
  import org.springframework.data.domain.Sort;
  import org.springframework.data.web.PageableDefault;
+ import org.springframework.security.core.annotation.AuthenticationPrincipal;
  import org.springframework.stereotype.Controller;
  import org.springframework.ui.Model;
  import org.springframework.web.bind.annotation.*;
@@ -27,14 +29,14 @@ public class RewardController {
     @GetMapping("/list")
     public String rewardList(
             Model model,
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @ModelAttribute("searchRequest") RewardListRequest searchRequest,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
-        Long mallManagerId = 8L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        Page<RewardListResponse> rewardListResponses = rewardService.searchRewardList(mallManagerId, searchRequest, pageable);
+        Page<RewardListResponse> rewardListResponses = rewardService.searchRewardList(email, searchRequest, pageable);
 
         model.addAttribute("rewardList", rewardListResponses);
         model.addAttribute("pages", rewardListResponses);
@@ -44,12 +46,12 @@ public class RewardController {
 
     @PostMapping("/create")
     public String createReward(
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @ModelAttribute("storeCreateRequest") RewardRegisterRequest request
     ) {
-        Long adminManagerId = 8L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        rewardService.createReward(adminManagerId, request);
+        rewardService.createReward(email, request);
 
         return "redirect:/rewards/list";
     }
@@ -58,14 +60,14 @@ public class RewardController {
     public String rewardListByUser(
             Model model,
             @PathVariable Long userId,
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @ModelAttribute("searchRequest") RewardListRequest searchRequest,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
 
-        Long mallManagerId = 8L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        Page<RewardListResponse> rewardListResponses = rewardService.searchUserRewardList(mallManagerId, userId, searchRequest, pageable);
+        Page<RewardListResponse> rewardListResponses = rewardService.searchUserRewardList(email, userId, searchRequest, pageable);
 
         model.addAttribute("rewardList", rewardListResponses);
         model.addAttribute("pages", rewardListResponses);
@@ -76,15 +78,14 @@ public class RewardController {
     @GetMapping("/detail/{rewardId}")
     public String rewardDetail(
             Model model,
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long rewardId,
             @PageableDefault Pageable pageable
     ) {
-        // jwt로 받아온 관리자 ID
-        Long mallManagerId = 8L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
         // 리워드 상세 조회
-        RewardDetailResponse rewardDetail = rewardService.searchRewardDetail(mallManagerId, rewardId, pageable);
+        RewardDetailResponse rewardDetail = rewardService.searchRewardDetail(email, rewardId, pageable);
 
         model.addAttribute("rewardDetail", rewardDetail);
         model.addAttribute("pages", rewardDetail.userList());
@@ -95,12 +96,12 @@ public class RewardController {
     @PostMapping("/image")
      public String uploadImage(
              @RequestParam("image") MultipartFile image,
-             @RequestParam("rewardId") Long rewardId
+             @RequestParam("rewardId") Long rewardId,
+             @AuthenticationPrincipal CustomUserDetails userDetails
      ) {
-         // jwt로 받아온 관리자 ID
-         Long mallManagerId = 8L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-         rewardService.uploadImage(mallManagerId, rewardId, image);
+         rewardService.uploadImage(email, rewardId, image);
 
          return "redirect:/rewards/detail/" + rewardId;
      }

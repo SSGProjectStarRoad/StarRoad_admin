@@ -1,5 +1,6 @@
 package com.ssg.starroadadmin.shop.controller;
 
+import com.ssg.starroadadmin.global.entity.CustomUserDetails;
 import com.ssg.starroadadmin.shop.dto.*;
 import com.ssg.starroadadmin.shop.service.StoreService;
 import com.ssg.starroadadmin.user.entity.Manager;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,45 +23,44 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/store")
 @RequiredArgsConstructor
 public class StoreController {
+
     private final StoreService storeService;
     private final ManagerService managerService;
 
+
     @PostMapping("/create")
     public String create(
-            // jwt로 받아온 관리자 ID
-            @ModelAttribute("storeCreateRequest") StoreCreateRequest storeCreateRequest) {
-            Long id = 5L; // 삭제할 부분
-            //1.받아온 데이터에서 일단 매장 관리자 메소드 로 추가 하기
-            String username = storeCreateRequest.createStoreManagerId();
-            String name = storeCreateRequest.createStoreManagerName();
-            String businessNumber = storeCreateRequest.createBusinessNumber();
-            String password = storeCreateRequest.createStoreManagerPassword();
-        Manager manager = managerService.createManager(username, name, businessNumber, password);
+            @ModelAttribute("storeCreateRequest") StoreCreateRequest storeCreateRequest,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
+        // 1. 받아온 데이터에서 일단 매장 관리자 메소드로 추가하기
+        String username = storeCreateRequest.createStoreManagerId();
+        String name = storeCreateRequest.createStoreManagerName();
+        String businessNumber = storeCreateRequest.createBusinessNumber();
+        String password = storeCreateRequest.createStoreManagerPassword();
+//        Authority authority = Authority.ADMIN; // 관리자의 권한 설정 (예시)
 
+        Manager newManager = managerService.createManager(username, password, businessNumber, name);
 
+        // 2. 받아온 데이터에서 매장 데이터 매장 추가 메소드로 매장 추가하기
+        Long managerId = newManager.getId();
+        storeService.createStore(email, storeCreateRequest, managerId);
 
-        //2.받아온 데이터에서 매장 데이터 매장 추가 메소드로 매장 추가하기
-            Long managerId = manager.getId();
-        storeService.createStore(5L,storeCreateRequest,managerId);
-
-            //3. 추후에 시큐리티 적용
-
-
-
+        // 3. 추후에 시큐리티 적용
         return "redirect:/store/list";
     }
 
     @GetMapping("/list")
     public String storeList(Model model,
-                            // jwt로 받아온 관리자 ID
                             @ModelAttribute("searchRequest") SearchStoreRequest searchRequest,
-                            @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable
+                            @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
+                            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long mallManagerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        Page<StoreListResponse> storeListResponses = storeService.searchStoreList(mallManagerId, searchRequest, pageable);
+        Page<StoreListResponse> storeListResponses = storeService.searchStoreList(Long.valueOf(email), searchRequest, pageable);
         model.addAttribute("storeList", storeListResponses);
         model.addAttribute("pages", storeListResponses);
 
@@ -68,11 +69,10 @@ public class StoreController {
 
     @GetMapping("/detail/{storeId}")
     public String storeDetail(Model model
-            // jwt로 받아온 관리자 ID
-            , @PathVariable Long storeId) {
-        Long managerId = 5L; // 삭제해야할 부분
+            , @PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        StoreResponse storeResponse = storeService.getStore(managerId, storeId);
+        StoreResponse storeResponse = storeService.getStore(Long.valueOf(email), storeId);
 
         model.addAttribute("storeResponse", storeResponse);
 
@@ -81,36 +81,36 @@ public class StoreController {
 
     @PostMapping("/logo")
     public String updateStoreLogo(@RequestParam("storeId") Long storeId,
-                                  // jwt로 받아온 관리자 ID
+                                  @AuthenticationPrincipal CustomUserDetails userDetails,
                                   @RequestParam("logo") MultipartFile file) {
-            Long managerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
         if (file.isEmpty()) {
             return "redirect:/store/detail/" + storeId;
         }
 
-        storeService.updateStoreImage(managerId, storeId, file);
+        storeService.updateStoreImage(email, storeId, file);
 
         return "redirect:/store/detail/" + storeId;
     }
 
     @PostMapping("/{storeId}/modify")
     public String modifyStoreInfo(@PathVariable("storeId") Long storeId,
-                                    // jwt로 받아온 관리자 ID
+                                  @AuthenticationPrincipal CustomUserDetails userDetails,
                                   StoreModifyRequest storeModifyRequest) {
-        Long managerId = 9L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        storeService.updateStore(managerId, storeId, storeModifyRequest);
+        storeService.updateStore(email, storeId, storeModifyRequest);
         return "redirect:/store/detail/" + storeId;
     }
 
     @ResponseBody
     @GetMapping("/{storeId}/color")
     public ResponseEntity<StoreConfidenceResponse> getStoreConfidenceColor(
-            // jwt로 받아온 관리자 ID
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long storeId) {
-        Long managerId = 5L; // 삭제해야할 부분
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        StoreConfidenceResponse storeConfidenceResponse = storeService.getStoreConfidenceColor(managerId, storeId);
+        StoreConfidenceResponse storeConfidenceResponse = storeService.getStoreConfidenceColor(email, storeId);
 
         return ResponseEntity.ok(storeConfidenceResponse);
     }

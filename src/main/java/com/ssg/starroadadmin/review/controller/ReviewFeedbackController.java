@@ -1,9 +1,11 @@
 package com.ssg.starroadadmin.review.controller;
 
+import com.ssg.starroadadmin.global.entity.CustomUserDetails;
 import com.ssg.starroadadmin.review.service.ReviewFeedbackService;
 import com.ssg.starroadadmin.shop.dto.StoreFeedbackResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +26,11 @@ public class ReviewFeedbackController {
     @ResponseBody
     @GetMapping("/{storeId}")
     public ResponseEntity<List<StoreFeedbackResponse>> storeFeedback(
-                                                                     // jwt로 받아온 관리자 ID
-                                                                     @PathVariable Long storeId) {
-        Long managerId = 5L; // 삭제해야할 부분
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long storeId) {
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreFeedback(managerId, storeId);
+        List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreFeedback(email, storeId);
 
         return ResponseEntity.ok(feedbackResponse);
     }
@@ -36,11 +38,11 @@ public class ReviewFeedbackController {
     @ResponseBody
     @GetMapping("/required/{storeId}")
     public ResponseEntity<List<StoreFeedbackResponse>> requiredFeedback(
-                                   // jwt로 받아온 관리자 ID
-                                   @PathVariable Long storeId) {
-        Long managerId = 5L; // 삭제해야할 부분
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long storeId) {
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreRequiredFeedback(managerId, storeId);
+        List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreRequiredFeedback(email, storeId);
 
         return ResponseEntity.ok(feedbackResponse);
     }
@@ -48,11 +50,11 @@ public class ReviewFeedbackController {
     @ResponseBody
     @GetMapping("/optional/{storeId}")
     public ResponseEntity<List<StoreFeedbackResponse>> optionalFeedback(
-                                   // jwt로 받아온 관리자 ID
-                                   @PathVariable Long storeId) {
-        Long managerId = 5L; // 삭제해야할 부분
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long storeId) {
+        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
 
-        List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreOptionalFeedback(managerId, storeId);
+        List<StoreFeedbackResponse> feedbackResponse = reviewFeedbackService.getStoreOptionalFeedback(email, storeId);
 
         return ResponseEntity.ok(feedbackResponse);
     }
