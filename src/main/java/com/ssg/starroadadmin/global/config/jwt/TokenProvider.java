@@ -94,11 +94,7 @@ public class TokenProvider {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
 
-        return new UsernamePasswordAuthenticationToken(
-                new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities),
-                token,
-                authorities
-        );
+        return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
     }
 
     // 토큰에서 클레임을 추출하는 보조 메소드

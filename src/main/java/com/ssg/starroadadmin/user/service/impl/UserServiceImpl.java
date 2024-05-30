@@ -7,6 +7,7 @@ import com.ssg.starroadadmin.global.error.exception.UsersException;
 import com.ssg.starroadadmin.user.dto.SearchUserRequest;
 import com.ssg.starroadadmin.user.dto.UserListResponse;
 import com.ssg.starroadadmin.user.dto.UserResponse;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.entity.User;
 import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
@@ -28,10 +29,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public Page<UserListResponse> searchUserList(Long adminManagerId, SearchUserRequest request, Pageable pageable) {
+    public Page<UserListResponse> searchUserList(String email, SearchUserRequest request, Pageable pageable) {
         // 관리자 권한 확인
-        managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+        Manager manager = managerRepository.findByUsername(email)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        if (manager.getAuthority() != Authority.ADMIN) {
+            throw new ManagerException(ManagerErrorCode.ACCESS_DENIED);
+        }
 
         Page<UserListResponse> users = userRepositoryCustom.findAllByStartDateAndEndDateAndEmailAndNameAndNickNameAndSortType(request.startDate(), request.endDate(), request.sortType(), request.email(), request.name(), request.nickname(), pageable);
 
@@ -39,10 +44,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUser(Long adminManagerId, Long userId) {
+    public UserResponse getUser(String email, Long userId) {
         // 관리자 권한 확인
-        managerRepository.findByIdAndAuthority(adminManagerId, Authority.ADMIN)
-                .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+        Manager manager = managerRepository.findByUsername(email)
+                .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
+
+        if (manager.getAuthority() != Authority.ADMIN) {
+            throw new ManagerException(ManagerErrorCode.ACCESS_DENIED);
+        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsersException(UserErrorCode.USER_NOT_FOUND));

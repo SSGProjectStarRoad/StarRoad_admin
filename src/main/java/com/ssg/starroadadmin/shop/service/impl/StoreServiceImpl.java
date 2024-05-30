@@ -42,20 +42,20 @@ public class StoreServiceImpl implements StoreService {
      * StoreRegisterRequest를 통해 매장 정보를 받아와서 Store에 정보 기입
      * Store.CompleteShoppingmall에 관리자를 통해서 쇼핑몰 정보를 가져와 기입
      *
-     * @param mallManagerId
+     * @param email
      * @param request
      */
     @Transactional
-    public Long createStore(Long mallManagerId, StoreCreateRequest request,Long storeManagerId) {
+    public Long createStore(String email, StoreCreateRequest request,Long storeManagerId) {
 
         // 쇼핑몰 관리자 정보 가져오기
-        Manager mallManager = managerRepository.findByIdAndAuthority(mallManagerId, Authority.MALL)
+        Manager mallManager = managerRepository.findByUsernameAndAuthority(email, Authority.MALL)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
         //관리자를 추가를 한 후에
         // 매장 관리자 정보 가져오기 , jwt로 받아온
         Manager storeManager = managerRepository.findById(storeManagerId).orElseThrow(()->new ManagerException(ManagerErrorCode.STORE_MANAGER_NOT_FOUND));
-        ComplexShoppingmall shoppingmall = complexShoppingmallRepository.findByManagerId(mallManagerId)
+        ComplexShoppingmall shoppingmall = complexShoppingmallRepository.findByManagerId(mallManager.getId())
                 .orElseThrow(() -> new ShopException(ShopErrorCode.SHOPPINGMALL_NOT_FOUND));
 
 
@@ -82,18 +82,18 @@ public class StoreServiceImpl implements StoreService {
      * SearchStoreRequest를 통해 가져온 정보들을 바탕으로
      * 조건에 매장 목록들을 검색
      *
-     * @param mallManagerId
+     * @param email
      * @param request
      * @return
      */
     @Transactional
-    public Page<StoreListResponse> searchStoreList(Long mallManagerId, SearchStoreRequest request, Pageable pageable) {
+    public Page<StoreListResponse> searchStoreList(String email, SearchStoreRequest request, Pageable pageable) {
         // 매장 관리자 정보 가져오기
-        managerRepository.findByIdAndAuthority(mallManagerId, Authority.MALL)
+        Manager manager = managerRepository.findByUsernameAndAuthority(email, Authority.MALL)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
         // 복합 쇼핑몰 정보 가져오기
-        ComplexShoppingmall shoppingmall = complexShoppingmallRepository.findByManagerId(mallManagerId)
+        ComplexShoppingmall shoppingmall = complexShoppingmallRepository.findByManagerId(manager.getId())
                 .orElseThrow(() -> new ShopException(ShopErrorCode.SHOPPINGMALL_NOT_FOUND));
 
         Page<StoreListResponse> page = storeRepositoryCustom.findByComplexShoppingmallIdAndNameContainingAndFloorAndStoreType(
@@ -112,15 +112,15 @@ public class StoreServiceImpl implements StoreService {
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreResponse getStore(Long managerId, Long storeId) {
+    public StoreResponse getStore(String email, Long storeId) {
         // 매장 관리자 정보 가져오기
-        Manager manager = managerRepository.findById(managerId)
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Store store = null;
         // 매장 관리자인 경우 본인 매장 정보만 볼 수 있음
         if (manager.getAuthority() == Authority.STORE) {
-            store = storeRepository.findByIdAndManagerId(storeId, managerId)
+            store = storeRepository.findByIdAndManagerId(storeId, manager.getId())
                     .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
         } else {
             store = storeRepository.findById(storeId)
@@ -136,20 +136,19 @@ public class StoreServiceImpl implements StoreService {
      * 매장 관리자의 본인 매장의
      * 매장 설명, 층수, 운영시간, 연락처를 수정
      *
-     * TODO : 매장 정보 수정을 매장 관리자 뿐만 아니라 쇼핑몰 관리자도 수정할 수 있도록 변경
-     *
+     * @param email
      * @param storeId
      * @param request
      */
     @Transactional
     @Override
-    public void updateStore(Long managerId, Long storeId, StoreModifyRequest request) {
-        Manager manager = managerRepository.findById(managerId)
+    public void updateStore(String email, Long storeId, StoreModifyRequest request) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Store store = null;
         if (manager.getAuthority() == Authority.STORE) {
-            store = storeRepository.findByIdAndManagerId(storeId, managerId)
+            store = storeRepository.findByIdAndManagerId(storeId, manager.getId())
                     .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
         } else {
             store = storeRepository.findById(storeId)
@@ -162,19 +161,19 @@ public class StoreServiceImpl implements StoreService {
     /**
      * 매장 이미지 수정
      *
-     * @param managerId
+     * @param email
      * @param storeId
      * @param file
      */
     @Transactional
     @Override
-    public void updateStoreImage(Long managerId, Long storeId, MultipartFile file) {
-        Manager manager = managerRepository.findById(managerId)
+    public void updateStoreImage(String email, Long storeId, MultipartFile file) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Store store = null;
         if (manager.getAuthority() == Authority.STORE) {
-            store = storeRepository.findByIdAndManagerId(storeId, managerId)
+            store = storeRepository.findByIdAndManagerId(storeId, manager.getId())
                     .orElseThrow(() -> new ShopException(ShopErrorCode.ACCESS_DENIED));
         } else {
             store = storeRepository.findById(storeId)
@@ -191,24 +190,24 @@ public class StoreServiceImpl implements StoreService {
     /**
      * 매장 삭제
      *
-     * @param managerId
+     * @param email
      * @param storeId
      */
     @Transactional
     @Override
-    public void deleteStore(Long managerId, Long storeId) {
-        managerRepository.findByIdAndAuthority(managerId, Authority.STORE)
+    public void deleteStore(String email, Long storeId) {
+        Manager manager = managerRepository.findByUsernameAndAuthority(email, Authority.STORE)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
-        Store store = storeRepository.findByIdAndManagerId(storeId, managerId)
+        Store store = storeRepository.findByIdAndManagerId(storeId, manager.getId())
                 .orElseThrow(() -> new ShopException(ShopErrorCode.STORE_NOT_FOUND));
 
         storeRepository.delete(store);
     }
 
     @Override
-    public StoreConfidenceResponse getStoreConfidenceColor(Long managerId, Long storeId) {
-        Manager manager = managerRepository.findById(managerId)
+    public StoreConfidenceResponse getStoreConfidenceColor(String email, Long storeId) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Store store = storeRepository.findById(storeId)

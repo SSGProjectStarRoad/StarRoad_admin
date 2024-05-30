@@ -1,8 +1,7 @@
 package com.ssg.starroadadmin.review.controller;
 
-import com.ssg.starroadadmin.global.entity.CustomUserDetails;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.review.dto.*;
-import com.ssg.starroadadmin.review.service.ChartService;
 import com.ssg.starroadadmin.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +11,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 @Slf4j
 @Controller
@@ -25,16 +24,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
-    private final ChartService chartService;
 
     @GetMapping("/store/{storeId}")
     public String storeReviewList(Model model,
-                                  @AuthenticationPrincipal CustomUserDetails userDetails,
+                                  @AuthenticationPrincipal Manager manager,
                                   @PathVariable Long storeId,
                                   @ModelAttribute("searchRequest") StoreReviewSearchRequest searchRequest,
                                   @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         Page<ReviewListWithDasyAgoResponse> reviewListResponses = reviewService.searchReviewList(email, searchRequest, pageable);
 
@@ -46,18 +44,15 @@ public class ReviewController {
 
     @GetMapping("/user/{userId}")
     public String userReviewList(Model model,
-                                 @AuthenticationPrincipal CustomUserDetails userDetails,
+                                 @AuthenticationPrincipal Manager manager,
                                   @PathVariable Long userId,
                                   @ModelAttribute("searchRequest") UserReviewSearchRequest searchRequest,
                                   @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         Page<ReviewListWithDasyAgoResponse> reviewListResponses = reviewService.searchReviewList(email, searchRequest, pageable);
 
-        for (ReviewListWithDasyAgoResponse reviewListResponse : reviewListResponses) {
-            System.out.println(reviewListResponse.reviewId() + " : " + reviewListResponse.userName() + " : " + reviewListResponse.reviewImagePaths().size());
-        }
         model.addAttribute("reviewList", reviewListResponses);
         model.addAttribute("pages", reviewListResponses);
 
@@ -66,10 +61,10 @@ public class ReviewController {
 
     @GetMapping("/detail/{reviewId}")
     public String reviewDetail(Model model,
-                               @AuthenticationPrincipal CustomUserDetails userDetails,
+                               @AuthenticationPrincipal Manager manager,
                                  @PathVariable Long reviewId
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
+        String email = manager.getUsername(); // 이메일을 직접 가져옴
 
         log.debug("reviewId : {}", reviewId);
         ReviewDetailResponse reviewDetailResponse = reviewService.getReview(email, reviewId);

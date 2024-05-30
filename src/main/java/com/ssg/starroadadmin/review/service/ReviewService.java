@@ -11,27 +11,29 @@ public interface ReviewService {
     /**
      * 매장별 리뷰 리스트 조회
      *
+     * @param email
      * @param reviewSearchRequest
      * @return Page<ReviewListWithDasyAgoResponse>
      */
-    Page<ReviewListWithDasyAgoResponse> searchReviewList(Long managerId, StoreReviewSearchRequest reviewSearchRequest, Pageable pageable);
+    Page<ReviewListWithDasyAgoResponse> searchReviewList(String email, StoreReviewSearchRequest reviewSearchRequest, Pageable pageable);
 
     /**
      * 사용자별 리뷰 리스트 조회
      *
+     * @param email
      * @param reviewSearchRequest
      * @return Page<ReviewListWithDasyAgoResponse>
      */
-    Page<ReviewListWithDasyAgoResponse> searchReviewList(Long managerId, UserReviewSearchRequest reviewSearchRequest, Pageable pageable);
+    Page<ReviewListWithDasyAgoResponse> searchReviewList(String email, UserReviewSearchRequest reviewSearchRequest, Pageable pageable);
 
     /**
      * 리뷰 상세 조회
      *
-     * @param mallManagerId
+     * @param email
      * @param reviewId
      * @return ReviewDetailResponse
      */
-    ReviewDetailResponse getReview(Long mallManagerId, Long reviewId);
+    ReviewDetailResponse getReview(String email, Long reviewId);
 
     /**
      * 최근 리뷰 5개 조회

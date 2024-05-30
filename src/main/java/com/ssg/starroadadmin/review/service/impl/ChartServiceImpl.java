@@ -32,10 +32,10 @@ public class ChartServiceImpl implements ChartService {
     /**
      * 월별 리뷰 수 조회하여 차트 데이터로 반환
      *
-     * @param mallManagerId
+     * @param email
      */
-    public List<MallReviewCountResponse> gerMallReviewCount(Long mallManagerId) {
-        Manager manager = managerRepository.findById(mallManagerId)
+    public List<MallReviewCountResponse> gerMallReviewCount(String email) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         List<MallReviewCountResponse> responseList = charRepository.findMallReviewsByManager(manager);
@@ -43,9 +43,14 @@ public class ChartServiceImpl implements ChartService {
         return responseList;
     }
 
+    /**
+     * 최근 3개월 매장별 리뷰 수 조회하여 차트 데이터로 반환
+     *
+     * @param email
+     */
     @Override
-    public List<StoreReviewCountResponse> gerStoreReviewCount(Long mallManagerId) {
-        Manager manager = managerRepository.findById(mallManagerId)
+    public List<StoreReviewCountResponse> gerStoreReviewCount(String email) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         List<StoreReviewCountResponse> responseList = charRepository.findStoreReviewsByManager(manager);
@@ -54,9 +59,15 @@ public class ChartServiceImpl implements ChartService {
         return responseList;
     }
 
+    /**
+     * 매장별 월별 리뷰 수 조회하여 차트 데이터로 반환
+     *
+     * @param email
+     * @param storeId
+     */
     @Override
-    public List<MonthlyStoreReviewResponse> gerMonthlyStoreReview(Long mallManagerId, Long storeId) {
-        Manager manager = managerRepository.findByIdAndAuthorityNot(mallManagerId, Authority.STORE)
+    public List<MonthlyStoreReviewResponse> gerMonthlyStoreReview(String email, Long storeId) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
 
         Store store = storeRepository.findById(storeId)

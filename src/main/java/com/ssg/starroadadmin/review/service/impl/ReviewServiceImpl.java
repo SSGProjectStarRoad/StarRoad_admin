@@ -10,14 +10,13 @@ import com.ssg.starroadadmin.global.error.exception.ReviewException;
 import com.ssg.starroadadmin.global.error.exception.ShopException;
 import com.ssg.starroadadmin.global.error.exception.UsersException;
 import com.ssg.starroadadmin.review.dto.*;
-import com.ssg.starroadadmin.review.entity.*;
+import com.ssg.starroadadmin.review.entity.Review;
 import com.ssg.starroadadmin.review.repository.*;
 import com.ssg.starroadadmin.review.service.ReviewService;
 import com.ssg.starroadadmin.shop.entity.Store;
 import com.ssg.starroadadmin.shop.repository.StoreRepository;
 import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.user.entity.User;
-import com.ssg.starroadadmin.user.enums.Authority;
 import com.ssg.starroadadmin.user.repository.FollowRepository;
 import com.ssg.starroadadmin.user.repository.ManagerRepository;
 import com.ssg.starroadadmin.user.repository.UserRepository;
@@ -48,12 +47,13 @@ public class ReviewServiceImpl implements ReviewService {
     /**
      * 매장별 리뷰 리스트 조회
      *
+     * @param email
      * @param reviewSearchRequest
      * @return
      */
     @Override
-    public Page<ReviewListWithDasyAgoResponse> searchReviewList(Long managerId, StoreReviewSearchRequest reviewSearchRequest, Pageable pageable) {
-        managerRepository.findByIdAndAuthorityNot(managerId, Authority.STORE)
+    public Page<ReviewListWithDasyAgoResponse> searchReviewList(String email, StoreReviewSearchRequest reviewSearchRequest, Pageable pageable) {
+        managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
 
         Store store = storeRepository.findById(reviewSearchRequest.storeId())
@@ -96,13 +96,16 @@ public class ReviewServiceImpl implements ReviewService {
     /**
      * 사용자별 리뷰 리스트 조회
      *
+     * @param email
      * @param reviewSearchRequest
      * @return
      */
     @Override
-    public Page<ReviewListWithDasyAgoResponse> searchReviewList(Long managerId, UserReviewSearchRequest reviewSearchRequest, Pageable pageable) {
-        managerRepository.findByIdAndAuthorityNot(managerId, Authority.STORE)
+    public Page<ReviewListWithDasyAgoResponse> searchReviewList(String email, UserReviewSearchRequest reviewSearchRequest, Pageable pageable) {
+        managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.ACCESS_DENIED));
+
+
 
         User user = userRepository.findById(reviewSearchRequest.userId())
                 .orElseThrow(() -> new UsersException(UserErrorCode.USER_NOT_FOUND));
@@ -150,13 +153,13 @@ public class ReviewServiceImpl implements ReviewService {
     /**
      * 리뷰 상세 조회
      *
-     * @param mallManagerId
+     * @param email
      * @param reviewId
      * @return
      */
     @Override
-    public ReviewDetailResponse getReview(Long mallManagerId, Long reviewId) {
-        Manager manager = managerRepository.findById(mallManagerId)
+    public ReviewDetailResponse getReview(String email, Long reviewId) {
+        Manager manager = managerRepository.findByUsername(email)
                 .orElseThrow(() -> new ManagerException(ManagerErrorCode.MANAGER_NOT_FOUND));
         log.debug("manager.getAuthority() : {}", manager.getAuthority());
 

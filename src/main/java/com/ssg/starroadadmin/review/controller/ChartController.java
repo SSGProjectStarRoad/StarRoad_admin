@@ -1,6 +1,6 @@
 package com.ssg.starroadadmin.review.controller;
 
-import com.ssg.starroadadmin.global.entity.CustomUserDetails;
+import com.ssg.starroadadmin.user.entity.Manager;
 import com.ssg.starroadadmin.review.dto.MallReviewCountResponse;
 import com.ssg.starroadadmin.review.dto.MonthlyStoreReviewResponse;
 import com.ssg.starroadadmin.review.dto.StoreReviewCountResponse;
@@ -20,26 +20,20 @@ import java.util.List;
 public class ChartController {
     private final ChartService chartService;
 
-
-
     @GetMapping("/mall/review-count")
     public ResponseEntity<List<MallReviewCountResponse>> getMallReviewCountChart(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal Manager manager
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
-
-        List<MallReviewCountResponse> reviewChartResponses = chartService.gerMallReviewCount(email);
+        List<MallReviewCountResponse> reviewChartResponses = chartService.gerMallReviewCount(manager.getUsername());
 
         return ResponseEntity.ok(reviewChartResponses);
     }
 
     @GetMapping("/store/review-count")
     public ResponseEntity<List<StoreReviewCountResponse>> getStoreReviewCountChart(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal Manager manager
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
-
-        List<StoreReviewCountResponse> reviewChartResponses = chartService.gerStoreReviewCount(email);
+        List<StoreReviewCountResponse> reviewChartResponses = chartService.gerStoreReviewCount(manager.getUsername());
 
         return ResponseEntity.ok(reviewChartResponses);
     }
@@ -47,13 +41,12 @@ public class ChartController {
     @ResponseBody
     @GetMapping("/store/{storeId}")
     public ResponseEntity<List<MonthlyStoreReviewResponse>> getMonthlyStoreReview(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @AuthenticationPrincipal Manager manager,
             @PathVariable Long storeId
     ) {
-        String email = userDetails.getEmail(); // 이메일을 직접 가져옴
         log.debug("Get monthly store review count, storeId: {}", storeId);
 
-        List<MonthlyStoreReviewResponse> reviewChartResponses = chartService.gerMonthlyStoreReview(email, storeId);
+        List<MonthlyStoreReviewResponse> reviewChartResponses = chartService.gerMonthlyStoreReview(manager.getUsername(), storeId);
 
         return ResponseEntity.ok(reviewChartResponses);
     }
